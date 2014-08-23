@@ -1,4 +1,8 @@
 import gobject
+import globals
 
-class planet(gobject.Gobject):
-    pass
+class Planet(gobject.CircleGobject):
+    texture_name = 'basicPlanet.png'
+    def __init__(self,physics,bl,tr):
+        self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)
+        super(Planet,self).__init__(physics,bl,tr,self.tc)
