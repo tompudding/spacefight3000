@@ -2,7 +2,7 @@ import gobject
 import globals
 
 class Planet(gobject.CircleGobject):
-    texture_name = 'basicPlanet.png'
+    texture_name = '600blue.png'
     static = True
     def __init__(self,physics,bl,tr):
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)

@@ -100,8 +100,6 @@ class Gobject(object):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
-
-
 class BoxGobject(Gobject):
     shape_type = box2d.b2PolygonDef
 

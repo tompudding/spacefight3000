@@ -54,7 +54,7 @@ class Titles(Mode):
                                      text   = self.blurb ,
                                      textType = drawing.texture.TextTypes.GRID_RELATIVE,
                                      colour = (1,1,1,1),
-                                     scale  = 4)
+                                     scale  = 8)
         self.backdrop        = ui.Box(parent = globals.screen_root,
                                       pos    = Point(0,0),
                                       tr     = Point(1,1),
@@ -174,8 +174,8 @@ class Playing(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
         self.planets = []
-        self.planets.append(Planet(self.parent.physics, Point(50,50), Point(100,100)));
-        self.planets.append(Planet(self.parent.physics, Point(350,350), Point(400,400)));
+        self.planets.append(Planet(self.parent.physics, Point(50,50), Point(150,150)));
+        self.planets.append(Planet(self.parent.physics, Point(350,350), Point(450,450)));
 
     def KeyDown(self,key):
         pass
