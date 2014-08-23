@@ -226,7 +226,7 @@ class GameView(ui.RootElement):
         self.game_over = False
         self.dragging = None
         self.paused = False
-        self.zoom = 1
+        self.zoom = 0.5
         self.viewpos = Viewpos(Point(0,0))
         #pygame.mixer.music.load('music.ogg')
         #self.music_playing = False

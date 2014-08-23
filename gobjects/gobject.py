@@ -92,7 +92,7 @@ class Gobject(object):
         return self.body.angle
 
     def PhysUpdate(self):
-        if self.dead:
+        if self.dead or self.static:
             return
         #Just set the vertices
 
@@ -112,7 +112,7 @@ class CircleGobject(Gobject):
         if self.dead:
             return
         shape = self.shape_type()
-        shape.radius = midpoint.length()
+        shape.radius = midpoint.length()/math.sqrt(2)
         if pos != None:
             shape.SetLocalPosition(pos.to_vec())
         return shape
@@ -123,10 +123,9 @@ class CircleGobject(Gobject):
         #Just set the vertices
 
         p = Point(*self.body.GetWorldPoint(self.shape.localPosition))
-        print dir(self.shape)
         r = self.shape.radius
         
         for i,(x,y) in enumerate( ((r,r),(r,-r),(-r,-r),(-r,r)) ):
-            screen_coords = (p + Point(x,y))/self.physics.scale_factor
+            screen_coords = Point(*self.body.GetWorldPoint(self.shape.localPosition+Point(x,y).to_vec()))/self.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
