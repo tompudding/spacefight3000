@@ -6,6 +6,9 @@ from globals.types import Point
 import Box2D as box2d
 import modes
 import random
+import gobjects
+
+print gobjects.Gobject
 
 def b2Vec_indexer(self,index):
     if index == 0:
@@ -121,6 +124,18 @@ class Viewpos(object):
                 partial = partial*partial*(3 - 2*partial) #smoothstep
                 self.pos = (self.start_point + (self.target_change*partial)).to_int()
 
+class fwContactPoint:
+    """
+    Structure holding the necessary information for a contact point.
+    All of the information is copied from the contact listener callbacks.
+    """
+    shape1 = None
+    shape2 = None
+    normal = None
+    position = None
+    velocity = None
+    id  = None
+    state = 0
 
 class MyContactListener(box2d.b2ContactListener):
     physics = None
