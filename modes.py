@@ -64,8 +64,8 @@ class Titles(Mode):
         self.backdrop.Enable()
 
     def KeyDown(self,key):
-        self.stage = TitleStages.PLAYING
         self.Complete()
+        self.stage = TitleStages.PLAYING
 
     def Update(self):        
         self.elapsed = globals.time - self.start
@@ -180,7 +180,7 @@ class Playing(Mode):
         self.planets.append(gobjects.YellowPlanet(self.parent.physics, Point(800,200), Point(1200,600)));
 
         self.goodies = []
-        self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100), Point(150,150)));
+        self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
         self.goodies[0].body.ApplyForce(Point(1000,1000).to_vec(),Point(0,0).to_vec())
 
     def KeyDown(self,key):
