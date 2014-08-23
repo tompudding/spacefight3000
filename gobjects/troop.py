@@ -25,6 +25,7 @@ class Troop(gobject.BoxGobject):
         self.minWeaponAngle = 0
         self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
         self.locked_planet = None
+        self.move_direction = Point(0,0)
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
@@ -91,7 +92,6 @@ class Troop(gobject.BoxGobject):
             vertices.append( screen_coords )
             
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
-        self.doGravity(gravity_sources)
  
         if self.locked_planet:
             diff_vector = self.body.position - self.locked_planet.body.position
@@ -99,7 +99,7 @@ class Troop(gobject.BoxGobject):
             self.body.linearVelocity = box2d.b2Vec2(0,0)
             self.body.angle = angle - math.pi/2
         else:
-            
+            self.doGravity(gravity_sources)
             if hasattr(globals.current_view.mode, "planets"):
                 for planet in globals.current_view.mode.planets:
                     diff_vector = self.body.position - planet.body.position
