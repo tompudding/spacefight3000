@@ -1,0 +1,2 @@
+class gobject(object):
+    pass
