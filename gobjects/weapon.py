@@ -13,7 +13,7 @@ class Weapon(gobject.BoxGobject):
         
     def FireAtTarget(self, angle, force):
         #need to use the angle and force to determine where the projectile is headed. 
-        print "open fire... alll weapons"
+        print "open fire... alll weapons, angle, force = ", angle, force
         return projectile.Projectile(self.projectileImage)
     
     

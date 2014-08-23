@@ -184,16 +184,32 @@ class Playing(Mode):
         #self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
         
         self.selectedGoodie = None
+        self.keysDown = []
+        self.milisecsForPowerOrAngleUpdate = 200
+        self.lastPowerOrAngleUpdate = (globals.time - self.milisecsForPowerOrAngleUpdate)
 
-    def KeyDown(self,key):
-        if(key == pygame.K_SPACE):
-            if(self.selectedGoodie != None):
-                self.selectedGoodie.fireWeapon()
-        #elif(key == pygame.K_UP):
-        #    if(self)
+    def KeyDown(self,key):        
+        self.keysDown.append(key)
+        
+        if(self.keyChangesPowerOrAngle(key)):
+            self.resetAnglePowerKeyTimer()
 
     def KeyUp(self,key):
-        pass
+        if(key in self.keysDown):
+            self.keysDown.remove(key)
+        
+        if(self.keyChangesPowerOrAngle(key)):
+            self.resetAnglePowerKeyTimer()
+    
+    def keyChangesPowerOrAngle(self, key):
+        if(key == pygame.K_UP or key == pygame.K_DOWN or key == pygame.K_LEFT or key == pygame.K_RIGHT):
+            return True
+        else:
+            return False
+        
+    def resetAnglePowerKeyTimer(self):
+        self.lastPowerOrAngleUpdate = (globals.time - self.milisecsForPowerOrAngleUpdate)
+        
     
     def MouseMotion(self,pos,rel):
         pass
@@ -216,6 +232,23 @@ class Playing(Mode):
     def Update(self):        
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
+        
+        if(globals.time > self.lastPowerOrAngleUpdate + self.milisecsForPowerOrAngleUpdate):
+            if(self.selectedGoodie != None):
+                if(pygame.K_SPACE in self.keysDown):
+                    self.selectedGoodie.fireWeapon()
+                elif(pygame.K_UP in self.keysDown):
+                    self.lastPowerOrAngleUpdate = globals.time
+                    self.selectedGoodie.increaseWeaponPower()
+                elif(pygame.K_DOWN in self.keysDown):
+                    self.lastPowerOrAngleUpdate = globals.time
+                    self.selectedGoodie.decreaseWeaponPower()
+                elif(pygame.K_LEFT in self.keysDown):
+                    self.lastPowerOrAngleUpdate = globals.time
+                    self.selectedGoodie.increaseWeaponAngle()
+                elif(pygame.K_RIGHT in self.keysDown):
+                    self.lastPowerOrAngleUpdate = globals.time
+                    self.selectedGoodie.decreaseWeaponAngle()
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO

@@ -50,7 +50,7 @@ def main():
         if t - last > 1000:
             #print 'FPS:',clock.get_fps()
             last = t
-
+        
         globals.current_view.Update()
         globals.current_view.Draw()
         globals.screen_root.Draw()
