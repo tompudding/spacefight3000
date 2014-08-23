@@ -1,4 +1,4 @@
 import gobject
 
-class projectile(gobject.gobject):
+class Projectile(gobject.Gobject):
     pass
