@@ -173,9 +173,13 @@ class Playing(Mode):
                                       buffer = globals.ui_buffer,
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
+
         self.planets = []
         self.planets.append(Planet(self.parent.physics, Point(100,200), Point(500,600)));
         self.planets.append(Planet(self.parent.physics, Point(800,200), Point(1200,600)));
+
+        self.goodies = []
+        self.goodies.append(Troop(self.parent.physics, Point(100,100), Point(110,110)));
 
     def KeyDown(self,key):
         pass

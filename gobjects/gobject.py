@@ -102,6 +102,7 @@ class Gobject(object):
 
 class BoxGobject(Gobject):
     shape_type = box2d.b2PolygonDef
+    vertex_permutation = (0,3,2,1)
 
 class CircleGobject(Gobject):
     shape_type = box2d.b2CircleDef
