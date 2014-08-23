@@ -181,7 +181,7 @@ class Playing(Mode):
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100), Point(150,150)));
-        self.goodies[0].body.ApplyForce(Point(100,0).to_vec(),Point(0,0).to_vec())
+        self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
 
     def KeyDown(self,key):
         pass

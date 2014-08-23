@@ -105,10 +105,9 @@ class Gobject(object):
             distance = Point(*force_dir).length()
             force_dir = force_dir/distance
             print force_dir
-            force_magnitude = 200000/(distance*distance)
+            force_magnitude = 2000000/(distance*distance)
             print force_dir,force_magnitude
             self.body.ApplyForce(force_dir*force_magnitude,self.body.GetWorldCenter())
-            break
             #print self,distance
 
     def PhysUpdate(self,gravity_sources):
