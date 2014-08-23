@@ -184,16 +184,20 @@ class Physics(object):
         self.positionIterations = 8
         self.max_zoom = 2.0
         self.objects = []
+        self.gravity_sources = []
     
     def AddObject(self,obj):
         self.objects.append(obj)
+        if obj.is_gravity_source:
+            self.gravity_sources.append(obj)
 
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
 
         for obj in self.objects:
-            obj.PhysUpdate()
+            obj.PhysUpdate(self.gravity_sources)
+
 
     def GetObjectAtPoint(self,pos):
         aabb = box2d.b2AABB()
