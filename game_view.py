@@ -251,9 +251,10 @@ class GameView(ui.RootElement):
 
     def Draw(self):
         drawing.ResetState()
+        drawing.DrawAll(globals.backdrop_buffer,self.backdrop_texture.texture)
+        drawing.ResetState()
         drawing.Scale(self.zoom,self.zoom,1)
         drawing.Translate(-self.viewpos.pos.x,-self.viewpos.pos.y,0)
-        drawing.DrawAll(globals.backdrop_buffer,self.backdrop_texture.texture)
         drawing.DrawAll(globals.quad_buffer,self.atlas.texture.texture)
         drawing.DrawAll(globals.nonstatic_text_buffer,globals.text_manager.atlas.texture.texture)
         
