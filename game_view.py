@@ -191,7 +191,7 @@ class Physics(object):
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
-        
+
         for obj in self.objects:
             obj.PhysUpdate()
 
@@ -212,12 +212,12 @@ class Physics(object):
 
 
 class GameView(ui.RootElement):
-    max_zoom = 2.0
+    max_zoom = 4.0
     min_zoom = 0.5
     def __init__(self):
         self.atlas = globals.atlas = drawing.texture.TextureAtlas('tiles_atlas_0.png','tiles_atlas.txt')
         self.backdrop_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield.png'))
-        super(GameView,self).__init__(Point(0,0),Point(2000,2000))
+        super(GameView,self).__init__(Point(0,0),Point(4000,4000))
         tiles = (self.absolute.size.to_float())/self.backdrop_texture.size
         self.backdrop  = drawing.Quad(globals.backdrop_buffer,tc = numpy.array([(0,0),(0,tiles.y),(tiles.x,tiles.y),(tiles.x,0)]))
         self.backdrop.SetVertices(Point(0,0),
@@ -234,8 +234,6 @@ class GameView(ui.RootElement):
         self.physics = Physics(self)
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
-        self.planet = gobjects.Planet(self.physics,Point(50,10),Point(100,60))
-        self.planet = gobjects.Planet(self.physics,Point(140,10),Point(190,60))
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 
@@ -286,9 +284,9 @@ class GameView(ui.RootElement):
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
-        #print 'mouse button down',pos,button
+        
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2 | pygame.K_LCTRL in self.modifier_keys:
+        if button == 2 or button == 3 or pygame.K_LCTRL in self.modifier_keys:
             self.dragging = screen_pos
         else:
             self.mode.MouseButtonDown(screen_pos,button)
@@ -297,7 +295,7 @@ class GameView(ui.RootElement):
     def MouseButtonUp(self,pos,button):
         #print 'mouse button up',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2:
+        if button == 2 or button == 3:
             self.dragging = None
         elif button == 4 and not self.dragging:
             self.AdjustZoom(-0.5,pos)

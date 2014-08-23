@@ -54,7 +54,7 @@ class Titles(Mode):
                                      text   = self.blurb ,
                                      textType = drawing.texture.TextTypes.GRID_RELATIVE,
                                      colour = (1,1,1,1),
-                                     scale  = 4)
+                                     scale  = 8)
         self.backdrop        = ui.Box(parent = globals.screen_root,
                                       pos    = Point(0,0),
                                       tr     = Point(1,1),
@@ -64,18 +64,18 @@ class Titles(Mode):
 
     def KeyDown(self,key):
         self.stage = TitleStages.PLAYING
-        self.parent.mode = Playing(self.parent)
+        self.Complete()
 
     def Update(self):        
         self.elapsed = globals.time - self.start
-        self.stage = self.handlers[self.stage](globals.time)
+        self.stage = self.handlers[self.stage]()
 
-    def Complete(self,t):
+    def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.mode = GameOver(self.parent)
+        self.parent.mode = Playing(self.parent)
 
-    def Startup(self,t):
+    def Startup(self):
         return TitleStages.STARTED
 
 class GameMode(Mode):
@@ -175,8 +175,8 @@ class Playing(Mode):
         self.backdrop.Enable()
 
         self.planets = []
-        self.planets.append(Planet(self.parent.physics, Point(50,50), Point(100,100)));
-        self.planets.append(Planet(self.parent.physics, Point(350,350), Point(400,400)));
+        self.planets.append(Planet(self.parent.physics, Point(100,200), Point(500,600)));
+        self.planets.append(Planet(self.parent.physics, Point(800,200), Point(1200,600)));
 
         self.goodies = []
         self.goodies.append(Troop(self.parent.physics, Point(100,100), Point(110,110)));
