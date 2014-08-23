@@ -2,6 +2,7 @@ from OpenGL.GL import *
 import random,numpy,cmath,math,pygame
 
 import ui,globals,drawing,os,copy
+from gobjects import *
 from globals.types import Point
 import sys
 
@@ -34,6 +35,7 @@ class TitleStages(object):
     TEXT     = 2
     SCROLL   = 3
     WAIT     = 4
+    PLAYING = 5
 
 
 class Titles(Mode):
@@ -61,7 +63,8 @@ class Titles(Mode):
         self.backdrop.Enable()
 
     def KeyDown(self,key):
-        self.stage = TitleStages.COMPLETE
+        self.stage = TitleStages.PLAYING
+        self.parent.mode = Playing(self.parent)
 
     def Update(self):        
         self.elapsed = globals.time - self.start
@@ -151,3 +154,38 @@ class GameOver(Mode):
     def MouseButtonDown(self,pos,button):
         self.KeyDown(0)
         return False,False
+
+class PlayingStages:
+    PLAYERS_GO = 0
+    COMPUTERS_GO = 1
+
+class Playing(Mode):
+    def __init__(self,parent):
+        self.parent          = parent
+        self.start           = pygame.time.get_ticks()
+        self.stage           = PlayingStages.PLAYERS_GO
+        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
+        bl = self.parent.GetRelative(Point(0,0))
+        tr = bl + self.parent.GetRelative(globals.screen)
+        self.backdrop        = ui.Box(parent = globals.screen_root,
+                                      pos    = Point(0,0),
+                                      tr     = Point(1,1),
+                                      buffer = globals.ui_buffer,
+                                      colour = (0,0,0,0))
+        self.backdrop.Enable()
+        self.planets = []
+        self.planets.append(Planet(self.parent.physics, Point(50,50), Point(100,100)));
+        self.planets.append(Planet(self.parent.physics, Point(350,350), Point(400,400)));
+
+    def KeyDown(self,key):
+        pass
+
+    def KeyUp(self,key):
+        pass
+
+    def Update(self):        
+        self.elapsed = globals.time - self.start
+        self.stage = self.handlers[self.stage](globals.time)
+
+    def PlayerPlay(self, ticks):
+        return PlayingStages.PLAYERS_GO
