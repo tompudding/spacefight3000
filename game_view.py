@@ -212,12 +212,12 @@ class Physics(object):
 
 
 class GameView(ui.RootElement):
-    max_zoom = 2.0
+    max_zoom = 4.0
     min_zoom = 0.5
     def __init__(self):
         self.atlas = globals.atlas = drawing.texture.TextureAtlas('tiles_atlas_0.png','tiles_atlas.txt')
         self.backdrop_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield.png'))
-        super(GameView,self).__init__(Point(0,0),Point(2000,2000))
+        super(GameView,self).__init__(Point(0,0),Point(4000,4000))
         tiles = (self.absolute.size.to_float())/self.backdrop_texture.size
         self.backdrop  = drawing.Quad(globals.backdrop_buffer,tc = numpy.array([(0,0),(0,tiles.y),(tiles.x,tiles.y),(tiles.x,0)]))
         self.backdrop.SetVertices(Point(0,0),
@@ -226,7 +226,7 @@ class GameView(ui.RootElement):
         self.game_over = False
         self.dragging = None
         self.paused = False
-        self.zoom = 0.5
+        self.zoom = 1
         self.viewpos = Viewpos(Point(0,0))
         #pygame.mixer.music.load('music.ogg')
         #self.music_playing = False
@@ -284,7 +284,7 @@ class GameView(ui.RootElement):
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
-        #print 'mouse button down',pos,button
+        
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.K_LCTRL in self.modifier_keys:
             self.dragging = screen_pos
