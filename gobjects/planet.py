@@ -1,0 +1,2 @@
+class planet:
+    pass
