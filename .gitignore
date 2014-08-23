@@ -4,3 +4,4 @@
 .project
 .pydevproject
 errorlog.log
+*.orig
