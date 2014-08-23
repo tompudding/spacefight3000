@@ -7,6 +7,20 @@ import Box2D as box2d
 import modes
 import random
 
+def b2Vec_indexer(self,index):
+    if index == 0:
+        return self.x
+    elif index == 1:
+        return self.y
+def b2Vec_setter(self,index,val):
+    if index == 0:
+        self.x =val
+    elif index == 1:
+        self.y = val
+box2d.b2Vec2.__getitem__ = b2Vec_indexer
+box2d.b2Vec2.__setitem__ = b2Vec_setter
+
+
 class MyContactListener(box2d.b2ContactListener):
     physics = None
     def __init__(self): 
