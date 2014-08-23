@@ -186,7 +186,11 @@ class Playing(Mode):
         self.selectedGoodie = None
 
     def KeyDown(self,key):
-        pass
+        if(key == pygame.K_SPACE):
+            if(self.selectedGoodie != None):
+                self.selectedGoodie.fireWeapon()
+        #elif(key == pygame.K_UP):
+        #    if(self)
 
     def KeyUp(self,key):
         pass

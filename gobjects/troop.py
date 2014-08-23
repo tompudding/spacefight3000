@@ -1,6 +1,7 @@
 import gobject
 import globals
 import weapon
+import math
 from globals.types import Point
 import math
 import drawing
@@ -14,6 +15,13 @@ class Troop(gobject.BoxGobject):
         self.selected = False
         self.selectionBoxQuad = None
         self.selectedBoxtc = globals.atlas.TextureSpriteCoords(self.selectedBoxFilename)
+        self.currentWeaponAngle = 0
+        self.currentWeaponPower = 0
+        
+        self.maxWeaponPower = 100
+        self.maxWeaponAngle = (2 * math.pi)
+        self.minWeaponAngle = 0
+        self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
@@ -38,6 +46,29 @@ class Troop(gobject.BoxGobject):
     def unselect(self):
         self.selected = False
         self.selectionBoxQuad.Disable()
+    
+    def fireWeapon(self):
+        self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
+        
+    def increaseWeaponPower(self):
+        self.currentWeaponPower += 1
+        if(self.currentWeaponPower > self.maxWeaponPower):
+            self.currentWeaponPower = 0
+    
+    def decreaseWeaponPower(self):
+        self.currentWeaponPower -= 1
+        if(self.currentWeaponPower > self.maxWeaponPower):
+            self.currentWeaponPower = self.maxWeaponPower
+    
+    def increaseWeaponAngle(self):
+        self.currentWeaponAngle += self.angleModificationAmount
+        if(self.currentWeaponAngle > self.maxWeaponAngle):
+            self.currentWeaponAngle = self.minWeaponAngle
+    
+    def decreaseWeaponAngle(self):
+        self.currentWeaponAngle -= self.angleModificationAmount
+        if(self.currentWeaponAngle < self.minWeaponAngle):
+            self.currentWeaponAngle = self.maxWeaponAngle
          
     def InitPolygons(self,tc):
         super(Troop,self).InitPolygons(self.tc)
