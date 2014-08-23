@@ -2,7 +2,7 @@ from OpenGL.GL import *
 import random,numpy,cmath,math,pygame
 
 import ui,globals,drawing,os,copy
-from gobjects import *
+import gobjects
 from globals.types import Point
 import sys
 
@@ -175,11 +175,12 @@ class Playing(Mode):
         self.backdrop.Enable()
 
         self.planets = []
-        self.planets.append(Planet(self.parent.physics, Point(100,200), Point(500,600)));
-        self.planets.append(Planet(self.parent.physics, Point(800,200), Point(1200,600)));
+        self.planets.append(gobjects.BluePlanet(self.parent.physics, Point(100,200), Point(500,600)));
+        self.planets.append(gobjects.YellowPlanet(self.parent.physics, Point(800,200), Point(1200,600)));
 
         self.goodies = []
-        self.goodies.append(Troop(self.parent.physics, Point(100,100), Point(110,110)));
+        self.goodies.append(gobjects.Troop(self.parent.physics, Point(100,100), Point(110,110)));
+        self.goodies[0].body.ApplyForce(Point(10,10).to_vec(),Point(0,0).to_vec())
 
     def KeyDown(self,key):
         pass

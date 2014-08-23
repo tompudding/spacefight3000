@@ -10,6 +10,9 @@ class Troop(gobject.BoxGobject):
         self.currentWeapon = initialWeapon
         self.texture_name = 'bazookaTroop.png'
 
+        self.body.SetMassFromShapes()
+        if not self.static:
+            physics.AddObject(self)
         
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon 

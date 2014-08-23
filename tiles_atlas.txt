@@ -1,3 +1,4 @@
-resource/sprites/600blue.png:tiles_atlas_0.png:0:424.0:600:600
-resource/sprites/basicPlanet.png:tiles_atlas_0.png:600:874.0:150:150
-resource/sprites/bazookaTroop.png:tiles_atlas_0.png:750:992.0:32:32
+resource/sprites/600blue.png:tiles_atlas_0.png:0:1448.0:600:600
+resource/sprites/600yellow.png:tiles_atlas_0.png:600:1448.0:600:600
+resource/sprites/basicPlanet.png:tiles_atlas_0.png:1200:1898.0:150:150
+resource/sprites/bazookaTroop.png:tiles_atlas_0.png:1350:2016.0:32:32
