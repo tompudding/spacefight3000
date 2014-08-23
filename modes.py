@@ -64,18 +64,18 @@ class Titles(Mode):
 
     def KeyDown(self,key):
         self.stage = TitleStages.PLAYING
-        self.parent.mode = Playing(self.parent)
+        self.Complete()
 
     def Update(self):        
         self.elapsed = globals.time - self.start
-        self.stage = self.handlers[self.stage](globals.time)
+        self.stage = self.handlers[self.stage]()
 
-    def Complete(self,t):
+    def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.mode = GameOver(self.parent)
+        self.parent.mode = Playing(self.parent)
 
-    def Startup(self,t):
+    def Startup(self):
         return TitleStages.STARTED
 
 class GameMode(Mode):
@@ -174,8 +174,8 @@ class Playing(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
         self.planets = []
-        self.planets.append(Planet(self.parent.physics, Point(50,50), Point(150,150)));
-        self.planets.append(Planet(self.parent.physics, Point(350,350), Point(450,450)));
+        self.planets.append(Planet(self.parent.physics, Point(250,50), Point(850,650)));
+        #self.planets.append(Planet(self.parent.physics, Point(350,350), Point(450,450)));
 
     def KeyDown(self,key):
         pass

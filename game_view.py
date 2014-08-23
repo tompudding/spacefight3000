@@ -284,8 +284,9 @@ class GameView(ui.RootElement):
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
-        #print 'mouse button down',pos,button
+        
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
+        print 'mouse button down',screen_pos,button
         if button == 2 or pygame.K_LCTRL in self.modifier_keys:
             self.dragging = screen_pos
         else:
