@@ -49,6 +49,7 @@ class Troop(gobject.BoxGobject):
     
     def fireWeapon(self):
         self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
+        #do an ammo check here and switch to a default weapon if you run out of ammo? 
         
     def increaseWeaponPower(self):
         self.currentWeaponPower += 1
