@@ -4,7 +4,9 @@ import weapon
 import math
 from globals.types import Point
 import math
+import cmath
 import drawing
+import Box2D as box2d
 
 class Troop(gobject.BoxGobject):    
   
@@ -22,6 +24,7 @@ class Troop(gobject.BoxGobject):
         self.maxWeaponAngle = (2 * math.pi)
         self.minWeaponAngle = 0
         self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
+        self.locked_planet = None
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
@@ -33,8 +36,6 @@ class Troop(gobject.BoxGobject):
             physics.AddObject(self)
             
         self.selectionBoxQuad.Disable()
-            
-
         
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
@@ -78,7 +79,8 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
      
     def PhysUpdate(self,gravity_sources):
-        super(Troop,self).PhysUpdate(gravity_sources)
+        #Don't pass the gravity sources as we want to take care of that
+        super(Troop,self).PhysUpdate([])
         if self.dead or self.static:
             return
         #Just set the vertices
@@ -88,11 +90,25 @@ class Troop(gobject.BoxGobject):
             vertices.append( screen_coords )
             
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
- 
         self.doGravity(gravity_sources)
-
-        if hasattr(globals.current_view.mode, "planets"):
-            for planet in globals.current_view.mode.planets:
-                diff_vector =  - self.body.position - planet.body.position
-                if diff_vector.Length() <  planet.shape.radius + 2:
-                    self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
+ 
+        if self.locked_planet:
+            diff_vector = self.body.position - self.locked_planet.body.position
+            distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
+            self.body.linearVelocity = box2d.b2Vec2(0,0)
+            self.body.angle = angle - math.pi/2
+        else:
+            
+            if hasattr(globals.current_view.mode, "planets"):
+                for planet in globals.current_view.mode.planets:
+                    diff_vector = self.body.position - planet.body.position
+                    if diff_vector.Length() < planet.shape.radius*1.2:
+                        #We're near a planet. We'll lock on if the velocity in direction towards the planets surface is low enough
+                        v = self.body.linearVelocity.x*diff_vector.x + self.body.linearVelocity.y*diff_vector.y
+                        if abs(v) < 5:
+                            distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
+                            self.body.angle = angle - math.pi/2
+                            self.locked_planet = planet
+                            self.body.linearVelocity = box2d.b2Vec2(0,0)
+                            print 'bob'
+                            break

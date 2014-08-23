@@ -181,7 +181,7 @@ class Playing(Mode):
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
-        self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
+        #self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
         
         self.selectedGoodie = None
 
