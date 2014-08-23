@@ -286,7 +286,7 @@ class GameView(ui.RootElement):
     def MouseButtonDown(self,pos,button):
         #print 'mouse button down',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2 or pygame.K_LCTRL in self.modifier_keys:
+        if button == 2 or button == 3 or pygame.K_LCTRL in self.modifier_keys:
             self.dragging = screen_pos
         else:
             self.mode.MouseButtonDown(screen_pos,button)
@@ -295,7 +295,7 @@ class GameView(ui.RootElement):
     def MouseButtonUp(self,pos,button):
         #print 'mouse button up',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2:
+        if button == 2 or button == 3:
             self.dragging = None
         elif button == 4 and not self.dragging:
             self.AdjustZoom(-0.5,pos)
