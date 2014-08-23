@@ -8,6 +8,12 @@ class Troop(gobject.BoxGobject):
   
     def __init__(self, initialWeapon, physics, bl, tr):
         self.texture_filename = 'bazookaTroop.png'
+        self.selectedBoxFilename = 'selectionBox.png'
+        self.selected = False
+        self.selectionBoxQuad = None
+        self.selectedBoxtc = globals.atlas.TextureSpriteCoords(self.selectedBoxFilename)
+        
+        
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
         super(Troop,self).__init__(physics,bl,tr,self.tc)
         self.currentWeapon = initialWeapon(physics, bl, tr)
@@ -16,22 +22,28 @@ class Troop(gobject.BoxGobject):
         if not self.static:
             physics.AddObject(self)
             
-        self.selected = False
-        self.selectionBoxQuad = None
+        self.selectionBoxQuad.Disable()
+            
+
         
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon 
         
     def select(self):
         self.selected = True
+        self.selectionBoxQuad.Enable()
+    
+    def unselect(self):
+        self.selected = False
+        self.selectionBoxQuad.Disable()
          
 
     def InitPolygons(self,tc):
-        super(Troop,self).InitPolygons(tc)
+        super(Troop,self).InitPolygons(self.tc)
         
         if self.dead:
             return
-        self.selectionBoxQuad = drawing.Quad(globals.quad_buffer,tc = tc)
+        self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
      
      
     def PhysUpdate(self,gravity_sources):
@@ -39,9 +51,12 @@ class Troop(gobject.BoxGobject):
         if self.dead or self.static:
             return
         #Just set the vertices
- 
+        vertices = []
         for i,vertex in enumerate(self.shape.vertices):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
-            self.selectionBoxQuad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
+            vertices.append( screen_coords )
+            #self.selectionBoxQuad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level+0.1)
+            
+        self.selectionBoxQuad.SetVertices(vertices[0], vertices[2], self.z_level+0.1)
  
         self.doGravity(gravity_sources)
