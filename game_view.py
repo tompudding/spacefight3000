@@ -195,6 +195,7 @@ class Physics(object):
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
+        #self.world.ClearForces()
         for obj in self.objects:
             obj.PhysUpdate(self.gravity_sources)
 
