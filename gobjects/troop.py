@@ -57,7 +57,7 @@ class Troop(gobject.BoxGobject):
     
     def decreaseWeaponPower(self):
         self.currentWeaponPower -= 1
-        if(self.currentWeaponPower > self.maxWeaponPower):
+        if(self.currentWeaponPower < 0):
             self.currentWeaponPower = self.maxWeaponPower
     
     def increaseWeaponAngle(self):
