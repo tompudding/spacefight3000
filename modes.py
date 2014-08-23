@@ -188,6 +188,17 @@ class Playing(Mode):
 
     def KeyUp(self,key):
         pass
+    
+    def MouseMotion(self,pos,rel):
+        pass
+    
+    def MouseButtonDown(self,pos,button):
+        objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
+        if(objectUnderPoint != None and (objectUnderPoint in self.goodies)):
+            objectUnderPoint.select()
+
+    def MouseButtonUp(self,pos,button):
+        return
 
     def Update(self):        
         self.elapsed = globals.time - self.start

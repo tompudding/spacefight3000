@@ -13,7 +13,12 @@ class Troop(gobject.BoxGobject):
         self.body.SetMassFromShapes()
         if not self.static:
             physics.AddObject(self)
+            
+        self.selected = False
         
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon 
+        
+    def select(self):
+        self.selected = True
          
