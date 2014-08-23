@@ -4,6 +4,7 @@ import globals
 class Planet(gobject.CircleGobject):
     texture_name = '600blue.png'
     static = True
+    is_gravity_source = True
     def __init__(self,physics,bl,tr):
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)
         super(Planet,self).__init__(physics,bl,tr,self.tc)

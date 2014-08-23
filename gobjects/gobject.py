@@ -11,6 +11,7 @@ class Gobject(object):
     static   = False
     health   = 500
     z_level  = 10
+    is_gravity_source = False
     def __init__(self,physics,bl,tr,tc = None,angle=0):
         self.dead = False
         self.tc = tc
@@ -41,7 +42,7 @@ class Gobject(object):
         self.child_joint = None
         self.parent_joint = None
         self.ExtraShapes()
-        self.PhysUpdate()
+        self.PhysUpdate([])
 
     def ExtraShapes(self):
         pass
@@ -91,7 +92,14 @@ class Gobject(object):
             return
         return self.body.angle
 
-    def PhysUpdate(self):
+    def doGravity(self,gravity_sources):
+        if self.is_gravity_source:
+            return 
+
+        for source in gravity_sources:
+            distance = source.midpoint - self.midpoint
+
+    def PhysUpdate(self,gravity_sources):
         if self.dead or self.static:
             return
         #Just set the vertices
@@ -100,6 +108,7 @@ class Gobject(object):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
+        self.doGravity(gravity_sources)
 class BoxGobject(Gobject):
     shape_type = box2d.b2PolygonDef
     vertex_permutation = (0,3,2,1)
@@ -112,11 +121,12 @@ class CircleGobject(Gobject):
             return
         shape = self.shape_type()
         shape.radius = midpoint.length()/math.sqrt(2)
+        self.midpoint = Point(0,0)
         if pos != None:
             shape.SetLocalPosition(pos.to_vec())
         return shape
 
-    def PhysUpdate(self):
+    def PhysUpdate(self,gravity_sources):
         if self.dead:
             return
         #Just set the vertices
