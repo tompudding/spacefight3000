@@ -8,8 +8,6 @@ import modes
 import random
 import gobjects
 
-print gobjects.Gobject
-
 def b2Vec_indexer(self,index):
     if index == 0:
         return self.x
@@ -236,6 +234,7 @@ class GameView(ui.RootElement):
         self.physics = Physics(self)
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
+        self.planet = gobjects.Planet(self.physics,Point(100,100),Point(200,200))
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 

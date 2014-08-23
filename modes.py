@@ -90,6 +90,7 @@ class GameOver(Mode):
                                 TitleStages.SCROLL  : self.Wait,
                                 TitleStages.WAIT    : self.Wait}
         self.backdrop        = ui.Box(parent = globals.screen_root,
+                                      buffer = globals.backdrop_buffer,
                                       pos    = Point(0,0),
                                       tr     = Point(1,1),
                                       colour = (0,0,0,0.6))
@@ -113,11 +114,11 @@ class GameOver(Mode):
         #pygame.mixer.music.load('end_fail.mp3')
         #pygame.mixer.music.play(-1)
 
-    def Update(self,t):
+    def Update(self):
         if self.start == None:
-            self.start = t
-        self.elapsed = t - self.start
-        self.stage = self.handlers[self.stage](t)
+            self.start = globals.time
+        self.elapsed = globals.time - self.start
+        self.stage = self.handlers[self.stage](globals.time)
         if self.stage == TitleStages.COMPLETE:
             raise sys.exit('Come again soon!')
 

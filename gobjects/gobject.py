@@ -10,7 +10,6 @@ class Gobject(object):
     health   = 500
     z_level  = 10
     def __init__(self,physics,bl,tr,tc = None,angle=0):
-        #Hardcode the dirt texture since right now all static things are dirt. I know I know.
         self.dead = False
         self.tc = tc
         self.bl = bl
@@ -67,7 +66,7 @@ class Gobject(object):
     def CreateShape(self,midpoint,pos = None):
         if self.dead:
             return
-        shape = box2d.b2PolygonDef()
+        shape = self.shape_type()
         if pos == None:
             shape.SetAsBox(*midpoint)
         else:
@@ -89,3 +88,18 @@ class Gobject(object):
 
     def PhysUpdate(self):
         return
+
+class BoxGobject(Gobject):
+    shape_type = box2d.b2PolygonDef
+
+class CircleGobject(Gobject):
+    shape_type = box2d.b2CircleDef
+    def CreateShape(self,midpoint,pos = None):
+        if self.dead:
+            return
+        shape = self.shape_type()
+        shape.radius = midpoint.length()
+        if pos != None:
+            shape.SetLocalPosition(pos.to_vec())
+        return shape
+
