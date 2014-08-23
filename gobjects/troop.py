@@ -3,6 +3,7 @@ import globals
 import weapon
 from globals.types import Point
 import math
+import drawing
 
 class Troop(gobject.BoxGobject):    
   
@@ -38,15 +39,6 @@ class Troop(gobject.BoxGobject):
         self.selected = False
         self.selectionBoxQuad.Disable()
          
-    def PhysUpdate(self,gravity_sources):
-        super(Troop,self).PhysUpdate(gravity_sources)
-
-        if hasattr(globals.current_view.mode, "planets"):
-            for planet in globals.current_view.mode.planets:
-                diff_vector = planet.body.position - self.body.position
-                if diff_vector.Length() <  12:
-                    self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
-
     def InitPolygons(self,tc):
         super(Troop,self).InitPolygons(self.tc)
         
@@ -68,3 +60,9 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
  
         self.doGravity(gravity_sources)
+
+        if hasattr(globals.current_view.mode, "planets"):
+            for planet in globals.current_view.mode.planets:
+                diff_vector = planet.body.position - self.body.position
+                if diff_vector.Length() <  12:
+                    self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
