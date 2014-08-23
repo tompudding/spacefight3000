@@ -1,4 +1,8 @@
 import gobject
 
 class Projectile(gobject.Gobject):
-    pass
+    
+    def __init__(self, image, mass):
+        self.image = image
+        self.mass = mass
+        self.isBullet = True
