@@ -104,9 +104,7 @@ class Gobject(object):
             force_dir = -(self.centre_world - source.centre_world)
             distance = Point(*force_dir).length()
             force_dir = force_dir/distance
-            print force_dir
             force_magnitude = 2000000/(distance*distance)
-            print force_dir,force_magnitude
             self.body.ApplyForce(force_dir*force_magnitude,self.body.GetWorldCenter())
             #print self,distance
 
