@@ -182,6 +182,8 @@ class Playing(Mode):
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100), Point(150,150)));
         self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
+        
+        self.selectedGoodie = None
 
     def KeyDown(self,key):
         pass
@@ -193,9 +195,16 @@ class Playing(Mode):
         pass
     
     def MouseButtonDown(self,pos,button):
+        self.selectedGoodie = None
+        
         objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
+        
+        for goodie in self.goodies:
+            goodie.unselect()
+        
         if(objectUnderPoint != None and (objectUnderPoint in self.goodies)):
             objectUnderPoint.select()
+            self.selectedGoodie = objectUnderPoint
 
     def MouseButtonUp(self,pos,button):
         return
