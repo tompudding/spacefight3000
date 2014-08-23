@@ -28,5 +28,4 @@ class Troop(gobject.BoxGobject):
                 diff_vector = planet.body.position - self.body.position
                 if diff_vector.Length() <  12:
                     self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
-                    print self.body.angle / (2*math.pi) * 360
 
