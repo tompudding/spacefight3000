@@ -21,6 +21,7 @@ class Troop(gobject.BoxGobject):
         self.maxWeaponPower = 100
         self.maxWeaponAngle = (2 * math.pi)
         self.minWeaponAngle = 0
+        self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
@@ -60,12 +61,12 @@ class Troop(gobject.BoxGobject):
             self.currentWeaponPower = self.maxWeaponPower
     
     def increaseWeaponAngle(self):
-        self.currentWeaponAngle += 1
+        self.currentWeaponAngle += self.angleModificationAmount
         if(self.currentWeaponAngle > self.maxWeaponAngle):
             self.currentWeaponAngle = self.minWeaponAngle
     
     def decreaseWeaponAngle(self):
-        self.currentWeaponAngle -= 1
+        self.currentWeaponAngle -= self.angleModificationAmount
         if(self.currentWeaponAngle < self.minWeaponAngle):
             self.currentWeaponAngle = self.maxWeaponAngle
          
