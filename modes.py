@@ -165,7 +165,8 @@ class Playing(Mode):
         self.parent          = parent
         self.start           = pygame.time.get_ticks()
         self.stage           = PlayingStages.PLAYERS_GO
-        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
+        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay,
+                                PlayingStages.COMPUTERS_GO : self.ComputerPlay}
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.backdrop        = ui.Box(parent = globals.screen_root,
@@ -181,8 +182,11 @@ class Playing(Mode):
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
-        #self.goodies[0].body.ApplyForce(Point(10000,0).to_vec(),self.goodies[0].body.GetWorldCenter())
         
+        self.baddies = []
+        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,100)));
+        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,400)));
+
         self.selectedGoodie = None
         self.keysDown = []
         self.milisecsForPowerOrAngleUpdate = 200
@@ -194,13 +198,18 @@ class Playing(Mode):
         if(self.keyChangesPowerOrAngle(key)):
             self.resetAnglePowerKeyTimer()
 
+        if key == pygame.K_n:
+            StartComputersGo(self)
+
+
     def KeyUp(self,key):
         if(key in self.keysDown):
             self.keysDown.remove(key)
         
         if(self.keyChangesPowerOrAngle(key)):
             self.resetAnglePowerKeyTimer()
-    
+
+
     def keyChangesPowerOrAngle(self, key):
         if(key == pygame.K_UP or key == pygame.K_DOWN or key == pygame.K_LEFT or key == pygame.K_RIGHT):
             return True
@@ -209,10 +218,6 @@ class Playing(Mode):
         
     def resetAnglePowerKeyTimer(self):
         self.lastPowerOrAngleUpdate = (globals.time - self.milisecsForPowerOrAngleUpdate)
-        
-    
-    def MouseMotion(self,pos,rel):
-        pass
     
     def MouseButtonDown(self,pos,button):
         self.selectedGoodie = None
@@ -225,9 +230,6 @@ class Playing(Mode):
         if(objectUnderPoint != None and (objectUnderPoint in self.goodies)):
             objectUnderPoint.select()
             self.selectedGoodie = objectUnderPoint
-
-    def MouseButtonUp(self,pos,button):
-        return
 
     def Update(self):        
         self.elapsed = globals.time - self.start
@@ -250,5 +252,12 @@ class Playing(Mode):
                     self.lastPowerOrAngleUpdate = globals.time
                     self.selectedGoodie.decreaseWeaponAngle()
 
+    def StartComputersGo(self):
+        self.selectedGoodie = None
+        self.stage = PlayingStages.COMPUTERS_GO
+
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
+
+    def ComputerPlay(self, ticks):
+        return PlayingStages.COMPUTERS_GO
