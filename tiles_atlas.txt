@@ -1,7 +1,9 @@
 resource/sprites/600blue.png:tiles_atlas_0.png:0:1448.0:600:600
 resource/sprites/600yellow.png:tiles_atlas_0.png:600:1448.0:600:600
-resource/sprites/spacehattanday.png:tiles_atlas_0.png:1200:1448.0:600:600
-resource/sprites/spacehattannight.png:tiles_atlas_0.png:0:848.0:600:600
+resource/sprites/bunny.png:tiles_atlas_0.png:1200:1448.0:600:600
+resource/sprites/spacehattanday.png:tiles_atlas_0.png:0:848.0:600:600
+resource/sprites/spacehattannight.png:tiles_atlas_0.png:600:848.0:600:600
 resource/sprites/basicPlanet.png:tiles_atlas_0.png:1800:1898.0:150:150
 resource/sprites/bazookaTroop.png:tiles_atlas_0.png:1800:1770.0:128:128
-resource/sprites/tempRound.png:tiles_atlas_0.png:1950:2043.0:5:5
+resource/sprites/selectionBox.png:tiles_atlas_0.png:1950:2016.0:32:32
+resource/sprites/tempRound.png:tiles_atlas_0.png:1982:2043.0:5:5
