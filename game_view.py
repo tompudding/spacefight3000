@@ -222,12 +222,17 @@ class GameView(ui.RootElement):
     def __init__(self):
         self.atlas = globals.atlas = drawing.texture.TextureAtlas('tiles_atlas_0.png','tiles_atlas.txt')
         self.backdrop_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield.png'))
+        self.backdrop_alpha_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield_alpha.png'))
         super(GameView,self).__init__(Point(0,0),Point(4000,4000))
         tiles = (self.absolute.size.to_float())/self.backdrop_texture.size
         self.backdrop  = drawing.Quad(globals.backdrop_buffer,tc = numpy.array([(0,0),(0,tiles.y),(tiles.x,tiles.y),(tiles.x,0)]))
+        self.backdrop_alpha  = drawing.Quad(globals.backdrop_alpha_buffer,tc = numpy.array([(tiles.x,tiles.y),(tiles.x,0),(0,0),(0,tiles.y),]))
         self.backdrop.SetVertices(Point(0,0),
                                   self.absolute.size,
                                   drawing.constants.DrawLevels.grid)
+        self.backdrop_alpha.SetVertices(Point(0,0),
+                                        self.absolute.size,
+                                        drawing.constants.DrawLevels.grid+1)
         self.game_over = False
         self.dragging = None
         self.paused = False
@@ -252,6 +257,12 @@ class GameView(ui.RootElement):
     def Draw(self):
         drawing.ResetState()
         drawing.DrawAll(globals.backdrop_buffer,self.backdrop_texture.texture)
+
+        drawing.ResetState()
+        drawing.Scale(0.6,0.6,1)
+        drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
+        drawing.DrawAll(globals.backdrop_alpha_buffer,self.backdrop_alpha_texture.texture)
+
         drawing.ResetState()
         drawing.Scale(self.zoom,self.zoom,1)
         drawing.Translate(-self.viewpos.pos.x,-self.viewpos.pos.y,0)

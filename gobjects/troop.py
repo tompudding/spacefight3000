@@ -55,7 +55,6 @@ class Troop(gobject.BoxGobject):
         for i,vertex in enumerate(self.shape.vertices):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
             vertices.append( screen_coords )
-            #self.selectionBoxQuad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level+0.1)
             
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
  
