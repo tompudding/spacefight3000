@@ -191,7 +191,7 @@ class Physics(object):
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
-        
+
         for obj in self.objects:
             obj.PhysUpdate()
 
@@ -234,8 +234,6 @@ class GameView(ui.RootElement):
         self.physics = Physics(self)
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
-        self.planet = gobjects.Planet(self.physics,Point(50,10),Point(100,60))
-        self.planet = gobjects.Planet(self.physics,Point(140,10),Point(190,60))
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 
@@ -288,7 +286,7 @@ class GameView(ui.RootElement):
     def MouseButtonDown(self,pos,button):
         #print 'mouse button down',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2 | pygame.K_LCTRL in self.modifier_keys:
+        if button == 2 or pygame.K_LCTRL in self.modifier_keys:
             self.dragging = screen_pos
         else:
             self.mode.MouseButtonDown(screen_pos,button)
