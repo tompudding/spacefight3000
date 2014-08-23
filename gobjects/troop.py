@@ -1,13 +1,15 @@
 import gobject
 import globals
 import weapon
-import drawing
 import math
 from globals.types import Point
+import math
+import drawing
 
 class Troop(gobject.BoxGobject):    
   
-    def __init__(self, initialWeapon, physics, bl, tr):
+    def __init__(self, initialWeapon, physics, bl):
+        tr = bl + Point(50,50)
         self.texture_filename = 'bazookaTroop.png'
         self.selectedBoxFilename = 'selectionBox.png'
         self.selected = False
@@ -34,7 +36,7 @@ class Troop(gobject.BoxGobject):
 
         
     def changeWeapon(self, newWeapon):
-        self.currentWeapon = newWeapon 
+        self.currentWeapon = newWeapon
         
     def select(self):
         self.selected = True
@@ -67,7 +69,6 @@ class Troop(gobject.BoxGobject):
         if(self.currentWeaponAngle < self.minWeaponAngle):
             self.currentWeaponAngle = self.maxWeaponAngle
          
-
     def InitPolygons(self,tc):
         super(Troop,self).InitPolygons(self.tc)
         
@@ -89,3 +90,9 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
  
         self.doGravity(gravity_sources)
+
+        if hasattr(globals.current_view.mode, "planets"):
+            for planet in globals.current_view.mode.planets:
+                diff_vector = planet.body.position - self.body.position
+                if diff_vector.Length() <  12:
+                    self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
