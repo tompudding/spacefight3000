@@ -30,7 +30,11 @@ class Troop(gobject.BoxGobject):
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
         super(Troop,self).__init__(physics,bl,tr,self.tc)
+        
+        #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
+        #you want to give another weapon that isnt unlimited, use change weapon. 
         self.currentWeapon = initialWeapon(physics, bl, tr)
+        self.defaultWeapon = initialWeapon(physics, bl, tr)
     
         self.body.SetMassFromShapes()
         if not self.static:
@@ -50,8 +54,14 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
     
     def fireWeapon(self):
-        self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
-        #do an ammo check here and switch to a default weapon if you run out of ammo? 
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
+        
+        #switch weapon if we run out of ammo.
+        if(self.currentWeapon.isOutOfAmmo()):
+            self.currentWeapon = self.defaultWeapon
+            
+        return newProjectile
+        
         
     def increaseWeaponPower(self):
         self.currentWeaponPower += 1
