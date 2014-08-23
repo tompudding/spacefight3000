@@ -187,14 +187,14 @@ class Physics(object):
         self.gravity_sources = []
     
     def AddObject(self,obj):
-        self.objects.append(obj)
+        if not obj.static:
+            self.objects.append(obj)
         if obj.is_gravity_source:
             self.gravity_sources.append(obj)
 
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
-
         for obj in self.objects:
             obj.PhysUpdate(self.gravity_sources)
 
