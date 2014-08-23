@@ -25,11 +25,16 @@ class Troop(gobject.BoxGobject):
         self.minWeaponAngle = 0
         self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
         self.locked_planet = None
+        self.move_direction = Point(0,0)
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
         super(Troop,self).__init__(physics,bl,tr,self.tc)
+        
+        #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
+        #you want to give another weapon that isnt unlimited, use change weapon. 
         self.currentWeapon = initialWeapon(physics, bl, tr)
+        self.defaultWeapon = initialWeapon(physics, bl, tr)
     
         self.body.SetMassFromShapes()
         if not self.static:
@@ -49,8 +54,14 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
     
     def fireWeapon(self):
-        self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
-        #do an ammo check here and switch to a default weapon if you run out of ammo? 
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
+        
+        #switch weapon if we run out of ammo.
+        if(self.currentWeapon.isOutOfAmmo()):
+            self.currentWeapon = self.defaultWeapon
+            
+        return newProjectile
+        
         
     def increaseWeaponPower(self):
         self.currentWeaponPower += 1
@@ -91,7 +102,6 @@ class Troop(gobject.BoxGobject):
             vertices.append( screen_coords )
             
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
-        self.doGravity(gravity_sources)
  
         if self.locked_planet:
             diff_vector = self.body.position - self.locked_planet.body.position
@@ -99,7 +109,7 @@ class Troop(gobject.BoxGobject):
             self.body.linearVelocity = box2d.b2Vec2(0,0)
             self.body.angle = angle - math.pi/2
         else:
-            
+            self.doGravity(gravity_sources)
             if hasattr(globals.current_view.mode, "planets"):
                 for planet in globals.current_view.mode.planets:
                     diff_vector = self.body.position - planet.body.position
