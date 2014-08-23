@@ -1,6 +1,8 @@
 import Box2D as box2d
 from globals.types import Point
 import globals
+import drawing
+import math
 
 class Gobject(object):
     isBullet = False
@@ -74,7 +76,10 @@ class Gobject(object):
         return shape
 
     def InitPolygons(self,tc):
-        return
+        if self.dead:
+            return
+        self.quad = drawing.Quad(globals.quad_buffer,tc = tc)
+
 
     def GetPos(self):
         if self.dead:
@@ -87,13 +92,22 @@ class Gobject(object):
         return self.body.angle
 
     def PhysUpdate(self):
-        return
+        if self.dead:
+            return
+        #Just set the vertices
+
+        for i,vertex in enumerate(self.shape.vertices):
+            screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
+            self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
+
+
 
 class BoxGobject(Gobject):
     shape_type = box2d.b2PolygonDef
 
 class CircleGobject(Gobject):
     shape_type = box2d.b2CircleDef
+    vertex_permutation = (0,3,2,1)
     def CreateShape(self,midpoint,pos = None):
         if self.dead:
             return
@@ -102,4 +116,17 @@ class CircleGobject(Gobject):
         if pos != None:
             shape.SetLocalPosition(pos.to_vec())
         return shape
+
+    def PhysUpdate(self):
+        if self.dead:
+            return
+        #Just set the vertices
+
+        p = Point(*self.body.GetWorldPoint(self.shape.localPosition))
+        print dir(self.shape)
+        r = self.shape.radius
+        
+        for i,(x,y) in enumerate( ((r,r),(r,-r),(-r,-r),(-r,r)) ):
+            screen_coords = (p + Point(x,y))/self.physics.scale_factor
+            self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 

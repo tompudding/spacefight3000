@@ -227,14 +227,15 @@ class GameView(ui.RootElement):
         self.dragging = None
         self.paused = False
         self.zoom = 1
-        self.viewpos = Viewpos(Point(670,870))
+        self.viewpos = Viewpos(Point(0,0))
         #pygame.mixer.music.load('music.ogg')
         #self.music_playing = False
         
         self.physics = Physics(self)
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
-        self.planet = gobjects.Planet(self.physics,Point(100,100),Point(200,200))
+        self.planet = gobjects.Planet(self.physics,Point(50,10),Point(100,60))
+        self.planet = gobjects.Planet(self.physics,Point(140,10),Point(190,60))
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 
