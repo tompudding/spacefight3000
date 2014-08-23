@@ -109,8 +109,6 @@ class Gobject(object):
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
         self.doGravity(gravity_sources)
-
-
 class BoxGobject(Gobject):
     shape_type = box2d.b2PolygonDef
     vertex_permutation = (0,3,2,1)
