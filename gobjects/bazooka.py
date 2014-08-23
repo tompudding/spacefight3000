@@ -1,6 +1,6 @@
 import weapon
 
-class bazooka(weapon.Weapon):
+class Bazooka(weapon.Weapon):
     
     def __init__(self):
         self.projectile_texture_name = "" 
