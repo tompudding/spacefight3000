@@ -1,7 +1,7 @@
 import gobject
-from projectile import projectile
+import projectile
 
-class weapon(gobject.gobject):
+class Weapon(gobject.Gobject):
     
     def __init__(self, maxDamage, projectileMass, projectileImage):
         self.maxDamage = maxDamage
@@ -10,7 +10,7 @@ class weapon(gobject.gobject):
         
     def FireAtTarget(self, angle, force):
         #need to use the angle and force to determine where the projectile is headed. 
-        return projectile(self.projectileImage, self.projectileMass)
+        return projectile.Projectile(self.projectileImage, self.projectileMass)
     
     
     
