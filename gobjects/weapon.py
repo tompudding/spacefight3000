@@ -2,7 +2,7 @@ import gobject
 import globals
 import projectile
 
-class Weapon(gobject.Gobject):
+class Weapon(gobject.BoxGobject):
     
     def __init__(self, maxDamage, projectileImage, physics, bl, tr):
         self.maxDamage = maxDamage
