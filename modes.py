@@ -6,7 +6,7 @@ from globals.types import Point
 import sys
 
 class Mode(object):
-    """ Base class to represent game modes """
+    """ Abstract base class to represent game modes """
     def __init__(self,parent):
         self.parent = parent
     
@@ -16,10 +16,16 @@ class Mode(object):
     def KeyUp(self,key):
         pass
 
-    def MouseButtonDown(self,pos,button):
-        return False,False
+    def MouseMotion(self,pos,rel):
+        pass
 
-    def Update(self):
+    def MouseButtonDown(self,pos,button):
+        return
+
+    def MouseButtonUp(self,pos,button):
+        return
+
+    def Update(self,t):
         pass
 
 class TitleStages(object):
