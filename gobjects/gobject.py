@@ -44,6 +44,10 @@ class Gobject(object):
         self.ExtraShapes()
         self.PhysUpdate([])
 
+    @property
+    def centre_world(self):
+        return self.body.GetWorldPoint(self.midpoint.to_vec())/self.physics.scale_factor
+
     def ExtraShapes(self):
         pass
 
@@ -97,7 +101,15 @@ class Gobject(object):
             return 
 
         for source in gravity_sources:
-            distance = source.midpoint - self.midpoint
+            force_dir = -(self.centre_world - source.centre_world)
+            distance = Point(*force_dir).length()
+            force_dir = force_dir/distance
+            print force_dir
+            force_magnitude = 200000/(distance*distance)
+            print force_dir,force_magnitude
+            self.body.ApplyForce(force_dir*force_magnitude,self.body.GetWorldCenter())
+            break
+            #print self,distance
 
     def PhysUpdate(self,gravity_sources):
         if self.dead or self.static:
