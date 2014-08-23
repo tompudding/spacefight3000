@@ -93,5 +93,5 @@ class Point(object):
 class Directories:
     def __init__(self,base):
         self.resource = base
-        for name in 'tiles','sprites','foreground','maps','fonts':
+        for name in 'tiles','images','foreground','maps','fonts':
             setattr(self,name,os.path.join(base,name))
