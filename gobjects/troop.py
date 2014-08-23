@@ -57,6 +57,6 @@ class Troop(gobject.BoxGobject):
             vertices.append( screen_coords )
             #self.selectionBoxQuad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level+0.1)
             
-        self.selectionBoxQuad.SetVertices(vertices[0], vertices[2], self.z_level+0.1)
+        self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
  
         self.doGravity(gravity_sources)
