@@ -46,7 +46,6 @@ class Troop(gobject.BoxGobject):
             return
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
      
-     
     def PhysUpdate(self,gravity_sources):
         super(Troop,self).PhysUpdate(gravity_sources)
         if self.dead or self.static:
@@ -63,6 +62,6 @@ class Troop(gobject.BoxGobject):
 
         if hasattr(globals.current_view.mode, "planets"):
             for planet in globals.current_view.mode.planets:
-                diff_vector = planet.body.position - self.body.position
-                if diff_vector.Length() <  12:
+                diff_vector =  - self.body.position - planet.body.position
+                if diff_vector.Length() <  planet.shape.radius + 2:
                     self.body.angle = math.tan(float(diff_vector.x) / -diff_vector.y) + math.pi
