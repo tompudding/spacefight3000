@@ -41,7 +41,7 @@ class Troop(gobject.BoxGobject):
     def InitPolygons(self,tc):
         super(Troop,self).InitPolygons(self.tc)
         
-        if self.dead:
+        if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
      

@@ -244,6 +244,7 @@ class GameView(ui.RootElement):
         self.physics = Physics(self)
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
+        self.parallax = Point(-1024,-1024)
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 
@@ -259,8 +260,7 @@ class GameView(ui.RootElement):
         drawing.DrawAll(globals.backdrop_buffer,self.backdrop_texture.texture)
 
         drawing.ResetState()
-        drawing.Scale(0.6,0.6,1)
-        drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
+        drawing.Translate(self.parallax.x-self.viewpos.pos.x/2,self.parallax.y-self.viewpos.pos.y/2,0)
         drawing.DrawAll(globals.backdrop_alpha_buffer,self.backdrop_alpha_texture.texture)
 
         drawing.ResetState()
@@ -387,10 +387,13 @@ class GameView(ui.RootElement):
             return
 
         new_pos_coords = self.viewpos.Get() + pos/self.zoom
+        self.parallax += (pos_coords-new_pos_coords)/2
         self.viewpos.Set(self.viewpos.Get() + (pos_coords - new_pos_coords))
-        self.ClampViewpos()
+        diff = self.ClampViewpos()
+        self.parallax += diff/2
 
     def ClampViewpos(self):
+        old = Point(*self.viewpos.pos)
         if self.viewpos.pos.x < 0:
             self.viewpos.pos.x = 0
         if self.viewpos.pos.y < 0:
@@ -399,3 +402,4 @@ class GameView(ui.RootElement):
             self.viewpos.pos.x = (self.absolute.size.x - (globals.screen.x/self.zoom))
         if self.viewpos.pos.y > (self.absolute.size.y - (globals.screen.y/self.zoom)):
             self.viewpos.pos.y = (self.absolute.size.y - (globals.screen.y/self.zoom))
+        return self.viewpos.pos-old
