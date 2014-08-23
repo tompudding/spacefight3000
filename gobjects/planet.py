@@ -1,4 +1,4 @@
 import gobject
 
-class planet(gobject.gobject):
+class planet(gobject.Gobject):
     pass

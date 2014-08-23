@@ -6,6 +6,9 @@ from globals.types import Point
 import Box2D as box2d
 import modes
 import random
+import gobjects
+
+print gobjects.Gobject
 
 def b2Vec_indexer(self,index):
     if index == 0:
