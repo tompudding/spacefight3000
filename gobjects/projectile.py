@@ -22,7 +22,7 @@ class Projectile(gobject.TeleportableBox):
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
         self.body.ApplyForce(force, self.body.GetWorldCenter())
-    
+
     def dontApplyGravity(self):
         self.applyGravity = False
 
@@ -40,8 +40,8 @@ class Projectile(gobject.TeleportableBox):
 
     def destroyAfterTimeLimit(self):
         time_limit = 5000
-        
-        if not self.applyGravity)
+
+        if not self.applyGravity:
             time_limit = 100
             self.applyGravity = True
         if(not self.destroyMe):
