@@ -8,6 +8,7 @@ import cmath
 import drawing
 import Box2D as box2d
 
+
 class Troop(gobject.BoxGobject):
     texture_name = 'redtrooper'
     frame_duration = 100
@@ -96,7 +97,7 @@ class Troop(gobject.BoxGobject):
     def fireWeapon(self):
         current_bl_pos = self.getProjectileBLPosition()
 
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos, self)
 
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
@@ -106,7 +107,7 @@ class Troop(gobject.BoxGobject):
         self.charging = False
         self.currentWeaponPower = 0.0
         globals.game_view.hud.setWeaponPowerBarValue(0.0)
-
+        
         return newProjectile
 
     def getProjectileBLPosition(self):
@@ -188,6 +189,13 @@ class Troop(gobject.BoxGobject):
             globals.game_view.hud.setWeaponPowerBarValue(self.currentWeaponPower)
 
         self.last_power_update_time = current_time
+        
+        if(self.health <= 0):
+            self.Destroy()
+            
+    def TakeDamage(self, amount):
+        print "taking damage"
+        self.health -= amount
 
 
     def PhysUpdate(self,gravity_sources):

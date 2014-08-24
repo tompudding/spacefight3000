@@ -152,6 +152,8 @@ class MyContactListener(box2d.b2ContactListener):
         cp.id       = point.id.key
         #globals.sounds.thud.play()
         globals.physics.contacts.append(cp)
+        
+        self.checkProjectileTroopCollision(cp.shape1, cp.shape2)
 
         s1 = point.shape1.userData
         s2 = point.shape2.userData
@@ -214,9 +216,26 @@ class MyContactFilter(box2d.b2ContactFilter):
         if filter1.groupIndex == filter2.groupIndex and filter1.groupIndex != 0:
             return filter1.groupIndex > 0
 
-        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0
+        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0        
         return collides
-
+    
+    #returns false if the projectile hits the originating troop
+    def checkProjectileTroopCollision(self, shape1, shape2):
+        if(isinstance(shape2.userData, gobjects.Projectile)):
+            projectile = shape2.userData
+            if(isinstance(shape1.userData, gobjects.Troop)):
+                troop = shape1.userData
+                 
+                if projectile.ParentTroop != None and troop == projectile.ParentTroop:
+                    return False
+                else:
+                    troop.TakeDamage(projectile.maxDamage)
+            else:
+                print shape1
+                projectile.destroyNextUpdate()
+        
+        return True
+               
 class Physics(object):
     scale_factor = 0.05
     def __init__(self,parent):
