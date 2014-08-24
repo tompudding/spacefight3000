@@ -11,10 +11,10 @@ class Mode(object):
     """ Abstract base class to represent game modes """
     def __init__(self,parent):
         self.parent = parent
-    
+
     def KeyDown(self,key):
         pass
-    
+
     def KeyUp(self,key):
         pass
     def MouseMotion(self,pos,rel):
@@ -66,7 +66,7 @@ class Titles(Mode):
         self.Complete()
         self.stage = TitleStages.PLAYING
 
-    def Update(self):        
+    def Update(self):
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage]()
 
@@ -81,7 +81,7 @@ class Titles(Mode):
 class GameMode(Mode):
     def __init__(self,parent):
         self.parent = parent
-        
+
 
 class GameOver(Mode):
     blurb = "GAME OVER"
@@ -97,7 +97,7 @@ class GameOver(Mode):
                                       pos    = Point(0,0),
                                       tr     = Point(1,1),
                                       colour = (0,0,0,0.6))
-        
+
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.blurb_text = ui.TextBox(parent = globals.screen_root,
@@ -198,7 +198,7 @@ class Playing(Mode):
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
-        
+
         self.baddies = []
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,100)));
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,400)));
@@ -221,19 +221,19 @@ class Playing(Mode):
             self.keydownmap &= (~self.keyflags[key])
             if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-    
+
     def MouseButtonDown(self,pos,button):
         objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
                 self.selectedGoodie = None
-        
+
         if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.goodies:
             objectUnderPoint.select()
             self.selectedGoodie = objectUnderPoint
 
-    def Update(self):        
+    def Update(self):
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
 
