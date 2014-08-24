@@ -1,6 +1,7 @@
 import gobjects
 import globals
 from globals.types import Point
+import math
 
 import itertools
 class GameWorld(object):
@@ -17,7 +18,7 @@ class GameWorld(object):
         if level == 0:
             self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
             self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
-            self.portals.append(gobjects.Portal(self.planets[0],2,self.planets[1],1.5))
+            self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
             self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,600),1));
             self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,900),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
@@ -26,9 +27,9 @@ class GameWorld(object):
             self.planets.append(gobjects.BluePlanet(Point(1100,600), 200));
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
-        
-        
-            
+
+
+
         self.ResetAfterTurn()
         self.UpdateHUD()
         globals.current_view.viewpos.Set(Point(500,500))
@@ -67,7 +68,3 @@ class GameWorld(object):
             return self.badies_to_play.pop()
         else:
             return None
-        
-
-            
-
