@@ -306,7 +306,6 @@ class Troop(gobject.BoxGobject):
                             y *= 1-(0.5-progress)**2
                         self.teleport_quads[i*4+j].vertex[k] = numpy.array([x,y,0]) + start + ((end-start)*progress)
 
-            print progress
             return
         else:
 
