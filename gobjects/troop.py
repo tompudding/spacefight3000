@@ -20,7 +20,7 @@ class Troop(gobject.BoxGobject):
         self.currentWeaponAngle = 0
         self.currentWeaponPower = 0
 
-        self.maxWeaponPower = 100
+        self.maxWeaponPower = 1
         self.maxWeaponAngle = (2 * math.pi)
         self.minWeaponAngle = 0
         self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
@@ -54,17 +54,17 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        currentAngle = self.body.angle
-        temprect = cmath.rect(self.midpoint.x + 0.3, currentAngle)
-        x = temprect.real
-        y = temprect.imag
+        current_angle = self.body.angle
+        update_distance_rect = cmath.rect(self.midpoint.x + 0.3, current_angle)
+        x = update_distance_rect.real
+        y = update_distance_rect.imag
         
         blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
         bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
         
-        currentBLPos = Point(blx, bly) 
+        current_bl_pos = Point(blx, bly) 
         
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, currentBLPos)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
 
         #switch weapon if we run out of ammo. 
         if(self.currentWeapon.isOutOfAmmo()):
@@ -74,12 +74,12 @@ class Troop(gobject.BoxGobject):
 
 
     def increaseWeaponPower(self):
-        self.currentWeaponPower += 1
+        self.currentWeaponPower += 0.01
         if(self.currentWeaponPower > self.maxWeaponPower):
             self.currentWeaponPower = 0
 
     def decreaseWeaponPower(self):
-        self.currentWeaponPower -= 1
+        self.currentWeaponPower -= 0.01
         if(self.currentWeaponPower < 0):
             self.currentWeaponPower = self.maxWeaponPower
 

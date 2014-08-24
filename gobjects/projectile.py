@@ -5,7 +5,7 @@ import Box2D as box2d
 
 class Projectile(gobject.BoxGobject):
     
-    def __init__(self, image, bl):
+    def __init__(self, image, bl, force):
         self.image = image
         self.isBullet = True
         
@@ -17,6 +17,6 @@ class Projectile(gobject.BoxGobject):
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
     
-        
-        self.body.ApplyForce( box2d.b2Vec2(0,1000), self.body.GetWorldCenter())
+        print "force applied = ", force
+        self.body.ApplyForce(force, self.body.GetWorldCenter())
         
