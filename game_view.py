@@ -107,7 +107,7 @@ class Viewpos(object):
                         newdiff = target - self.pos
                     else:
                         self.pos += diff*0.02
-                
+
         elif self.target:
             if t >= self.target_time:
                 self.pos = self.target
@@ -137,8 +137,8 @@ class fwContactPoint:
 
 class MyContactListener(box2d.b2ContactListener):
     physics = None
-    def __init__(self): 
-        super(MyContactListener, self).__init__() 
+    def __init__(self):
+        super(MyContactListener, self).__init__()
     def Add(self, point):
         """Handle add point"""
         if not globals.physics:
@@ -151,7 +151,7 @@ class MyContactListener(box2d.b2ContactListener):
         cp.id       = point.id
         #globals.sounds.thud.play()
         globals.physics.contacts.append(cp)
-        
+
     def Persist(self, point):
         """Handle persist point"""
 
@@ -185,7 +185,7 @@ class Physics(object):
         self.max_zoom = 2.0
         self.objects = []
         self.gravity_sources = []
-    
+
     def AddObject(self,obj):
         if not obj.static:
             self.objects.append(obj)
@@ -239,9 +239,9 @@ class GameView(ui.RootElement):
         self.viewpos = Viewpos(Point(0,0))
         #pygame.mixer.music.load('music.ogg')
         #self.music_playing = False
-        
+
         globals.physics = Physics(self)
-        
+
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
         self.parallax = Point(-1024,-1024)
@@ -266,7 +266,7 @@ class GameView(ui.RootElement):
         drawing.Translate(-self.viewpos.pos.x,-self.viewpos.pos.y,0)
         drawing.DrawAll(globals.quad_buffer,self.atlas.texture.texture)
         drawing.DrawAll(globals.nonstatic_text_buffer,globals.text_manager.atlas.texture.texture)
-        
+
     def Update(self):
         if self.mode:
             self.mode.Update()
@@ -276,11 +276,11 @@ class GameView(ui.RootElement):
 
         if not self.paused:
             globals.physics.Step()
-            
+
     def GameOver(self):
         self.game_over = True
         self.mode = modes.GameOver(self)
-        
+
     def KeyDown(self,key):
         self.mode.KeyDown(key)
 
@@ -297,7 +297,7 @@ class GameView(ui.RootElement):
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
-        
+
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
@@ -341,7 +341,7 @@ class GameView(ui.RootElement):
             self.zoom = self.min_zoom
         if self.zoom > self.max_zoom:
             self.zoom = self.max_zoom
-        
+
         #if we've zoomed so far out that we can see an edge of the screen, fix that
         top_left= Point(0,globals.screen.y/self.zoom)
         top_right = globals.screen/self.zoom
@@ -353,7 +353,7 @@ class GameView(ui.RootElement):
 
         if new_viewpos.x < 0:
             new_viewpos.x = 0
-        
+
         #now the top left
         new_top_right = new_viewpos+top_right
         if new_top_right.y  > self.absolute.size.y:
@@ -361,7 +361,7 @@ class GameView(ui.RootElement):
 
         if new_top_right.x > self.absolute.size.x:
             new_viewpos.x -= (new_top_right.x - self.absolute.size.x)
-        
+
         try:
             if new_viewpos.y < 0:
                 raise ValueError

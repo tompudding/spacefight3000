@@ -54,9 +54,19 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, self.bl)
+        currentAngle = self.body.angle
+        temprect = cmath.rect(self.midpoint.x + 0.3, currentAngle)
+        x = temprect.real
+        y = temprect.imag
+        
+        blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
+        bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
+        
+        currentBLPos = Point(blx, bly) 
+        
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, currentBLPos)
 
-        #switch weapon if we run out of ammo.
+        #switch weapon if we run out of ammo. 
         if(self.currentWeapon.isOutOfAmmo()):
             self.currentWeapon = self.defaultWeapon
 
@@ -91,12 +101,7 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
     def Update(self):
-        if not self.locked_planet:
-            #you can't move
-            return
-        vector = cmath.rect(self.move_direction.x*200,self.body.angle)
-        self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
-        self.locked_planet = None
+        pass
 
     def PhysUpdate(self,gravity_sources):
         #Don't pass the gravity sources as we want to take care of that
@@ -116,7 +121,10 @@ class Troop(gobject.BoxGobject):
             diff_vector = self.body.position - self.locked_planet.body.position
             distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
             self.body.linearVelocity = box2d.b2Vec2(0,0)
+            vector = cmath.rect(self.move_direction.x*200,self.body.angle)
+            self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
+            self.locked_planet = None
         else:
             self.doGravity(gravity_sources)
             if hasattr(globals.current_view, "game_world"):
