@@ -5,7 +5,7 @@ import Box2D as box2d
 
 class Projectile(gobject.TeleportableBox):
     always_instaport = True
-    def __init__(self, image, bl, force, maxDamage, parentTroop):
+    def __init__(self, image, bl, imageSize, imageAngle, force, maxDamage, parentTroop):
         self.image = image
         self.isBullet = True
         self.destroyMe = False
@@ -15,12 +15,13 @@ class Projectile(gobject.TeleportableBox):
         self.applyGravity = True
 
         self.tc = globals.atlas.TextureSpriteCoords(self.image)
-        tr = bl + Point(10,10)
+        tr = bl + imageSize
 
         super(Projectile,self).__init__(bl, tr, self.tc)
 
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
+        self.body.angle = imageAngle
         self.body.ApplyForce(force, self.body.GetWorldCenter())
     
     def dontApplyGravity(self):
