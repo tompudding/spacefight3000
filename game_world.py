@@ -1,4 +1,5 @@
 import gobjects
+import globals
 from globals.types import Point
 
 import itertools
@@ -10,6 +11,8 @@ class GameWorld(object):
         self.baddies = []
         self.portals = []
         self.level = level
+        print level
+        globals.current_view.hud.SetLevelBar("Level " + str(level+1))
 
         if level == 0:
             self.planets.append(gobjects.BluePlanet(Point(300,400), 200));
