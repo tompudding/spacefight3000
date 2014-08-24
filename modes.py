@@ -206,7 +206,7 @@ class Playing(Mode):
         self.selectedGoodie = None
         self.keydownmap = 0
 
-    def KeyDown(self,key):  
+    def KeyDown(self,key):
         if key in self.keyflags:
             self.keydownmap |= self.keyflags[key]
             if self.selectedGoodie:
@@ -214,7 +214,7 @@ class Playing(Mode):
         elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
         if key == pygame.K_n:
-            StartComputersGo(self)
+            self.StartComputersGo()
 
     def KeyUp(self,key):
         if key in self.direction_amounts and (self.keydownmap & self.keyflags[key]):
@@ -240,9 +240,25 @@ class Playing(Mode):
     def StartComputersGo(self):
         self.selectedGoodie = None
         self.stage = PlayingStages.COMPUTERS_GO
+        self.computers_go_time = 0;
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
     def ComputerPlay(self, ticks):
+        if len(self.baddies) == 0:
+            raise sys.exit("player won")
+        elif self.computers_go_time == 0:
+            self.computers_go_time = ticks
+            self.current_baddie_index = 0
+            self.baddies[0].select()
+        elif ticks - self.computers_go_time > 500:
+            self.baddies[self.current_baddie_index].fireWeapon()
+            self.computers_go_time = ticks
+            self.baddies[self.current_baddie_index].unselect()
+            self.current_baddie_index += 1
+            if self.current_baddie_index == len(self.baddies):
+                return PlayingStages.PLAYERS_GO
+            else:
+                self.baddies[self.current_baddie_index].select()
         return PlayingStages.COMPUTERS_GO
