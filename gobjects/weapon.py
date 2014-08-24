@@ -21,7 +21,7 @@ class Weapon(object):
         
         if(self.limitedAmmo):
             self.currentAmmo -= 1
-        
+                    
         #work out force to apply to the projectile  
         update_distance_rect = cmath.rect(weapon_force * self.power_modifier, angle)
         x = update_distance_rect.real
