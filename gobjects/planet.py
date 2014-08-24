@@ -7,9 +7,12 @@ import math
 
 class PortalEnd(gobject.CircleGobject):
     texture_name = 'gate'
-    def __init__(self,centre,radius,angle):
-        self.tc = [globals.atlas.TextureSpriteCoords(self.texture_name + '%d.png' % i) for i in xrange(6)]
+    frame_duration = 100
+    def __init__(self,planet,centre,radius,angle):
+        self.tc = [globals.atlas.TextureSpriteCoords(self.texture_name + '%d.png' % i) for i in xrange(9)]
+        self.animation_duration = len(self.tc)*self.frame_duration
         super(PortalEnd,self).__init__(centre,radius,self.tc)
+        self.planet = planet
         self.body.angle = angle
         self.PhysUpdate([])
 
@@ -20,6 +23,15 @@ class PortalEnd(gobject.CircleGobject):
     def CreateShape(self,midpoint,pos = None):
         return super(PortalEnd,self).CreateShape(midpoint,pos)
 
+    def Update(self):
+        frame = (globals.time%self.animation_duration)/self.frame_duration
+        tc = self.tc[frame]
+        self.quad.SetTextureCoordinates(tc)
+
+
+    def ExitPoint(self):
+        return
+
 
 class Portal(object):
     size = 30
@@ -27,9 +39,13 @@ class Portal(object):
         self.ends = []
         for planet,angle in (source_planet,source_angle),(target_planet,target_angle):
             centre = planet.GetSurfacePoint(self.size,angle)
-            self.ends.append(PortalEnd(centre,self.size,angle+3*math.pi/2))
+            self.ends.append(PortalEnd(planet,centre,self.size,angle+3*math.pi/2))
         self.ends[0].other_end = self.ends[1]
         self.ends[1].other_end = self.ends[0]
+
+    def Update(self):
+        for end in self.ends:
+            end.Update()
 
 
 class Planet(gobject.CircleGobject):
