@@ -6,6 +6,7 @@ import gobjects
 from globals.types import Point
 import sys
 import gobjects.bazooka
+from game_world import GameWorld
 
 class Mode(object):
     """ Abstract base class to represent game modes """
@@ -192,19 +193,12 @@ class Playing(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
 
-        self.planets = []
-        self.planets.append(gobjects.BluePlanet(self.parent.physics, Point(100,200), Point(500,600)));
-        self.planets.append(gobjects.YellowPlanet(self.parent.physics, Point(800,200), Point(1200,600)));
 
-        self.goodies = []
-        self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
-        
-        self.baddies = []
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,100)));
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,400)));
 
         self.selectedGoodie = None
         self.keydownmap = 0
+
+        self.parent.game_world = GameWorld(self.parent.physics)
 
     def KeyDown(self,key):
         if key in self.keyflags:
@@ -229,7 +223,7 @@ class Playing(Mode):
                 self.selectedGoodie.unselect()
                 self.selectedGoodie = None
         
-        if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.goodies:
+        if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
             objectUnderPoint.select()
             self.selectedGoodie = objectUnderPoint
 
@@ -246,19 +240,19 @@ class Playing(Mode):
         return PlayingStages.PLAYERS_GO
 
     def ComputerPlay(self, ticks):
-        if len(self.baddies) == 0:
+        if len(self.parent.game_world.baddies) == 0:
             raise sys.exit("player won")
         elif self.computers_go_time == 0:
             self.computers_go_time = ticks
             self.current_baddie_index = 0
-            self.baddies[0].select()
+            self.parent.game_world.baddies[0].select()
         elif ticks - self.computers_go_time > 500:
-            self.baddies[self.current_baddie_index].fireWeapon()
+            self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
             self.computers_go_time = ticks
-            self.baddies[self.current_baddie_index].unselect()
+            self.parent.game_world.baddies[self.current_baddie_index].unselect()
             self.current_baddie_index += 1
-            if self.current_baddie_index == len(self.baddies):
+            if self.current_baddie_index == len(self.parent.game_world.baddies):
                 return PlayingStages.PLAYERS_GO
             else:
-                self.baddies[self.current_baddie_index].select()
+                self.parent.game_world.baddies[self.current_baddie_index].select()
         return PlayingStages.COMPUTERS_GO

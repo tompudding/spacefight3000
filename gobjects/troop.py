@@ -110,8 +110,8 @@ class Troop(gobject.BoxGobject):
             self.body.angle = angle - math.pi/2
         else:
             self.doGravity(gravity_sources)
-            if hasattr(globals.current_view.mode, "planets"):
-                for planet in globals.current_view.mode.planets:
+            if hasattr(globals.current_view, "game_world"):
+                for planet in globals.current_view.game_world.planets:
                     diff_vector = self.body.position - planet.body.position
                     if diff_vector.Length() < planet.shape.radius*1.2:
                         #We're near a planet. We'll lock on if the velocity in direction towards the planets surface is low enough
