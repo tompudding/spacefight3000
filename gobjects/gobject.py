@@ -199,7 +199,7 @@ class TeleportableBox(BoxGobject):
         rotate_velocity = cmath.rect(distance,angle - portal_angle)
         self.saved_linear_velocity = box2d.b2Vec2(rotate_velocity.real,rotate_velocity.imag)
         self.saved_angular_velocity = self.body.angularVelocity
-        self.saved_angle = angle + portal_angle + math.pi/2
+        self.saved_angle = angle + portal_angle
 
         #Make 16 quads in the same place as before
         w = (self.quad.vertex[1] - self.quad.vertex[0])/4
