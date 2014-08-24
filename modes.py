@@ -180,8 +180,7 @@ class PlayerPlaying(Mode):
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
-                pygame.K_UP    : KeyFlags.UP,
-                pygame.K_DOWN  : KeyFlags.DOWN}
+                }
 
     def __init__(self,parent):
         self.parent          = parent
@@ -205,16 +204,18 @@ class PlayerPlaying(Mode):
             self.keydownmap |= self.keyflags[key]
             if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-        elif key == pygame.K_SPACE and not self.selectedGoodie == None:
+        elif key == pygame.K_SPACE and self.selectedGoodie:
             self.selectedGoodie.fireWeapon()
-        elif key == pygame.K_n:
+        elif key == pygame.K_UP and self.selectedGoodie:
             self.selectedGoodie.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
-        elif key == pygame.K_k:
+            self.selectedGoodie.jump()
+        elif key == pygame.K_n:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
                 self.selectedGoodie.unselect()
                 self.parent.mode = ComputerPlaying(self.parent)
+            self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_TAB:
             if not self.selectedGoodie and len(self.parent.game_world.goodies) > 0:
                 self.selectedGoodie = self.parent.game_world.goodies[0]
@@ -279,7 +280,7 @@ class ComputerPlaying(Mode):
         self.current_baddie_index = 0
         self.parent.game_world.baddies[0].select()
 
-    def Update(self):        
+    def Update(self):
         self.elapsed = globals.time - self.start
         ticks = pygame.time.get_ticks()
 

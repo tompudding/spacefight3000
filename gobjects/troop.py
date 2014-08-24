@@ -9,7 +9,8 @@ import drawing
 import Box2D as box2d
 
 class Troop(gobject.BoxGobject):
-
+    jump_power = 50
+    jump_duration = 300
     def __init__(self, initialWeapon, bl):
         tr = bl + Point(50,50)
         self.texture_filename = 'bazookaTroop.png'
@@ -20,12 +21,13 @@ class Troop(gobject.BoxGobject):
         self.currentWeaponAngle = 0
         self.currentWeaponPower = 0
 
-        self.maxWeaponPower = 100
+        self.maxWeaponPower = 1
         self.maxWeaponAngle = (2 * math.pi)
         self.minWeaponAngle = 0
         self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
         self.locked_planet = None
         self.move_direction = Point(0,0)
+        self.jumping = None
 
 
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
@@ -54,17 +56,17 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        currentAngle = self.body.angle
-        temprect = cmath.rect(self.midpoint.x + 0.3, currentAngle)
-        x = temprect.real
-        y = temprect.imag
+        current_angle = self.body.angle
+        update_distance_rect = cmath.rect(self.midpoint.x + 0.3, current_angle)
+        x = update_distance_rect.real
+        y = update_distance_rect.imag
         
         blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
         bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
         
-        currentBLPos = Point(blx, bly) 
+        current_bl_pos = Point(blx, bly) 
         
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, currentBLPos)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
 
         #switch weapon if we run out of ammo. 
         if(self.currentWeapon.isOutOfAmmo()):
@@ -72,14 +74,24 @@ class Troop(gobject.BoxGobject):
 
         return newProjectile
 
+    def jump(self):
+        if not self.locked_planet:
+            #can only jump on the surface
+            print 'jemp'
+            return
+        print 'jimp!'
+        self.locked_planet = None
+        r = cmath.rect(self.jump_power,self.body.angle+math.pi/2)
+        self.body.ApplyImpulse(box2d.b2Vec2(r.real,r.imag),self.body.GetWorldCenter())
+        self.jumping = globals.time + self.jump_duration
 
     def increaseWeaponPower(self):
-        self.currentWeaponPower += 1
+        self.currentWeaponPower += 0.01
         if(self.currentWeaponPower > self.maxWeaponPower):
             self.currentWeaponPower = 0
 
     def decreaseWeaponPower(self):
-        self.currentWeaponPower -= 1
+        self.currentWeaponPower -= 0.01
         if(self.currentWeaponPower < 0):
             self.currentWeaponPower = self.maxWeaponPower
 
@@ -116,15 +128,24 @@ class Troop(gobject.BoxGobject):
 
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
 
+        if self.jumping:
+            if globals.time > self.jumping:
+                #jump done
+                self.jumping = False
+            self.doGravity(gravity_sources)
+            return
+
         if self.locked_planet:
             self.doGravity([self.locked_planet])
             diff_vector = self.body.position - self.locked_planet.body.position
             distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
-            self.body.linearVelocity = box2d.b2Vec2(0,0)
+            self.body.linearVelocity = box2d.b2Vec2(self.body.linearVelocity.x/10,self.body.linearVelocity.y/10)
             vector = cmath.rect(self.move_direction.x*200,self.body.angle)
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
-            self.locked_planet = None
+            vector = cmath.rect(-1000,angle )
+            self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
+            #self.locked_planet = None
         else:
             self.doGravity(gravity_sources)
             if hasattr(globals.current_view, "game_world"):
@@ -137,5 +158,6 @@ class Troop(gobject.BoxGobject):
                             distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
                             self.body.angle = angle - math.pi/2
                             self.locked_planet = planet
-                            self.body.linearVelocity = box2d.b2Vec2(0,0)
+                            vector = cmath.rect(-1000,angle )
+                            self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
                             break
