@@ -123,7 +123,7 @@ class Troop(gobject.BoxGobject):
             return
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
-    def update(self):
+    def Update(self):
         current_time = globals.time
 
         if self.teleport_target:
