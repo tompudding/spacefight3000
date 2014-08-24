@@ -13,7 +13,7 @@ class Projectile(gobject.BoxGobject):
         self.maxDamage = maxDamage
         
         self.tc = globals.atlas.TextureSpriteCoords(self.image)
-        tr = bl + Point(5,5)
+        tr = bl + Point(10,10)
         
         super(Projectile,self).__init__(bl, tr, self.tc)
         

@@ -33,6 +33,7 @@ class Troop(gobject.BoxGobject):
         self.max_weapon_power = 1
         self.power_increase_amount_per_milisecond = (0.2 / 1000.0)
         self.last_power_update_time = globals.time
+        self.projectile_position = None
 
         self.locked_planet = None
         self.move_direction = Point(0,0)
@@ -95,9 +96,7 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        current_bl_pos = self.getProjectileBLPosition()
-
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos, self)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, self.projectile_position, self)
 
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
@@ -110,16 +109,32 @@ class Troop(gobject.BoxGobject):
         
         return newProjectile
 
-    def getProjectileBLPosition(self):
-        current_angle = self.body.angle
-        update_distance_rect = cmath.rect(self.midpoint.x + 0.3, current_angle)
-        x = update_distance_rect.real
-        y = update_distance_rect.imag
+    def getProjectileBLPosition(self, mouse_xy):
+        dx = mouse_xy[0] - self.body.GetWorldCenter()[0] / globals.physics.scale_factor
+        dy = mouse_xy[1] - self.body.GetWorldCenter()[1] / globals.physics.scale_factor
+        
+        projectile_start_pos = box2d.b2Vec2(dx,dy)
+        projectile_start_pos.Normalize()
+        projectile_start_pos.mul_float(self.midpoint.x + 30)
+        projectile_start_pos.add_vector(box2d.b2Vec2(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor))
+        
+        self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
+        #current_angle = self.body.angle
+        
+        #if(self.direction == 'right'):
+        #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
+        #    x = update_distance_rect.real
+        #    y = update_distance_rect.imag
+        #    blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
+        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
+        #else:
+        #    update_distance_rect = cmath.rect(self.midpoint.x - 1, current_angle + math.pi)
+        #    x = update_distance_rect.real
+        #    y = update_distance_rect.imag
+        #    blx = (self.body.GetWorldCenter()[0] - x) / globals.physics.scale_factor
+        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
 
-        blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
-        bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
-
-        return Point(blx, bly)
+        #return Point(blx, bly)
 
     def chargeWeapon(self):
         self.charging = True
@@ -146,10 +161,11 @@ class Troop(gobject.BoxGobject):
             self.currentWeaponPower = self.maxWeaponPower
 
     def setWeaponAngle(self, mouse_xy):
-        projectile_pos = self.getProjectileBLPosition()
-        dx = float(mouse_xy[0] - (projectile_pos[0])) #/ globals.physics.scale_factor))
-        dy = float(mouse_xy[1] - (projectile_pos[1])) #/ globals.physics.scale_factor))
-
+        self.getProjectileBLPosition(mouse_xy)
+        
+        dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
+        dy = float(mouse_xy[1] - (self.projectile_position[1])) #/ globals.physics.scale_factor))
+    
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
     def InitPolygons(self,tc):  
