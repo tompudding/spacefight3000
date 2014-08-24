@@ -327,8 +327,10 @@ class GameView(ui.RootElement):
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
-        elif button not in (4,5): #Don't give them scroll wheel events
+        
+        if button not in (4,5): #Don't give them scroll wheel events
             self.mode.MouseButtonDown(screen_pos,button)
+            
         return super(GameView,self).MouseButtonDown(pos,button)
 
     def MouseButtonUp(self,pos,button):
@@ -340,7 +342,8 @@ class GameView(ui.RootElement):
             self.AdjustZoom(-0.5,pos)
         elif button == 5 and not self.dragging:
             self.AdjustZoom(+0.5,pos)
-        else:
+        
+        if button not in (4,5):
             self.mode.MouseButtonUp(screen_pos,button)
         return super(GameView,self).MouseButtonUp(pos,button)
 

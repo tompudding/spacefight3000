@@ -21,14 +21,14 @@ class Troop(gobject.BoxGobject):
         self.currentWeaponAngle = 0
         self.currentWeaponPower = 0
 
-        self.maxWeaponPower = 1
-        self.maxWeaponAngle = (2 * math.pi)
-        self.minWeaponAngle = 0
-        self.angleModificationAmount = 0.17 #about 10 degrees, needs to be fairly granular.
+        self.max_weapon_power = 1
+        self.power_increase_amount_per_milisecond = (0.2 / 1000.0)
+        self.last_power_update_time = globals.time
+         
         self.locked_planet = None
         self.move_direction = Point(0,0)
         self.jumping = None
-
+        self.charging = False
 
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
         super(Troop,self).__init__(bl,tr,self.tc)
@@ -58,7 +58,7 @@ class Troop(gobject.BoxGobject):
         self.selected = False
         self.selectionBoxQuad.Disable()
 
-    def fireWeapon(self):
+    def fireWeapon(self):        
         current_bl_pos = self.getProjectileBLPosition()
 
         newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
@@ -66,7 +66,11 @@ class Troop(gobject.BoxGobject):
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
             self.currentWeapon = self.defaultWeapon
-
+            
+        #reset 
+        self.charging = False
+        self.currentWeaponPower = 0.0
+        
         return newProjectile
 
     def getProjectileBLPosition(self):
@@ -80,6 +84,8 @@ class Troop(gobject.BoxGobject):
 
         return Point(blx, bly)
 
+    def chargeWeapon(self):
+        self.charging = True 
 
     def jump(self):
         if not self.locked_planet:
@@ -116,9 +122,19 @@ class Troop(gobject.BoxGobject):
             return
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
-    def Update(self):
-        pass
-
+    def update(self):
+        current_time = globals.time
+        
+        if self.charging:
+            amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond      
+            self.currentWeaponPower += amountToIncreasePower 
+            
+            if(self.currentWeaponPower > self.max_weapon_power):
+                self.currentWeaponPower = self.max_weapon_power
+            
+        self.last_power_update_time = current_time
+        
+        
     def PhysUpdate(self,gravity_sources):
         #Don't pass the gravity sources as we want to take care of that
         super(Troop,self).PhysUpdate([])

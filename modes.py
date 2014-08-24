@@ -245,16 +245,25 @@ class PlayerPlaying(Mode):
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
-        if self.selectedGoodie:
-            self.selectedGoodie.unselect()
-
-        objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
-        if not objectUnderPoint:
-            self.selectedGoodie = None
-
-        if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
-            objectUnderPoint.select()
-            self.selectedGoodie = objectUnderPoint
+        if(button == 1): 
+            if self.selectedGoodie:
+                self.selectedGoodie.unselect()
+    
+            objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
+            if not objectUnderPoint:
+                self.selectedGoodie = None
+    
+            if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
+                objectUnderPoint.select()
+                self.selectedGoodie = objectUnderPoint
+        elif(button == 3):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.chargeWeapon()
+    
+    def MouseButtonUp(self,pos,button):
+        if(button == 3):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.fireWeapon()
 
     def Update(self):
         #self.elapsed = globals.time - self.start
