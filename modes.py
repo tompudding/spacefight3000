@@ -76,7 +76,7 @@ class Titles(Mode):
     def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.game_world = GameWorld()
+        self.parent.game_world = GameWorld(0)
         self.parent.mode = PlayerPlaying(self.parent)
 
     def Startup(self):
@@ -89,10 +89,13 @@ class GameMode(Mode):
 
 
 class GameOver(Mode):
-    blurb = "GAME OVER"
-    def __init__(self,parent):
+    def __init__(self,parent, won):
         self.parent          = parent
-        self.blurb           = self.blurb
+        if won:
+            self.blurb           = "You won!"
+        else:
+            self.blurb           = "You lost!"
+
         self.blurb_text      = None
         self.handlers        = {TitleStages.TEXT    : self.TextDraw,
                                 TitleStages.SCROLL  : self.Wait,
@@ -212,14 +215,15 @@ class PlayerPlaying(Mode):
             self.keydownmap |= self.keyflags[key]
             if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-        elif key == pygame.K_SPACE and self.selectedGoodie:
-            self.selectedGoodie.fireWeapon()
         elif key == pygame.K_UP and self.selectedGoodie:
             self.selectedGoodie.jump()
         elif key == pygame.K_k and self.selectedGoodie:
             self.selectedGoodie.Destroy()
             self.selectedGoodie.unselect()
             self.selectedGoodie = None
+        elif key == pygame.K_x:
+            for baddie in self.parent.game_world.baddies:
+                baddie.Destroy();
         elif key == pygame.K_n:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
@@ -275,8 +279,14 @@ class PlayerPlaying(Mode):
         #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent)
+        if len(self.parent.game_world.baddies) == 0:
+            if GameWorld.last_level == self.parent.game_world.level:
+                self.parent.mode = GameOver(self.parent, True)
+            else:
+                self.parent.game_world.Destroy()
+                self.parent.game_world = GameWorld(self.parent.game_world.level + 1)
+                self.parent.mode = PlayerPlaying(self.parent)
+
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
@@ -312,7 +322,7 @@ class ComputerPlaying(Mode):
             self.current_baddie_index += 1
             if self.current_baddie_index == len(self.parent.game_world.baddies):
                 if len(self.parent.game_world.goodies) == 0:
-                    self.parent.mode = GameOver(self.parent)
+                    self.parent.mode = GameOver(self.parent, False)
                 else:
                     self.parent.mode = PlayerPlaying(self.parent)
             else:

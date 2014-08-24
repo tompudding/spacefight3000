@@ -46,6 +46,9 @@ class Portal(object):
     def Update(self):
         for end in self.ends:
             end.Update()
+    def Destroy(self):
+        for end in self.ends:
+            end.Destroy();
 
 
 class Planet(gobject.CircleGobject):
