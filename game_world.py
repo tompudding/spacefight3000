@@ -9,6 +9,7 @@ class GameWorld(object):
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
+        self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
         
         self.baddies = []
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));

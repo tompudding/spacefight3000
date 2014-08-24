@@ -199,8 +199,6 @@ class PlayerPlaying(Mode):
         self.selectedGoodie = None
         self.keydownmap = 0
 
-
-
     def KeyDown(self,key):
         if key in self.keyflags:
             self.keydownmap |= self.keyflags[key]
@@ -212,6 +210,20 @@ class PlayerPlaying(Mode):
             self.selectedGoodie.jump()
         if key == pygame.K_n:
             self.parent.mode = ComputerPlaying(self.parent)
+        elif key == pygame.K_TAB:
+            if not self.selectedGoodie and len(self.parent.game_world.goodies) > 0:
+                self.selectedGoodie = self.parent.game_world.goodies[0]
+                self.selectedGoodie.select()
+            else:
+                selected_goodie_index = self.parent.game_world.goodies.index(self.selectedGoodie)
+                print selected_goodie_index
+                if selected_goodie_index + 1 < len(self.parent.game_world.goodies):
+                    self.selectedGoodie.unselect()
+                    self.selectedGoodie = self.parent.game_world.goodies[selected_goodie_index + 1]
+                    self.selectedGoodie.select()
+                else:
+                    self.selectedGoodie.unselect()
+                    self.selectedGoodie = None
 
     def KeyUp(self,key):
         if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
