@@ -7,6 +7,7 @@ import Box2D as box2d
 import modes
 import random
 import gobjects
+import hud
 
 def b2Vec_indexer(self,index):
     if index == 0:
@@ -273,6 +274,8 @@ class GameView(ui.RootElement):
         self.parallax = Point(-1024,-1024)
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
+        
+        self.hud = hud.Hud(self)
 
     def StartMusic(self):
         pass
