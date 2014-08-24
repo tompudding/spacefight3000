@@ -119,6 +119,8 @@ class Troop(gobject.BoxGobject):
         #Make 16 quads in the same place as before
         w = (self.quad.vertex[1] - self.quad.vertex[0])/4
         h = (self.quad.vertex[3] - self.quad.vertex[0])/4
+        tc_w = (self.quad.tc[1] - self.quad.tc[0])/4
+        tc_h = (self.quad.tc[3] - self.quad.tc[0])/4
         for i in xrange(4):
             for j in xrange(4):
                 self.teleport_quads[i*4+j].Enable()
@@ -127,7 +129,32 @@ class Troop(gobject.BoxGobject):
                 self.teleport_quads[i*4+j].vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
                 self.teleport_quads[i*4+j].vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
 
+                self.teleport_quads[i*4+j].tc[0] = self.quad.tc[0] + tc_w*j + tc_h*i
+                self.teleport_quads[i*4+j].tc[1] = self.quad.tc[0] + tc_w*(j+1) + tc_h*i
+                self.teleport_quads[i*4+j].tc[2] = self.quad.tc[0] + tc_w*(j+1) + tc_h*(i+1)
+                self.teleport_quads[i*4+j].tc[3] = self.quad.tc[0] + tc_w*j + tc_h*(i+1)
+
                 pass
+
+        self.body.SetXForm(portal.body.position,0)
+        for i,vertex in enumerate(self.shape.vertices):
+            screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
+            self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
+
+        w = (self.quad.vertex[1] - self.quad.vertex[0])/4
+        h = (self.quad.vertex[3] - self.quad.vertex[0])/4
+        tc_w = (self.quad.tc[1] - self.quad.tc[0])/4
+        tc_h = (self.quad.tc[3] - self.quad.tc[0])/4
+        for i in xrange(4):
+            for j in xrange(4):
+                self.teleport_quads[i*4+j].target_vertex = [0 for i in xrange(4)]
+                self.teleport_quads[i*4+j].target_vertex[0] = self.quad.vertex[0] + w*j + h*i
+                self.teleport_quads[i*4+j].target_vertex[1] = self.quad.vertex[0] + w*(j+1) + h*i
+                self.teleport_quads[i*4+j].target_vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
+                self.teleport_quads[i*4+j].target_vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
+
+                pass
+
 
         self.Disable()
 
@@ -186,15 +213,15 @@ class Troop(gobject.BoxGobject):
     def getProjectileBLPosition(self, mouse_xy):
         dx = mouse_xy[0] - self.body.GetWorldCenter()[0] / globals.physics.scale_factor
         dy = mouse_xy[1] - self.body.GetWorldCenter()[1] / globals.physics.scale_factor
-        
+
         projectile_start_pos = box2d.b2Vec2(dx,dy)
         projectile_start_pos.Normalize()
         projectile_start_pos.mul_float(self.midpoint.x + 30)
         projectile_start_pos.add_vector(box2d.b2Vec2(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor))
-        
+
         self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
         #current_angle = self.body.angle
-        
+
         #if(self.direction == 'right'):
         #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
         #    x = update_distance_rect.real
@@ -235,10 +262,10 @@ class Troop(gobject.BoxGobject):
     def setWeaponAngle(self, mouse_xy):
         self.last_mouse_xy = mouse_xy
         self.getProjectileBLPosition(mouse_xy)
-        
+
         dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
         dy = float(mouse_xy[1] - (self.projectile_position[1])) #/ globals.physics.scale_factor))
-    
+
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
     def InitPolygons(self,tc):
