@@ -71,6 +71,7 @@ class Troop(gobject.BoxGobject):
         #reset
         self.charging = False
         self.currentWeaponPower = 0.0
+        globals.game_view.hud.setWeaponPowerBarValue(0.0)
 
         return newProjectile
 
@@ -136,6 +137,8 @@ class Troop(gobject.BoxGobject):
 
             if(self.currentWeaponPower > self.max_weapon_power):
                 self.currentWeaponPower = self.max_weapon_power
+            
+            globals.game_view.hud.setWeaponPowerBarValue(self.currentWeaponPower)
 
         self.last_power_update_time = current_time
 

@@ -275,7 +275,7 @@ class GameView(ui.RootElement):
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
         
-        self.hud = hud.Hud(self)
+        self.hud = hud.Hud(globals.screen_root)
 
     def StartMusic(self):
         pass
