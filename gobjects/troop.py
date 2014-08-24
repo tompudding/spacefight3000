@@ -32,7 +32,7 @@ class Troop(gobject.TeleportableBox):
         self.currentWeaponPower = 0
 
         self.max_weapon_power = 1
-        self.power_increase_amount_per_milisecond = (0.2 / 1000.0)
+        self.power_increase_amount_per_milisecond = (0.6 / 1000.0)
         self.last_power_update_time = globals.time
         self.projectile_position = None
         self.last_mouse_xy = None
