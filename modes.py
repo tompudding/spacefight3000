@@ -17,7 +17,6 @@ class Mode(object):
     
     def KeyUp(self,key):
         pass
-
     def MouseMotion(self,pos,rel):
         pass
 
@@ -214,22 +213,16 @@ class Playing(Mode):
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
         elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
-        
-
         if key == pygame.K_n:
             StartComputersGo(self)
-
 
     def KeyUp(self,key):
         if key in self.direction_amounts and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
             if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-
     
     def MouseButtonDown(self,pos,button):
-        self.selectedGoodie = None
-        
         objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
             if self.selectedGoodie:
