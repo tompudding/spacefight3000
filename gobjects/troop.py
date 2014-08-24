@@ -14,6 +14,7 @@ class Troop(gobject.BoxGobject):
     jump_power = 50
     jump_duration = 300
     portal_touch_duration = 1000
+    teleport_min_velocity = 2
     def __init__(self, initialWeapon, bl):
         self.direction = 'right'
         self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
@@ -37,6 +38,7 @@ class Troop(gobject.BoxGobject):
         self.charging = False
         self.teleport_target = None
         self.touch_portal = None
+        self.instaport = None
         self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
@@ -63,6 +65,9 @@ class Troop(gobject.BoxGobject):
         #we've touched a portal. We want the following to happen:
         #If we're moving fast enough, just teleport us straight away
         #otherwise, wait a few seconds and then do it
+        if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
+            self.instaport = portal.other_end
+            return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
 
     def AddPortalContact(self, portal, contact):
@@ -77,6 +82,7 @@ class Troop(gobject.BoxGobject):
         self.touch_portal = None
         self.body.SetXForm(portal.body.position,0)
         self.locked_planet = False
+        self.portal_contacts = []
 
     def select(self):
         self.selected = True
@@ -166,6 +172,10 @@ class Troop(gobject.BoxGobject):
         if self.teleport_target:
             self.body.SetXForm(self.teleport_target.body.position,0)
             self.teleport = None
+
+        if self.instaport:
+            self.Teleport(self.instaport)
+            self.instaport = None
 
         if self.touch_portal:
             #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
