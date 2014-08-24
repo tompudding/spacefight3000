@@ -66,8 +66,11 @@ class Troop(gobject.BoxGobject):
         if not self.portal_contacts and self.touch_portal:
             self.touch_portal = None
 
-    def Teleport(self, target_portal_end):
-        self.teleport_target = target_portal_end
+    def Teleport(self, portal):
+        self.touch_portal = None
+        self.body.SetXForm(portal.body.position,0)
+        self.locked_planet = False
+
 
     def select(self):
         self.selected = True
@@ -150,13 +153,7 @@ class Troop(gobject.BoxGobject):
             #box2d
             portal,end_time = self.touch_portal
             if globals.time > end_time:
-                self.touch_portal = None
-                self.body.SetXForm(portal.other_end.body.position,0)
-                self.locked_planet = False
-
-        if self.teleport_target:
-            self.body.SetXForm(self.teleport_target.body.position,0)
-            self.teleport = None
+                self.Teleport(portal.other_end)
 
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
@@ -220,4 +217,3 @@ class Troop(gobject.BoxGobject):
     def Destroy(self):
         super(Troop,self).Destroy()
         self.selectionBoxQuad.Delete()
-

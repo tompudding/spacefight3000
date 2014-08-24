@@ -206,7 +206,7 @@ class MyContactFilter(box2d.b2ContactFilter):
             if isinstance(obj,gobjects.Troop):
                 obj.TouchPortal(shape1.userData)
                 return True
-                #obj.Teleport(shape1.userData.other_end)
+
         #print 'collision!',shape1 == shape1.userData.shape#,shape2
         filter1 = shape1.filter
         filter2 = shape2.filter
