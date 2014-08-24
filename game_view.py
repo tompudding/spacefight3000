@@ -177,7 +177,10 @@ class MyContactListener(box2d.b2ContactListener):
                     troop.TakeDamage(projectile.maxDamage)
                     projectile.destroyNextUpdate()
             else:
-                projectile.destroyNextUpdate()
+                if(isinstance(shape1.userData, gobjects.Planet)):
+                    projectile.destroyAfterTimeLimit()
+                else:
+                    projectile.destroyNextUpdate()
         
 
     def Persist(self, point):

@@ -11,6 +11,7 @@ class Projectile(gobject.BoxGobject):
         self.destroyMe = False
         self.ParentTroop = parentTroop
         self.maxDamage = maxDamage
+        self.destroy_at = 0
 
         self.tc = globals.atlas.TextureSpriteCoords(self.image)
         tr = bl + Point(10,10)
@@ -19,14 +20,20 @@ class Projectile(gobject.BoxGobject):
 
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
-
         self.body.ApplyForce(force, self.body.GetWorldCenter())
 
     
     def destroyNextUpdate(self):
         self.destroyMe = True
+        self.destroy_at = globals.time
+    
+    def destroyAfterTimeLimit(self):
+        if(not self.destroyMe):
+            self.destroyMe = True
+            self.destroy_at = globals.time + 5000
         
     def Update(self):
         if(self.destroyMe):
-            self.Destroy()
+            if(globals.time >= self.destroy_at):
+                self.Destroy()
     
