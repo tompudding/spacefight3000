@@ -301,7 +301,7 @@ class GameView(ui.RootElement):
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
-        else:
+        elif button not in (4,5): #Don't give them scroll wheel events
             self.mode.MouseButtonDown(screen_pos,button)
         return super(GameView,self).MouseButtonDown(pos,button)
 
