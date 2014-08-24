@@ -18,13 +18,13 @@ class GameWorld(object):
             self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
             self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],2,self.planets[1],1.5))
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,600),1));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,900),1));
+            self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,600),1));
+            self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,900),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900),0));
         elif level == 1:
             self.planets.append(gobjects.BluePlanet(Point(1100,600), 200));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(500,900),1));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
         
         
