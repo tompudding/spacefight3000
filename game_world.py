@@ -11,8 +11,7 @@ class GameWorld(object):
         self.baddies = []
         self.portals = []
         self.level = level
-        print level
-        globals.current_view.hud.SetLevelBar("Level " + str(level+1))
+
 
         if level == 0:
             self.planets.append(gobjects.BluePlanet(Point(300,400), 200));
@@ -29,17 +28,24 @@ class GameWorld(object):
         
         self.projectiles = []
 
+        self.UpdateHUD()
+
     def update(self):
+        for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
+            item.Update()
+
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
         self.projectiles = [p for p in self.projectiles if not p.dead]
 
-        for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
-            item.Update()
+        self.UpdateHUD()
 
     def Destroy(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets):
             item.Destroy()
+
+    def UpdateHUD(self):
+        globals.current_view.hud.SetLevelBar("Us: {0} | Them: {1} | Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
 
         
 
