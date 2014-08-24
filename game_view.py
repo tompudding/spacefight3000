@@ -247,8 +247,6 @@ class GameView(ui.RootElement):
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
 
-        self.modifier_keys = set()
-
     def StartMusic(self):
         pass
         #pygame.mixer.music.play(-1)
@@ -283,26 +281,24 @@ class GameView(ui.RootElement):
         self.mode = modes.GameOver(self)
         
     def KeyDown(self,key):
-        if key == pygame.K_LCTRL:
-            self.modifier_keys.add(pygame.K_LCTRL)
         self.mode.KeyDown(key)
 
     def KeyUp(self,key):
-        if key == pygame.K_LCTRL:
-            self.modifier_keys.remove(pygame.K_LCTRL)
-        elif key == pygame.K_DELETE:
+        if key == pygame.K_DELETE:
             if self.music_playing:
                 self.music_playing = False
                 pygame.mixer.music.set_volume(0)
             else:
                 self.music_playing = True
                 pygame.mixer.music.set_volume(1)
+        if key == pygame.K_LCTRL or key == pygame.K_RCTRL:
+            self.dragging = None
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
         
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2 or button == 3 or pygame.K_LCTRL in self.modifier_keys:
+        if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
         else:
             self.mode.MouseButtonDown(screen_pos,button)
@@ -311,7 +307,7 @@ class GameView(ui.RootElement):
     def MouseButtonUp(self,pos,button):
         #print 'mouse button up',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
-        if button == 2 or button == 3:
+        if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = None
         elif button == 4 and not self.dragging:
             self.AdjustZoom(-0.5,pos)
