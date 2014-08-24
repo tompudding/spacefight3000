@@ -11,6 +11,7 @@ import Box2D as box2d
 class Troop(gobject.BoxGobject):
     jump_power = 50
     jump_duration = 300
+    portal_touch_duration = 1000
     def __init__(self, initialWeapon, bl):
         tr = bl + Point(50,50)
         self.texture_filename = 'redtrooper.png'
@@ -30,6 +31,8 @@ class Troop(gobject.BoxGobject):
         self.jumping = None
         self.charging = False
         self.teleport_target = None
+        self.touch_portal = None
+        self.portal_contacts = []
 
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
         super(Troop,self).__init__(bl,tr,self.tc)
@@ -48,6 +51,20 @@ class Troop(gobject.BoxGobject):
 
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
+
+    def TouchPortal(self, portal):
+        #we've touched a portal. We want the following to happen:
+        #If we're moving fast enough, just teleport us straight away
+        #otherwise, wait a few seconds and then do it
+        self.touch_portal = (portal,globals.time + self.portal_touch_duration)
+
+    def AddPortalContact(self, portal, contact):
+        self.portal_contacts.append( (portal, contact) )
+
+    def RemovePortalContact(self, portal, contact):
+        self.portal_contacts = [(p,c) for (p,c) in self.portal_contacts if p is not portal or c.id != contact.id]
+        if not self.portal_contacts and self.touch_portal:
+            self.touch_portal = None
 
     def Teleport(self, target_portal_end):
         self.teleport_target = target_portal_end
@@ -127,6 +144,15 @@ class Troop(gobject.BoxGobject):
 
     def Update(self):
         current_time = globals.time
+
+        if self.touch_portal:
+            #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
+            #box2d
+            portal,end_time = self.touch_portal
+            if globals.time > end_time:
+                self.touch_portal = None
+                self.body.SetXForm(portal.other_end.body.position,0)
+                self.locked_planet = False
 
         if self.teleport_target:
             self.body.SetXForm(self.teleport_target.body.position,0)

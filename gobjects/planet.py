@@ -8,6 +8,7 @@ import math
 class PortalEnd(gobject.CircleGobject):
     texture_name = 'gate'
     frame_duration = 100
+    is_sensor = True
     def __init__(self,planet,centre,radius,angle):
         self.tc = [globals.atlas.TextureSpriteCoords(self.texture_name + '%d.png' % i) for i in xrange(9)]
         self.animation_duration = len(self.tc)*self.frame_duration
