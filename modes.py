@@ -6,6 +6,7 @@ import gobjects
 from globals.types import Point
 import sys
 import gobjects.bazooka
+from game_world import GameWorld
 import itertools
 
 class Mode(object):
@@ -75,7 +76,8 @@ class Titles(Mode):
     def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.mode = Playing(self.parent)
+        self.parent.game_world = GameWorld()
+        self.parent.mode = PlayerPlaying(self.parent)
 
     def Startup(self):
         return TitleStages.STARTED
@@ -163,8 +165,7 @@ class PlayingStages:
     PLAYERS_GO = 0
     COMPUTERS_GO = 1
 
-
-class Playing(Mode):
+class PlayerPlaying(Mode):
     speed = 8
     class KeyFlags:
         LEFT  = 1
@@ -186,8 +187,7 @@ class Playing(Mode):
         self.parent          = parent
         self.start           = pygame.time.get_ticks()
         self.stage           = PlayingStages.PLAYERS_GO
-        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay,
-                                PlayingStages.COMPUTERS_GO : self.ComputerPlay}
+        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.backdrop        = ui.Box(parent = globals.screen_root,
@@ -197,19 +197,10 @@ class Playing(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
 
-        self.planets = []
-        self.planets.append(gobjects.BluePlanet(Point(100,200), Point(500,600)));
-        self.planets.append(gobjects.YellowPlanet(Point(800,200), Point(1200,600)));
-
-        self.goodies = []
-        self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
-
-        self.baddies = []
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
-
         self.selectedGoodie = None
         self.keydownmap = 0
+
+
 
     def KeyDown(self,key):
         if key in self.keyflags:
@@ -219,7 +210,7 @@ class Playing(Mode):
         elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
         if key == pygame.K_n:
-            self.StartComputersGo()
+            self.parent.mode = ComputerPlaying(self.parent)
 
     def KeyUp(self,key):
         if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
@@ -228,44 +219,77 @@ class Playing(Mode):
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
+        if self.selectedGoodie:
+            self.selectedGoodie.unselect()
+
         objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
-                self.selectedGoodie = None
+            self.selectedGoodie = None
 
-        if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.goodies:
+        if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
             objectUnderPoint.select()
             self.selectedGoodie = objectUnderPoint
 
     def Update(self):
         #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
-        for player in itertools.chain(self.goodies,self.baddies):
+        for player in itertools.chain(self.parent.game_world.goodies,self.parent.game_world.baddies):
             player.Update()
 
     def StartComputersGo(self):
-        self.selectedGoodie = None
-        self.stage = PlayingStages.COMPUTERS_GO
-        self.computers_go_time = 0;
+        self.parent.mode = ComputerPlaying(self.parent)
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
-    def ComputerPlay(self, ticks):
-        if len(self.baddies) == 0:
+class ComputerPlaying(Mode):
+    speed = 8
+    class KeyFlags:
+        LEFT  = 1
+        RIGHT = 2
+        UP    = 4
+        DOWN  = 8
+
+    direction_amounts = {KeyFlags.LEFT  : Point(-0.01*speed, 0.00),
+                         KeyFlags.RIGHT : Point( 0.01*speed, 0.00),
+                         KeyFlags.UP    : Point( 0.00, 0.01*speed),
+                         KeyFlags.DOWN  : Point( 0.00,-0.01*speed)}
+
+    keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
+                pygame.K_RIGHT : KeyFlags.RIGHT,
+                pygame.K_UP    : KeyFlags.UP,
+                pygame.K_DOWN  : KeyFlags.DOWN}
+
+    def __init__(self,parent):
+        self.parent          = parent
+        self.start           = pygame.time.get_ticks()
+        bl = self.parent.GetRelative(Point(0,0))
+        tr = bl + self.parent.GetRelative(globals.screen)
+        self.backdrop        = ui.Box(parent = globals.screen_root,
+                                      pos    = Point(0,0),
+                                      tr     = Point(1,1),
+                                      buffer = globals.ui_buffer,
+                                      colour = (0,0,0,0))
+        self.backdrop.Enable()
+
+        self.selectedGoodie = None
+        self.keydownmap = 0
+        self.computers_go_time = self.start
+        self.current_baddie_index = 0
+        self.parent.game_world.baddies[0].select()
+
+    def Update(self):        
+        self.elapsed = globals.time - self.start
+        ticks = pygame.time.get_ticks()
+
+        if len(self.parent.game_world.baddies) == 0:
             raise sys.exit("player won")
-        elif self.computers_go_time == 0:
-            self.computers_go_time = ticks
-            self.current_baddie_index = 0
-            self.baddies[0].select()
         elif ticks - self.computers_go_time > 500:
-            self.baddies[self.current_baddie_index].fireWeapon()
+            self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
             self.computers_go_time = ticks
-            self.baddies[self.current_baddie_index].unselect()
+            self.parent.game_world.baddies[self.current_baddie_index].unselect()
             self.current_baddie_index += 1
-            if self.current_baddie_index == len(self.baddies):
-                return PlayingStages.PLAYERS_GO
+            if self.current_baddie_index == len(self.parent.game_world.baddies):
+                self.parent.mode = PlayerPlaying(self.parent)
             else:
-                self.baddies[self.current_baddie_index].select()
-        return PlayingStages.COMPUTERS_GO
+                self.parent.game_world.baddies[self.current_baddie_index].select()
