@@ -37,6 +37,7 @@ class Troop(gobject.BoxGobject):
         self.max_weapon_power = 1
         self.power_increase_amount_per_milisecond = (0.2 / 1000.0)
         self.last_power_update_time = globals.time
+        self.projectile_position = None
 
         self.locked_planet = None
         self.move_direction = Point(0,0)
@@ -45,6 +46,7 @@ class Troop(gobject.BoxGobject):
         self.touch_portal = None
         self.instaport = None
         self.teleport_in_progress = None
+        self.last_teleport = 0
         self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
@@ -73,8 +75,10 @@ class Troop(gobject.BoxGobject):
         #otherwise, wait a few seconds and then do it
         if self.teleport_in_progress:
             return
-        print 'touch portal!',portal
         if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
+            if globals.time - self.last_teleport < 1000:
+                #if we just teleported, don't do an instaport
+                return
             self.instaport = portal.other_end
             return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
@@ -112,7 +116,6 @@ class Troop(gobject.BoxGobject):
             return
         self.Disable()
         #Where do you go when you're being teleported? to -100,-100 that's where
-        #print self.body.SetXForm(box2d.b2Vec2(-1000,-1000),0)
         self.shape.isSensor = True
         self.touch_portal = None
         self.portal_contacts = []
@@ -128,13 +131,14 @@ class Troop(gobject.BoxGobject):
             self.selectionBoxQuad.Enable()
 
     def Teleport(self, portal):
-        print 'teleport!',self.teleport_in_progress
         self.Enable()
         self.shape.isSensor = False
         self.touch_portal = None
-        self.body.SetXForm(portal.body.position,0)
         self.locked_planet = False
         self.portal_contacts = []
+        self.body.SetXForm(portal.body.position,0)
+        self.last_teleport = globals.time
+
 
     def select(self):
         self.selected = True
@@ -145,9 +149,7 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        current_bl_pos = self.getProjectileBLPosition()
-
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos, self)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, self.projectile_position, self)
 
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
@@ -160,16 +162,32 @@ class Troop(gobject.BoxGobject):
 
         return newProjectile
 
-    def getProjectileBLPosition(self):
-        current_angle = self.body.angle
-        update_distance_rect = cmath.rect(self.midpoint.x + 0.3, current_angle)
-        x = update_distance_rect.real
-        y = update_distance_rect.imag
+    def getProjectileBLPosition(self, mouse_xy):
+        dx = mouse_xy[0] - self.body.GetWorldCenter()[0] / globals.physics.scale_factor
+        dy = mouse_xy[1] - self.body.GetWorldCenter()[1] / globals.physics.scale_factor
+        
+        projectile_start_pos = box2d.b2Vec2(dx,dy)
+        projectile_start_pos.Normalize()
+        projectile_start_pos.mul_float(self.midpoint.x + 30)
+        projectile_start_pos.add_vector(box2d.b2Vec2(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor))
+        
+        self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
+        #current_angle = self.body.angle
+        
+        #if(self.direction == 'right'):
+        #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
+        #    x = update_distance_rect.real
+        #    y = update_distance_rect.imag
+        #    blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
+        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
+        #else:
+        #    update_distance_rect = cmath.rect(self.midpoint.x - 1, current_angle + math.pi)
+        #    x = update_distance_rect.real
+        #    y = update_distance_rect.imag
+        #    blx = (self.body.GetWorldCenter()[0] - x) / globals.physics.scale_factor
+        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
 
-        blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
-        bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
-
-        return Point(blx, bly)
+        #return Point(blx, bly)
 
     def chargeWeapon(self):
         self.charging = True
@@ -177,9 +195,7 @@ class Troop(gobject.BoxGobject):
     def jump(self):
         if not self.locked_planet:
             #can only jump on the surface
-            print 'jemp'
             return
-        print 'jimp!'
         self.locked_planet = None
         r = cmath.rect(self.jump_power,self.body.angle+math.pi/2)
         self.body.ApplyImpulse(box2d.b2Vec2(r.real,r.imag),self.body.GetWorldCenter())
@@ -196,10 +212,11 @@ class Troop(gobject.BoxGobject):
             self.currentWeaponPower = self.maxWeaponPower
 
     def setWeaponAngle(self, mouse_xy):
-        projectile_pos = self.getProjectileBLPosition()
-        dx = float(mouse_xy[0] - (projectile_pos[0])) #/ globals.physics.scale_factor))
-        dy = float(mouse_xy[1] - (projectile_pos[1])) #/ globals.physics.scale_factor))
-
+        self.getProjectileBLPosition(mouse_xy)
+        
+        dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
+        dy = float(mouse_xy[1] - (self.projectile_position[1])) #/ globals.physics.scale_factor))
+    
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
     def InitPolygons(self,tc):
@@ -223,7 +240,6 @@ class Troop(gobject.BoxGobject):
                 return
 
             progress = (t - globals.time)/float(self.teleport_duration)
-            print 'teleport_progress',progress
             return
         else:
 
@@ -237,6 +253,7 @@ class Troop(gobject.BoxGobject):
                 portal,end_time = self.touch_portal
                 if globals.time > end_time:
                     self.InitiateTeleport(portal.other_end)
+                    self.touch_portal = None
 
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
@@ -253,7 +270,6 @@ class Troop(gobject.BoxGobject):
             self.Destroy()
 
     def TakeDamage(self, amount):
-        print "taking damage"
         self.health -= amount
 
 
