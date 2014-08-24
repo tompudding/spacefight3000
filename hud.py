@@ -15,6 +15,15 @@ class Hud(object):
         barBorder = drawing.constants.colours.blue
         
         self.weapon_power_bar = ui.PowerBar(self.parent_ui_object, Point(0,0), Point(0.1,0.05), 0, barColours, barBorder)
+
+    def SetLevelBar(self, text):
+        self.level_bar = ui.TextBox(parent = self.parent_ui_object,
+                                     bl     = Point(0.5,0),
+                                     tr     = None,
+                                     text   = text ,
+                                     textType = drawing.texture.TextTypes.GRID_RELATIVE,
+                                     colour = (1,1,1,1),
+                                     scale  = 8)
         
     def setWeaponPowerBarValue(self, newValue):
         self.weapon_power_bar.SetBarLevel(newValue)

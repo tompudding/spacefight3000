@@ -164,6 +164,19 @@ class MyContactListener(box2d.b2ContactListener):
             troop = s2
             portal = s1
             troop.AddPortalContact(portal,cp)
+    
+        #returns false if the projectile hits the originating troop
+    def checkProjectileTroopCollision(self, shape1, shape2):
+        if(isinstance(shape2.userData, gobjects.Projectile)):
+            projectile = shape2.userData
+            if(isinstance(shape1.userData, gobjects.Troop)):
+                troop = shape1.userData
+                 
+                if not (projectile.ParentTroop != None and troop == projectile.ParentTroop):
+                    troop.TakeDamage(projectile.maxDamage)
+            else:
+                projectile.destroyNextUpdate()
+        
 
     def Persist(self, point):
         """Handle persist point"""
@@ -219,22 +232,6 @@ class MyContactFilter(box2d.b2ContactFilter):
         collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0        
         return collides
     
-    #returns false if the projectile hits the originating troop
-    def checkProjectileTroopCollision(self, shape1, shape2):
-        if(isinstance(shape2.userData, gobjects.Projectile)):
-            projectile = shape2.userData
-            if(isinstance(shape1.userData, gobjects.Troop)):
-                troop = shape1.userData
-                 
-                if projectile.ParentTroop != None and troop == projectile.ParentTroop:
-                    return False
-                else:
-                    troop.TakeDamage(projectile.maxDamage)
-            else:
-                print shape1
-                projectile.destroyNextUpdate()
-        
-        return True
                
 class Physics(object):
     scale_factor = 0.05
