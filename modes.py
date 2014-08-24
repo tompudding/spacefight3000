@@ -207,12 +207,9 @@ class PlayerPlaying(Mode):
         elif key == pygame.K_SPACE and self.selectedGoodie:
             self.selectedGoodie.fireWeapon()
         elif key == pygame.K_UP and self.selectedGoodie:
-            self.selectedGoodie.unselect()
-            self.parent.mode = ComputerPlaying(self.parent)
             self.selectedGoodie.jump()
         elif key == pygame.K_n:
             if self.selectedGoodie:
-                self.selectedGoodie.unselect()
                 self.selectedGoodie.unselect()
                 self.parent.mode = ComputerPlaying(self.parent)
             self.parent.mode = ComputerPlaying(self.parent)
