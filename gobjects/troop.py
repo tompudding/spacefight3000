@@ -190,3 +190,8 @@ class Troop(gobject.BoxGobject):
                             vector = cmath.rect(-1000,angle )
                             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
                             break
+
+    def Destroy(self):
+        super(Troop,self).Destroy()
+        self.selectionBoxQuad.Delete()
+
