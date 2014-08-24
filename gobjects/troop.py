@@ -7,7 +7,7 @@ import math
 import cmath
 import drawing
 import Box2D as box2d
-
+import numpy
 
 class Troop(gobject.BoxGobject):
     texture_name = 'redtrooper'
@@ -124,10 +124,10 @@ class Troop(gobject.BoxGobject):
         for i in xrange(4):
             for j in xrange(4):
                 self.teleport_quads[i*4+j].Enable()
-                self.teleport_quads[i*4+j].vertex[0] = self.quad.vertex[0] + w*j + h*i
-                self.teleport_quads[i*4+j].vertex[1] = self.quad.vertex[0] + w*(j+1) + h*i
-                self.teleport_quads[i*4+j].vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
-                self.teleport_quads[i*4+j].vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
+                self.teleport_quads[i*4+j].start_vertex[0] = self.quad.vertex[0] + w*j + h*i
+                self.teleport_quads[i*4+j].start_vertex[1] = self.quad.vertex[0] + w*(j+1) + h*i
+                self.teleport_quads[i*4+j].start_vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
+                self.teleport_quads[i*4+j].start_vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
 
                 self.teleport_quads[i*4+j].tc[0] = self.quad.tc[0] + tc_w*j + tc_h*i
                 self.teleport_quads[i*4+j].tc[1] = self.quad.tc[0] + tc_w*(j+1) + tc_h*i
@@ -147,7 +147,6 @@ class Troop(gobject.BoxGobject):
         tc_h = (self.quad.tc[3] - self.quad.tc[0])/4
         for i in xrange(4):
             for j in xrange(4):
-                self.teleport_quads[i*4+j].target_vertex = [0 for i in xrange(4)]
                 self.teleport_quads[i*4+j].target_vertex[0] = self.quad.vertex[0] + w*j + h*i
                 self.teleport_quads[i*4+j].target_vertex[1] = self.quad.vertex[0] + w*(j+1) + h*i
                 self.teleport_quads[i*4+j].target_vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
@@ -279,6 +278,9 @@ class Troop(gobject.BoxGobject):
         if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
         self.teleport_quads = [drawing.Quad(globals.quad_buffer, tc = tc) for i in xrange(16)]
+        for quad in self.teleport_quads:
+            quad.start_vertex = [0,0,0,0]
+            quad.target_vertex = [0,0,0,0]
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
     def Update(self):
@@ -291,7 +293,20 @@ class Troop(gobject.BoxGobject):
                 self.Teleport(portal)
                 return
 
-            progress = (t - globals.time)/float(self.teleport_duration)
+            progress = 1-(t - globals.time)/float(self.teleport_duration)
+            for i in xrange(4):
+                for j in xrange(4):
+                    for k in xrange(4):
+                        start = self.teleport_quads[i*4+j].start_vertex[k]
+                        end = self.teleport_quads[i*4+j].target_vertex[k]
+                        x = math.sin(progress*0.3*(i+1)*(j+1))*10
+                        y = math.sin(progress*3*0.3*(i+1)*(j+1))*10
+                        if progress > 0.5:
+                            x *= 1-(0.5-progress)**2
+                            y *= 1-(0.5-progress)**2
+                        self.teleport_quads[i*4+j].vertex[k] = numpy.array([x,y,0]) + start + ((end-start)*progress)
+
+            print progress
             return
         else:
 
