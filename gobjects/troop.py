@@ -97,9 +97,10 @@ class Troop(gobject.TeleportableBox):
         
     def unselect(self):
         self.selected = False
+        self.charging = False
         self.selectionBoxQuad.Disable()
         self.move_direction = Point(0,0)
-        #globals.game_view.hud.clearWeaponSelectionBoxs()
+        globals.game_view.hud.setWeaponPowerBarValue(0.0)
 
     def fireWeapon(self):
         self.setWeaponAngle(self.last_mouse_xy)

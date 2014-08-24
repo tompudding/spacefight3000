@@ -261,19 +261,6 @@ class PlayerPlaying(Mode):
         if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
             if self.selectedGoodie != None:
                 self.selectedGoodie.chargeWeapon()
-        elif button == 1: 
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
-    
-            objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
-            if not objectUnderPoint:
-                self.selectedGoodie = None
-    
-            if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
-                objectUnderPoint.select()
-                self.selectedGoodie = objectUnderPoint
-
-    
        
     def MouseButtonUp(self,pos,button):
         if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
@@ -282,10 +269,10 @@ class PlayerPlaying(Mode):
 
     def Update(self):
         self.elapsed = globals.time - self.start
-#        if self.elapsed > 5000:
-#            if self.selectedGoodie:
-#                self.selectedGoodie.unselect()
-#            self.parent.mode = ComputerPlaying(self.parent)
+        if self.elapsed > 5000:
+            if self.selectedGoodie:
+                self.selectedGoodie.unselect()
+            self.parent.mode = ComputerPlaying(self.parent)
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
