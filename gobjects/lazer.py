@@ -8,7 +8,7 @@ class Lazer(weapon.Weapon):
     def __init__(self):
         self.projectile_texture_name = "laser.png" 
         super(Lazer, self).__init__(75, self.projectile_texture_name, 2000, True, 5)
-        self.imageSize = Point(4,24)
+        self.imageSize = Point(24,4)
         #picked utterly random numbers, we can sort that later. 
     
     def FireAtTarget(self, angle, weapon_force, bl, parentTroop):

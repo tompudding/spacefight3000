@@ -13,9 +13,7 @@ class Weapon(object):
         self.currentAmmo = currentAmmo
         self.power_modifier = power_modifier
         self.imageSize = None
-        
-        self.halfPi = math.pi / 2
-        
+
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)
         
@@ -29,7 +27,7 @@ class Weapon(object):
         x = update_distance_rect.real
         y = update_distance_rect.imag
         
-        projectileAngle = angle + self.halfPi
+        projectileAngle = angle
             
         force = box2d.b2Vec2(x,y)
         return projectile.Projectile(self.projectileImage, bl, self.imageSize, projectileAngle, force, self.maxDamage, parentTroop)
