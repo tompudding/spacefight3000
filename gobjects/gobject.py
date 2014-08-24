@@ -9,7 +9,7 @@ class Gobject(object):
     mass     = 1
     filter_group = None
     static   = False
-    health   = 500
+    initial_health   = 500
     z_level  = 10
     is_gravity_source = False
     def __init__(self,bl,tr,tc = None,angle=0):
@@ -42,6 +42,7 @@ class Gobject(object):
         self.parent_joint = None
         self.ExtraShapes()
         self.PhysUpdate([])
+        self.health = Gobject.initial_health
 
     @property
     def centre_world(self):

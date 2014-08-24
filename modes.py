@@ -208,7 +208,13 @@ class PlayerPlaying(Mode):
         elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
         elif key == pygame.K_n:
+            self.selectedGoodie.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
+        elif key == pygame.K_k:
+            if self.selectedGoodie:
+                self.selectedGoodie.unselect()
+                self.selectedGoodie.unselect()
+                self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_TAB:
             if not self.selectedGoodie and len(self.parent.game_world.goodies) > 0:
                 self.selectedGoodie = self.parent.game_world.goodies[0]
@@ -255,23 +261,6 @@ class PlayerPlaying(Mode):
         return PlayingStages.PLAYERS_GO
 
 class ComputerPlaying(Mode):
-    speed = 8
-    class KeyFlags:
-        LEFT  = 1
-        RIGHT = 2
-        UP    = 4
-        DOWN  = 8
-
-    direction_amounts = {KeyFlags.LEFT  : Point(-0.01*speed, 0.00),
-                         KeyFlags.RIGHT : Point( 0.01*speed, 0.00),
-                         KeyFlags.UP    : Point( 0.00, 0.01*speed),
-                         KeyFlags.DOWN  : Point( 0.00,-0.01*speed)}
-
-    keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
-                pygame.K_RIGHT : KeyFlags.RIGHT,
-                pygame.K_UP    : KeyFlags.UP,
-                pygame.K_DOWN  : KeyFlags.DOWN}
-
     def __init__(self,parent):
         self.parent          = parent
         self.start           = pygame.time.get_ticks()
