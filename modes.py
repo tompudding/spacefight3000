@@ -172,14 +172,18 @@ class PlayerPlaying(Mode):
         RIGHT = 2
         UP    = 4
         DOWN  = 8
+        SHIFT = 16
 
     direction_amounts = {KeyFlags.LEFT  : Point(-speed, 0.00),
                          KeyFlags.RIGHT : Point( speed, 0.00),
                          KeyFlags.UP    : Point( 0.00, speed),
-                         KeyFlags.DOWN  : Point( 0.00, speed)}
+                         KeyFlags.DOWN  : Point( 0.00, speed),
+                         KeyFlags.SHIFT : Point (0.00, 0.00) }
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
+                pygame.K_LSHIFT : KeyFlags.SHIFT,
+                pygame.K_RSHIFT : KeyFlags.SHIFT
                 }
 
     def __init__(self,parent):
@@ -244,7 +248,10 @@ class PlayerPlaying(Mode):
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
-        if(button == 1): 
+        if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.chargeWeapon()
+        elif button == 1: 
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
     
@@ -255,12 +262,12 @@ class PlayerPlaying(Mode):
             if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
                 objectUnderPoint.select()
                 self.selectedGoodie = objectUnderPoint
-        elif(button == 3):
-            if self.selectedGoodie != None:
-                self.selectedGoodie.chargeWeapon()
+
     
+       
     def MouseButtonUp(self,pos,button):
-        if(button == 3):
+        if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+
             if self.selectedGoodie != None:
                 self.selectedGoodie.fireWeapon()
 
