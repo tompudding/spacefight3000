@@ -212,7 +212,7 @@ class Playing(Mode):
             self.keydownmap |= self.keyflags[key]
             if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-        elif key == pygame.K_SPACE:
+        elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
         
 
