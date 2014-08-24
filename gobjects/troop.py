@@ -9,11 +9,16 @@ import drawing
 import Box2D as box2d
 
 class Troop(gobject.BoxGobject):
+    texture_name = 'redtrooper'
+    frame_duration = 100
     jump_power = 50
     jump_duration = 300
     def __init__(self, initialWeapon, bl):
-        tr = bl + Point(50,50)
-        self.texture_filename = 'redtrooper.png'
+        self.direction = 'right'
+        self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
+        self.tc_left = [globals.atlas.TextureSpriteCoords(self.texture_name +'_left_%d.png' % i) for i in xrange(4)]
+        self.animation_duration = len(self.tc_right)*self.frame_duration
+        tr = bl + Point(25,50)
         self.selectedBoxFilename = 'selectionBox.png'
         self.selected = False
         self.selectionBoxQuad = None
@@ -31,8 +36,7 @@ class Troop(gobject.BoxGobject):
         self.charging = False
         self.teleport_target = None
 
-        self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
-        super(Troop,self).__init__(bl,tr,self.tc)
+        super(Troop,self).__init__(bl,tr,self.tc_right)
 
         #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
         #you want to give another weapon that isnt unlimited, use change weapon.
@@ -118,8 +122,11 @@ class Troop(gobject.BoxGobject):
 
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
-    def InitPolygons(self,tc):
-        super(Troop,self).InitPolygons(self.tc)
+    def InitPolygons(self,tc):  
+        if self.direction == 'right':
+            super(Troop,self).InitPolygons(self.tc_right[0])
+        else:
+            super(Troop,self).InitPolygons(self.tc_left[0])
 
         if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
@@ -127,7 +134,13 @@ class Troop(gobject.BoxGobject):
 
     def Update(self):
         current_time = globals.time
+        frame = (globals.time%self.animation_duration)/self.frame_duration
+        if self.direction == 'right':
+            tc = self.tc_right[frame]
+        else:
+            tc = self.tc_left[frame]
 
+        self.quad.SetTextureCoordinates(tc)
         if self.teleport_target:
             self.body.SetXForm(self.teleport_target.body.position,0)
             self.teleport = None
