@@ -42,6 +42,7 @@ class Troop(gobject.BoxGobject):
         self.touch_portal = None
         self.instaport = None
         self.teleport_in_progress = None
+        self.last_teleport = 0
         self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
@@ -70,8 +71,10 @@ class Troop(gobject.BoxGobject):
         #otherwise, wait a few seconds and then do it
         if self.teleport_in_progress:
             return
-        print 'touch portal!',portal
         if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
+            if globals.time - self.last_teleport < 1000:
+                #if we just teleported, don't do an instaport
+                return
             self.instaport = portal.other_end
             return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
@@ -109,7 +112,6 @@ class Troop(gobject.BoxGobject):
             return
         self.Disable()
         #Where do you go when you're being teleported? to -100,-100 that's where
-        #print self.body.SetXForm(box2d.b2Vec2(-1000,-1000),0)
         self.shape.isSensor = True
         self.touch_portal = None
         self.portal_contacts = []
@@ -125,13 +127,14 @@ class Troop(gobject.BoxGobject):
             self.selectionBoxQuad.Enable()
 
     def Teleport(self, portal):
-        print 'teleport!',self.teleport_in_progress
         self.Enable()
         self.shape.isSensor = False
         self.touch_portal = None
-        self.body.SetXForm(portal.body.position,0)
         self.locked_planet = False
         self.portal_contacts = []
+        self.body.SetXForm(portal.body.position,0)
+        self.last_teleport = globals.time
+
 
     def select(self):
         self.selected = True
@@ -174,9 +177,7 @@ class Troop(gobject.BoxGobject):
     def jump(self):
         if not self.locked_planet:
             #can only jump on the surface
-            print 'jemp'
             return
-        print 'jimp!'
         self.locked_planet = None
         r = cmath.rect(self.jump_power,self.body.angle+math.pi/2)
         self.body.ApplyImpulse(box2d.b2Vec2(r.real,r.imag),self.body.GetWorldCenter())
@@ -220,7 +221,6 @@ class Troop(gobject.BoxGobject):
                 return
 
             progress = (t - globals.time)/float(self.teleport_duration)
-            print 'teleport_progress',progress
             return
         else:
 
@@ -234,6 +234,7 @@ class Troop(gobject.BoxGobject):
                 portal,end_time = self.touch_portal
                 if globals.time > end_time:
                     self.InitiateTeleport(portal.other_end)
+                    self.touch_portal = None
 
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
@@ -250,7 +251,6 @@ class Troop(gobject.BoxGobject):
             self.Destroy()
 
     def TakeDamage(self, amount):
-        print "taking damage"
         self.health -= amount
 
 
