@@ -126,11 +126,41 @@ class BoxGobject(Gobject):
 class CircleGobject(Gobject):
     shape_type = box2d.b2CircleDef
     vertex_permutation = (1,0,3,2)
-    def CreateShape(self,midpoint,pos = None):
+    def __init__(self,centre,radius,tc = None,angle=0):
+        self.dead = False
+        self.tc = tc
+        if tc != None:
+            self.InitPolygons(tc)
+            self.visible = True
+        else:
+            self.visible = False
+        self.bodydef = box2d.b2BodyDef()
+        #This is inefficient, but it doesn't want to grab properly otherwise. Shitty hack but whatever
+        self.bodydef.allowSleep = False
+        self.midpoint = radius*math.sqrt(2)*globals.physics.scale_factor
+        self.bodydef.position = box2d.b2Vec2(*(centre*globals.physics.scale_factor))
+        self.bodydef.angle = angle
+        self.shape = self.CreateShape(radius)
+        if not self.static:
+            self.shape.userData = self
+        if self.filter_group != None:
+            self.shape.filter.groupIndex = self.filter_group
+        self.bodydef.isBullet = self.isBullet
+        self.body = globals.physics.world.CreateBody(self.bodydef)
+        self.shape.density = self.mass
+        self.shape.friction = 0.7
+        self.shapeI = self.body.CreateShape(self.shape)
+        self.child_joint = None
+        self.parent_joint = None
+        self.ExtraShapes()
+        self.PhysUpdate([])
+        self.health = Gobject.initial_health
+
+    def CreateShape(self,radius,pos = None):
         if self.dead:
             return
         shape = self.shape_type()
-        shape.radius = midpoint.length()/math.sqrt(2)
+        shape.radius = radius*globals.physics.scale_factor
         self.midpoint = Point(0,0)
         if pos != None:
             shape.SetLocalPosition(pos.to_vec())

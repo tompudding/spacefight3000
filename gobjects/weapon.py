@@ -17,8 +17,6 @@ class Weapon(object):
         
     def FireAtTarget(self, angle, weapon_force, bl):
         #need to use the angle and force to determine where the projectile is headed. 
-        print "open fire... alll weapons, angle, force, power_mod = ", angle, weapon_force, self.power_modifier
-        
         if(self.limitedAmmo):
             self.currentAmmo -= 1
                     

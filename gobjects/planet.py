@@ -7,9 +7,9 @@ import math
 
 class PortalEnd(gobject.CircleGobject):
     texture_name = 'gate'
-    def __init__(self,bl,tr,angle):
+    def __init__(self,centre,radius,angle):
         self.tc = [globals.atlas.TextureSpriteCoords(self.texture_name + '%d.png' % i) for i in xrange(6)]
-        super(PortalEnd,self).__init__(bl,tr,self.tc)
+        super(PortalEnd,self).__init__(centre,radius,self.tc)
         self.body.angle = angle
         self.PhysUpdate([])
 
@@ -22,26 +22,26 @@ class PortalEnd(gobject.CircleGobject):
 
 
 class Portal(object):
+    size = 30
     def __init__(self,source_planet,source_angle,target_planet,target_angle):
         self.ends = []
         for planet,angle in (source_planet,source_angle),(target_planet,target_angle):
-            bl = planet.GetSurfacePoint(angle)
-            tr = bl + Point(50,50)
-            self.ends.append(PortalEnd(bl,tr,angle+3*math.pi/2))
+            centre = planet.GetSurfacePoint(self.size,angle)
+            self.ends.append(PortalEnd(centre,self.size,angle+3*math.pi/2))
 
 
 class Planet(gobject.CircleGobject):
     texture_name = '600blue.png'
     #static = True
     is_gravity_source = True
-    def __init__(self,bl,tr):
+    def __init__(self,centre,radius):
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)
-        super(Planet,self).__init__(bl,tr,self.tc)
+        super(Planet,self).__init__(centre,radius,self.tc)
         globals.physics.AddObject(self)
 
-    def GetSurfacePoint(self,angle):
+    def GetSurfacePoint(self,distance,angle):
         centre = self.body.GetWorldCenter() / globals.physics.scale_factor
-        vector = cmath.rect(self.shape.radius / globals.physics.scale_factor, angle)
+        vector = cmath.rect((self.shape.radius / globals.physics.scale_factor) + distance, angle)
         return Point(*centre) + Point(vector.real,vector.imag)
 
 class BluePlanet(Planet):
