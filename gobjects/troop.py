@@ -10,7 +10,7 @@ import Box2D as box2d
 
 class Troop(gobject.BoxGobject):    
   
-    def __init__(self, initialWeapon, physics, bl):
+    def __init__(self, initialWeapon, bl):
         tr = bl + Point(50,50)
         self.texture_filename = 'bazookaTroop.png'
         self.selectedBoxFilename = 'selectionBox.png'
@@ -29,16 +29,16 @@ class Troop(gobject.BoxGobject):
         
         
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_filename)
-        super(Troop,self).__init__(physics,bl,tr,self.tc)
+        super(Troop,self).__init__(bl,tr,self.tc)
         
         #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
         #you want to give another weapon that isnt unlimited, use change weapon. 
-        self.currentWeapon = initialWeapon(physics, bl, tr)
-        self.defaultWeapon = initialWeapon(physics, bl, tr)
+        self.currentWeapon = initialWeapon()
+        self.defaultWeapon = initialWeapon()
     
         self.body.SetMassFromShapes()
         if not self.static:
-            physics.AddObject(self)
+            globals.physics.AddObject(self)
             
         self.selectionBoxQuad.Disable()
         
@@ -54,7 +54,7 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
     
     def fireWeapon(self):
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, self.bl)
         
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
@@ -98,7 +98,7 @@ class Troop(gobject.BoxGobject):
         #Just set the vertices
         vertices = []
         for i,vertex in enumerate(self.shape.vertices):
-            screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
+            screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
             vertices.append( screen_coords )
             
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)

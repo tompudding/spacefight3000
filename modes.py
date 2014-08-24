@@ -194,15 +194,15 @@ class Playing(Mode):
         self.backdrop.Enable()
 
         self.planets = []
-        self.planets.append(gobjects.BluePlanet(self.parent.physics, Point(100,200), Point(500,600)));
-        self.planets.append(gobjects.YellowPlanet(self.parent.physics, Point(800,200), Point(1200,600)));
+        self.planets.append(gobjects.BluePlanet(Point(100,200), Point(500,600)));
+        self.planets.append(gobjects.YellowPlanet(Point(800,200), Point(1200,600)));
 
         self.goodies = []
-        self.goodies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(100,100)));
+        self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
         
         self.baddies = []
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,100)));
-        self.baddies.append(gobjects.Troop(gobjects.Bazooka, self.parent.physics, Point(1000,400)));
+        self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
+        self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
 
         self.selectedGoodie = None
         self.keydownmap = 0
@@ -230,7 +230,7 @@ class Playing(Mode):
     def MouseButtonDown(self,pos,button):
         self.selectedGoodie = None
         
-        objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
+        objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()

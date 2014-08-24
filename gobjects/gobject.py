@@ -12,7 +12,7 @@ class Gobject(object):
     health   = 500
     z_level  = 10
     is_gravity_source = False
-    def __init__(self,physics,bl,tr,tc = None,angle=0):
+    def __init__(self,bl,tr,tc = None,angle=0):
         self.dead = False
         self.tc = tc
         self.bl = bl
@@ -22,12 +22,11 @@ class Gobject(object):
             self.visible = True
         else:
             self.visible = False
-        self.physics = physics
         self.bodydef = box2d.b2BodyDef()
         #This is inefficient, but it doesn't want to grab properly otherwise. Shitty hack but whatever
         self.bodydef.allowSleep = False
-        self.midpoint = (tr - bl)*0.5*physics.scale_factor
-        self.bodydef.position = tuple((bl*physics.scale_factor) + self.midpoint)
+        self.midpoint = (tr - bl)*0.5*globals.physics.scale_factor
+        self.bodydef.position = tuple((bl*globals.physics.scale_factor) + self.midpoint)
         self.bodydef.angle = angle
         self.shape = self.CreateShape(self.midpoint)
         if not self.static:
@@ -35,7 +34,7 @@ class Gobject(object):
         if self.filter_group != None:
             self.shape.filter.groupIndex = self.filter_group
         self.bodydef.isBullet = self.isBullet
-        self.body = physics.world.CreateBody(self.bodydef)
+        self.body = globals.physics.world.CreateBody(self.bodydef)
         self.shape.density = self.mass
         self.shape.friction = 0.7
         self.shapeI = self.body.CreateShape(self.shape)
@@ -46,7 +45,7 @@ class Gobject(object):
 
     @property
     def centre_world(self):
-        return self.body.GetWorldPoint(self.midpoint.to_vec())/self.physics.scale_factor
+        return self.body.GetWorldPoint(self.midpoint.to_vec())/globals.physics.scale_factor
 
     def ExtraShapes(self):
         pass
@@ -62,7 +61,7 @@ class Gobject(object):
             self.parent_joint.Ungrab()
             self.parent_joint = None
         self.shape.ClearUserData()
-        self.physics.world.DestroyBody(self.body)
+        globals.physics.world.DestroyBody(self.body)
         self.dead = True
         self.quad.Delete()
 
@@ -89,7 +88,7 @@ class Gobject(object):
     def GetPos(self):
         if self.dead:
             return
-        return Point(*self.body.position)/self.physics.scale_factor
+        return Point(*self.body.position)/globals.physics.scale_factor
 
     def GetAngle(self):
         if self.dead:
@@ -114,7 +113,7 @@ class Gobject(object):
         #Just set the vertices
 
         for i,vertex in enumerate(self.shape.vertices):
-            screen_coords = Point(*self.body.GetWorldPoint(vertex))/self.physics.scale_factor
+            screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
         self.doGravity(gravity_sources)
@@ -145,6 +144,6 @@ class CircleGobject(Gobject):
         r = self.shape.radius
         
         for i,(x,y) in enumerate( ((r,r),(r,-r),(-r,-r),(-r,r)) ):
-            screen_coords = Point(*self.body.GetWorldPoint(self.shape.localPosition+Point(x,y).to_vec()))/self.physics.scale_factor
+            screen_coords = Point(*self.body.GetWorldPoint(self.shape.localPosition+Point(x,y).to_vec()))/globals.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
 
