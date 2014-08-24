@@ -126,6 +126,7 @@ class BoxGobject(Gobject):
 class CircleGobject(Gobject):
     shape_type = box2d.b2CircleDef
     vertex_permutation = (1,0,3,2)
+    is_sensor = False
     def __init__(self,centre,radius,tc = None,angle=0):
         self.dead = False
         self.tc = tc
@@ -141,6 +142,7 @@ class CircleGobject(Gobject):
         self.bodydef.position = box2d.b2Vec2(*(centre*globals.physics.scale_factor))
         self.bodydef.angle = angle
         self.shape = self.CreateShape(radius)
+        self.shape.isSensor = self.is_sensor
         if not self.static:
             self.shape.userData = self
         if self.filter_group != None:

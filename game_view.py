@@ -149,19 +149,44 @@ class MyContactListener(box2d.b2ContactListener):
         cp.shape2   = point.shape2
         cp.position = point.position.copy()
         cp.normal   = point.normal.copy()
-        cp.id       = point.id
+        cp.id       = point.id.key
         #globals.sounds.thud.play()
         globals.physics.contacts.append(cp)
         
         self.checkProjectileTroopCollision(cp.shape1, cp.shape2)
 
+        s1 = point.shape1.userData
+        s2 = point.shape2.userData
+        if isinstance(s1,gobjects.Troop) and isinstance(s2,gobjects.planet.PortalEnd):
+            s1,s2 = s2,s1
+
+        if isinstance(s1,gobjects.planet.PortalEnd) and isinstance(s2,gobjects.Troop):
+            troop = s2
+            portal = s1
+            troop.AddPortalContact(portal,cp)
+
     def Persist(self, point):
         """Handle persist point"""
 
         pass
+
     def Remove(self, point):
         """Handle remove point"""
-        pass
+        cp          = fwContactPoint()
+        cp.shape1   = point.shape1
+        cp.shape2   = point.shape2
+        cp.position = point.position.copy()
+        cp.normal   = point.normal.copy()
+        cp.id       = point.id.key
+
+        s1 = point.shape1.userData
+        s2 = point.shape2.userData
+        if isinstance(s1,gobjects.Troop) and isinstance(s2,gobjects.planet.PortalEnd):
+            s1,s2 = s2,s1
+        if isinstance(s1,gobjects.planet.PortalEnd) and isinstance(s2,gobjects.Troop):
+            troop = s2
+            portal = s1
+            troop.RemovePortalContact(portal,cp)
     def Result(self, point):
         """Handle results"""
         pass
@@ -181,9 +206,9 @@ class MyContactFilter(box2d.b2ContactFilter):
         if isinstance(shape1.userData,gobjects.planet.PortalEnd):
             obj = shape2.userData
             if isinstance(obj,gobjects.Troop):
-                return False
-            
-                #obj.Teleport(shape1.userData.other_end)
+                obj.TouchPortal(shape1.userData)
+                return True
+
         #print 'collision!',shape1 == shape1.userData.shape#,shape2
         filter1 = shape1.filter
         filter2 = shape2.filter
@@ -295,7 +320,7 @@ class GameView(ui.RootElement):
         self.parallax = Point(-1024,-1024)
         #self.mode = modes.LevelOne(self)
         self.StartMusic()
-        
+
         self.hud = hud.Hud(globals.screen_root)
 
     def StartMusic(self):
