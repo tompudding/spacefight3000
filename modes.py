@@ -205,6 +205,12 @@ class PlayerPlaying(Mode):
 
         self.selectedGoodie = None
         self.keydownmap = 0
+
+        self.selectedGoodie = parent.game_world.NextGoodieToPlay()
+        if self.selectedGoodie == None:
+            self.parent.mode = ComputerPlaying(self.parent)
+        else:
+            self.selectedGoodie.select()
     
     def MouseMotion(self,pos,rel):
         if(self.selectedGoodie != None):
@@ -271,12 +277,15 @@ class PlayerPlaying(Mode):
        
     def MouseButtonUp(self,pos,button):
         if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
-
             if self.selectedGoodie != None:
                 self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
 
     def Update(self):
-        #self.elapsed = globals.time - self.start
+        self.elapsed = globals.time - self.start
+#        if self.elapsed > 5000:
+#            if self.selectedGoodie:
+#                self.selectedGoodie.unselect()
+#            self.parent.mode = ComputerPlaying(self.parent)
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
@@ -305,18 +314,28 @@ class ComputerPlaying(Mode):
 
         self.selectedGoodie = None
         self.keydownmap = 0
-        self.computers_go_time = self.start
-        self.current_baddie_index = 0
-        self.parent.game_world.baddies[0].select()
+
+        self.selectedGoodie = parent.game_world.NextBadieToPlay()
+        if self.selectedGoodie == None:
+            self.parent.mode = PlayerPlaying(self.parent)
+        else:
+            self.selectedGoodie.select()
 
     def Update(self):
         self.elapsed = globals.time - self.start
         ticks = pygame.time.get_ticks()
 
+        self.parent.game_world.update()
+        if self.elapsed > 5000:
+            if self.selectedGoodie:
+                self.selectedGoodie.unselect()
+            self.parent.mode = PlayerPlaying(self.parent)
+
+        return
         if len(self.parent.game_world.baddies) == 0:
             raise sys.exit("player won")
         elif ticks - self.computers_go_time > 500:
-            self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
+            # self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
             self.computers_go_time = ticks
             self.parent.game_world.baddies[self.current_baddie_index].unselect()
             self.current_baddie_index += 1

@@ -5,7 +5,7 @@ import Box2D as box2d
 
 class Projectile(gobject.TeleportableBox):
     always_instaport = True
-    def __init__(self, image, bl, force, maxDamage, parentTroop):
+    def __init__(self, image, bl, imageSize, imageAngle, force, maxDamage, parentTroop):
         self.image = image
         self.isBullet = True
         self.destroyMe = False
@@ -15,14 +15,15 @@ class Projectile(gobject.TeleportableBox):
         self.applyGravity = True
 
         self.tc = globals.atlas.TextureSpriteCoords(self.image)
-        tr = bl + Point(10,10)
+        tr = bl + imageSize
 
         super(Projectile,self).__init__(bl, tr, self.tc)
 
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
+        self.body.angle = imageAngle
         self.body.ApplyForce(force, self.body.GetWorldCenter())
-    
+
     def dontApplyGravity(self):
         self.applyGravity = False
 
@@ -32,14 +33,16 @@ class Projectile(gobject.TeleportableBox):
 
     def Disable(self):
         self.quad.Disable()
+        print 'disable!'
 
     def Enable(self):
         self.quad.Enable()
+        print 'enable!'
 
     def destroyAfterTimeLimit(self):
         time_limit = 5000
-        
-        if(not self.applyGravity):
+
+        if not self.applyGravity:
             time_limit = 100
             self.applyGravity = True
         if(not self.destroyMe):
@@ -51,6 +54,6 @@ class Projectile(gobject.TeleportableBox):
         if self.TeleportUpdate():
             return
 
-        if(self.destroyMe):
-            if(globals.time >= self.destroy_at):
+        if self.destroyMe:
+            if globals.time >= self.destroy_at:
                 self.Destroy()

@@ -2,6 +2,7 @@ import globals
 import projectile
 import Box2D as box2d
 import cmath
+import math
 
 class Weapon(object):
     
@@ -11,6 +12,9 @@ class Weapon(object):
         self.limitedAmmo = limitedAmmo
         self.currentAmmo = currentAmmo
         self.power_modifier = power_modifier
+        self.imageSize = None
+        
+        self.halfPi = math.pi / 2
         
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)
@@ -24,9 +28,11 @@ class Weapon(object):
         update_distance_rect = cmath.rect(weapon_force * self.power_modifier, angle)
         x = update_distance_rect.real
         y = update_distance_rect.imag
+        
+        projectileAngle = angle + self.halfPi
             
         force = box2d.b2Vec2(x,y)
-        return projectile.Projectile(self.projectileImage, bl, force, self.maxDamage, parentTroop)
+        return projectile.Projectile(self.projectileImage, bl, self.imageSize, projectileAngle, force, self.maxDamage, parentTroop)
     
     def isOutOfAmmo(self):
         if(self.limitedAmmo and self.currentAmmo <= 0):
