@@ -17,7 +17,10 @@ class Troop(gobject.BoxGobject):
     teleport_duration = 1100
     portal_touch_duration = 1000
     teleport_min_velocity = 2
-    def __init__(self, initialWeapon, bl):
+    def __init__(self, initialWeapon, bl, goodness):
+        self.good = goodness
+        if self.good == 0:
+            self.texture_name = 'alien'
         self.direction = 'right'
         self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
         self.tc_left = [globals.atlas.TextureSpriteCoords(self.texture_name +'_left_%d.png' % i) for i in xrange(4)]
