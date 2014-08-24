@@ -55,6 +55,9 @@ class Troop(gobject.BoxGobject):
 
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
+    
+    def setDirection(self,newdirection):
+        self.direction = newdirection
 
     def TouchPortal(self, portal):
         #we've touched a portal. We want the following to happen:
@@ -74,7 +77,6 @@ class Troop(gobject.BoxGobject):
         self.touch_portal = None
         self.body.SetXForm(portal.body.position,0)
         self.locked_planet = False
-
 
     def select(self):
         self.selected = True
@@ -210,6 +212,11 @@ class Troop(gobject.BoxGobject):
             distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
             self.body.linearVelocity = box2d.b2Vec2(self.body.linearVelocity.x/10,self.body.linearVelocity.y/10)
             vector = cmath.rect(self.move_direction.x*200,self.body.angle)
+            if self.move_direction.x > 0:
+                self.direction = 'right'
+            elif self.move_direction.x < 0:
+                self.direction = 'left'
+            
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
             vector = cmath.rect(-1000,angle )
