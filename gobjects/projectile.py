@@ -3,8 +3,8 @@ import globals
 from globals.types import Point
 import Box2D as box2d
 
-class Projectile(gobject.BoxGobject):
-
+class Projectile(gobject.TeleportableBox):
+    always_instaport = True
     def __init__(self, image, bl, force, maxDamage, parentTroop):
         self.image = image
         self.isBullet = True
@@ -22,18 +22,26 @@ class Projectile(gobject.BoxGobject):
         globals.physics.AddObject(self)
         self.body.ApplyForce(force, self.body.GetWorldCenter())
 
-    
+
     def destroyNextUpdate(self):
         self.destroyMe = True
         self.destroy_at = globals.time
-    
+
+    def Disable(self):
+        self.quad.Disable()
+
+    def Enable(self):
+        self.quad.Enable()
+
     def destroyAfterTimeLimit(self):
         if(not self.destroyMe):
             self.destroyMe = True
             self.destroy_at = globals.time + 5000
-        
+
     def Update(self):
+        if self.TeleportUpdate():
+            return
+
         if(self.destroyMe):
             if(globals.time >= self.destroy_at):
                 self.Destroy()
-    

@@ -14,9 +14,6 @@ class Troop(gobject.TeleportableBox):
     frame_duration = 100
     jump_power = 50
     jump_duration = 300
-    teleport_duration = 1100
-    portal_touch_duration = 1000
-    teleport_min_velocity = 2
     def __init__(self, initialWeapon, bl, goodness):
         self.good = goodness
         if self.good == 0:
@@ -75,16 +72,6 @@ class Troop(gobject.TeleportableBox):
         if self.selected:
             self.selectionBoxQuad.Enable()
 
-    def Teleport(self, portal):
-        self.Enable()
-        for quad in self.teleport_quads:
-            quad.Disable()
-        self.shape.isSensor = False
-        self.touch_portal = None
-        self.locked_planet = False
-        self.portal_contacts = []
-        self.body.SetXForm(portal.body.position,0)
-        self.last_teleport = globals.time
 
 
     def select(self):
@@ -179,10 +166,7 @@ class Troop(gobject.TeleportableBox):
 
         if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
-        self.teleport_quads = [drawing.Quad(globals.quad_buffer, tc = tc) for i in xrange(16)]
-        for quad in self.teleport_quads:
-            quad.start_vertex = [0,0,0,0]
-            quad.target_vertex = [0,0,0,0]
+
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
     def Update(self):

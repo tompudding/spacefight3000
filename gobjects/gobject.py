@@ -125,12 +125,17 @@ class BoxGobject(Gobject):
     vertex_permutation = (0,3,2,1)
 
 class TeleportableBox(BoxGobject):
+    teleport_duration = 1100
+    portal_touch_duration = 1000
+    teleport_min_velocity = 2
+    always_instaport = False
     def __init__(self,bl,tr,tc):
         self.touch_portal = None
         self.instaport = None
         self.teleport_in_progress = None
         self.last_teleport = 0
         self.portal_contacts = []
+        self.locked_planet = None
         super(TeleportableBox,self).__init__(bl,tr,tc)
 
     def TouchPortal(self, portal):
@@ -139,7 +144,7 @@ class TeleportableBox(BoxGobject):
         #otherwise, wait a few seconds and then do it
         if self.teleport_in_progress:
             return
-        if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
+        if self.always_instaport or (not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity):
             if globals.time - self.last_teleport < 1000:
                 #if we just teleported, don't do an instaport
                 return
@@ -227,13 +232,32 @@ class TeleportableBox(BoxGobject):
         self.portal_contacts = []
         self.teleport_in_progress = (portal,globals.time + self.teleport_duration)
 
+    def InitPolygons(self,tc):
+        super(TeleportableBox,self).InitPolygons(tc)
+        self.teleport_quads = [drawing.Quad(globals.quad_buffer, tc = tc) for i in xrange(16)]
+        for quad in self.teleport_quads:
+            quad.start_vertex = [0,0,0,0]
+            quad.target_vertex = [0,0,0,0]
+
+    def Teleport(self, portal):
+        self.Enable()
+        for quad in self.teleport_quads:
+            quad.Disable()
+        self.shape.isSensor = False
+        self.touch_portal = None
+        self.locked_planet = False
+        self.portal_contacts = []
+        self.body.SetXForm(portal.body.position,0)
+        self.last_teleport = globals.time
+
+
     def TeleportUpdate(self):
         if self.teleport_in_progress:
             portal,t = self.teleport_in_progress
             if globals.time > t:
                 self.teleport_in_progress = None
                 self.Teleport(portal)
-                return
+                return True
 
             progress = 1-(t - globals.time)/float(self.teleport_duration)
             for i in xrange(4):
@@ -248,10 +272,11 @@ class TeleportableBox(BoxGobject):
                             y *= 1-(0.5-progress)**2
                         self.teleport_quads[i*4+j].vertex[k] = numpy.array([x,y,0]) + start + ((end-start)*progress)
 
-            return
+            return True
         else:
 
             if self.instaport:
+                print 'jim'
                 self.InitiateTeleport(self.instaport)
                 self.instaport = None
 
@@ -262,8 +287,6 @@ class TeleportableBox(BoxGobject):
                 if globals.time > end_time:
                     self.InitiateTeleport(portal.other_end)
                     self.touch_portal = None
-
-
 
 
 class CircleGobject(Gobject):

@@ -152,36 +152,38 @@ class MyContactListener(box2d.b2ContactListener):
         cp.id       = point.id.key
         #globals.sounds.thud.play()
         globals.physics.contacts.append(cp)
-        
+
         self.checkProjectileTroopCollision(cp.shape1, cp.shape2)
         self.checkProjectileTroopCollision(cp.shape2, cp.shape1)
 
         s1 = point.shape1.userData
         s2 = point.shape2.userData
-        if isinstance(s1,gobjects.Troop) and isinstance(s2,gobjects.planet.PortalEnd):
+        if isinstance(s1,gobjects.TeleportableBox) and isinstance(s2,gobjects.planet.PortalEnd):
             s1,s2 = s2,s1
 
-        if isinstance(s1,gobjects.planet.PortalEnd) and isinstance(s2,gobjects.Troop):
+        if isinstance(s1,gobjects.planet.PortalEnd) and isinstance(s2,gobjects.TeleportableBox):
             troop = s2
             portal = s1
             troop.AddPortalContact(portal,cp)
-    
+
         #returns false if the projectile hits the originating troop
     def checkProjectileTroopCollision(self, shape1, shape2):
-        if(isinstance(shape2.userData, gobjects.Projectile)):
+        if isinstance(shape2.userData, gobjects.Projectile):
             projectile = shape2.userData
-            if(isinstance(shape1.userData, gobjects.Troop)):
+            if isinstance(shape1.userData, gobjects.Troop):
                 troop = shape1.userData
-                 
+
                 if not (projectile.ParentTroop != None and troop == projectile.ParentTroop):
                     troop.TakeDamage(projectile.maxDamage)
                     projectile.destroyNextUpdate()
             else:
-                if(isinstance(shape1.userData, gobjects.Planet)):
+                if isinstance(shape1.userData, gobjects.Planet):
                     projectile.destroyAfterTimeLimit()
+                elif isinstance(shape1.userData, gobjects.planet.PortalEnd):
+                    pass
                 else:
                     projectile.destroyNextUpdate()
-        
+
 
     def Persist(self, point):
         """Handle persist point"""
@@ -229,10 +231,10 @@ class MyContactFilter(box2d.b2ContactFilter):
         if filter1.groupIndex == filter2.groupIndex and filter1.groupIndex != 0:
             return filter1.groupIndex > 0
 
-        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0        
+        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0
         return collides
-    
-               
+
+
 class Physics(object):
     scale_factor = 0.05
     def __init__(self,parent):
