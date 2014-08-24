@@ -6,6 +6,7 @@ import gobjects
 from globals.types import Point
 import sys
 import gobjects.bazooka
+import itertools
 
 class Mode(object):
     """ Abstract base class to represent game modes """
@@ -28,6 +29,7 @@ class Mode(object):
 
     def Update(self,t):
         pass
+
 
 class TitleStages(object):
     STARTED  = 0
@@ -77,6 +79,7 @@ class Titles(Mode):
 
     def Startup(self):
         return TitleStages.STARTED
+
 
 class GameMode(Mode):
     def __init__(self,parent):
@@ -155,9 +158,11 @@ class GameOver(Mode):
         self.KeyDown(0)
         return False,False
 
+
 class PlayingStages:
     PLAYERS_GO = 0
     COMPUTERS_GO = 1
+
 
 class Playing(Mode):
     speed = 8
@@ -167,10 +172,10 @@ class Playing(Mode):
         UP    = 4
         DOWN  = 8
 
-    direction_amounts = {KeyFlags.LEFT  : Point(-0.01*speed, 0.00),
-                         KeyFlags.RIGHT : Point( 0.01*speed, 0.00),
-                         KeyFlags.UP    : Point( 0.00, 0.01*speed),
-                         KeyFlags.DOWN  : Point( 0.00,-0.01*speed)}
+    direction_amounts = {KeyFlags.LEFT  : Point(-speed, 0.00),
+                         KeyFlags.RIGHT : Point( speed, 0.00),
+                         KeyFlags.UP    : Point( 0.00, speed),
+                         KeyFlags.DOWN  : Point( 0.00, speed)}
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
@@ -217,10 +222,10 @@ class Playing(Mode):
             self.StartComputersGo()
 
     def KeyUp(self,key):
-        if key in self.direction_amounts and (self.keydownmap & self.keyflags[key]):
+        if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
             if self.selectedGoodie:
-                self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
+                self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
         objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
@@ -234,8 +239,10 @@ class Playing(Mode):
             self.selectedGoodie = objectUnderPoint
 
     def Update(self):
-        self.elapsed = globals.time - self.start
+        #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
+        for player in itertools.chain(self.goodies,self.baddies):
+            player.Update()
 
     def StartComputersGo(self):
         self.selectedGoodie = None
