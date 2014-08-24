@@ -13,7 +13,7 @@ class Troop(gobject.BoxGobject):
     jump_duration = 300
     def __init__(self, initialWeapon, bl):
         tr = bl + Point(50,50)
-        self.texture_filename = 'bazookaTroop.png'
+        self.texture_filename = 'redtrooper.png'
         self.selectedBoxFilename = 'selectionBox.png'
         self.selected = False
         self.selectionBoxQuad = None
