@@ -257,10 +257,6 @@ class PlayerPlaying(Mode):
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
 
-
-    def StartComputersGo(self):
-        self.parent.mode = ComputerPlaying(self.parent)
-
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
