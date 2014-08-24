@@ -178,7 +178,8 @@ class MyContactFilter(box2d.b2ContactFilter):
         if isinstance(shape1.userData,gobjects.planet.PortalEnd):
             obj = shape2.userData
             if isinstance(obj,gobjects.Troop):
-                obj.Teleport(shape1.userData.other_end)
+                return False
+                #obj.Teleport(shape1.userData.other_end)
         #print 'collision!',shape1 == shape1.userData.shape#,shape2
         filter1 = shape1.filter
         filter2 = shape2.filter
@@ -327,10 +328,10 @@ class GameView(ui.RootElement):
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
-        
+
         if button not in (4,5): #Don't give them scroll wheel events
             self.mode.MouseButtonDown(screen_pos,button)
-            
+
         return super(GameView,self).MouseButtonDown(pos,button)
 
     def MouseButtonUp(self,pos,button):
@@ -342,7 +343,7 @@ class GameView(ui.RootElement):
             self.AdjustZoom(-0.5,pos)
         elif button == 5 and not self.dragging:
             self.AdjustZoom(+0.5,pos)
-        
+
         if button not in (4,5):
             self.mode.MouseButtonUp(screen_pos,button)
         return super(GameView,self).MouseButtonUp(pos,button)
