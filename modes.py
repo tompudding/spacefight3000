@@ -198,6 +198,10 @@ class PlayerPlaying(Mode):
 
         self.selectedGoodie = None
         self.keydownmap = 0
+    
+    def MouseMotion(self,pos,rel):
+        if(self.selectedGoodie != None):
+            self.selectedGoodie.setWeaponAngle(pos)
 
     def KeyDown(self,key):
         if key in self.keyflags:
