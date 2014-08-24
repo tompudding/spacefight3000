@@ -141,7 +141,7 @@ class MyContactListener(box2d.b2ContactListener):
         super(MyContactListener, self).__init__() 
     def Add(self, point):
         """Handle add point"""
-        if not self.physics:
+        if not globals.physics:
             return
         cp          = fwContactPoint()
         cp.shape1   = point.shape1
@@ -150,7 +150,7 @@ class MyContactListener(box2d.b2ContactListener):
         cp.normal   = point.normal.copy()
         cp.id       = point.id
         #globals.sounds.thud.play()
-        self.physics.contacts.append(cp)
+        globals.physics.contacts.append(cp)
         
     def Persist(self, point):
         """Handle persist point"""
@@ -240,7 +240,8 @@ class GameView(ui.RootElement):
         #pygame.mixer.music.load('music.ogg')
         #self.music_playing = False
         
-        self.physics = Physics(self)
+        globals.physics = Physics(self)
+        
         #skip titles for development of the main game
         self.mode = modes.Titles(self)
         self.parallax = Point(-1024,-1024)
@@ -274,7 +275,7 @@ class GameView(ui.RootElement):
             return
 
         if not self.paused:
-            self.physics.Step()
+            globals.physics.Step()
             
     def GameOver(self):
         self.game_over = True

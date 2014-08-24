@@ -7,15 +7,16 @@ from globals.types import Point
 import sys
 import gobjects.bazooka
 from game_world import GameWorld
+import itertools
 
 class Mode(object):
     """ Abstract base class to represent game modes """
     def __init__(self,parent):
         self.parent = parent
-    
+
     def KeyDown(self,key):
         pass
-    
+
     def KeyUp(self,key):
         pass
     def MouseMotion(self,pos,rel):
@@ -29,6 +30,7 @@ class Mode(object):
 
     def Update(self,t):
         pass
+
 
 class TitleStages(object):
     STARTED  = 0
@@ -67,23 +69,24 @@ class Titles(Mode):
         self.Complete()
         self.stage = TitleStages.PLAYING
 
-    def Update(self):        
+    def Update(self):
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage]()
 
     def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.game_world = GameWorld(self.parent.physics)
+        self.parent.game_world = GameWorld()
         self.parent.mode = PlayerPlaying(self.parent)
 
     def Startup(self):
         return TitleStages.STARTED
 
+
 class GameMode(Mode):
     def __init__(self,parent):
         self.parent = parent
-        
+
 
 class GameOver(Mode):
     blurb = "GAME OVER"
@@ -99,7 +102,7 @@ class GameOver(Mode):
                                       pos    = Point(0,0),
                                       tr     = Point(1,1),
                                       colour = (0,0,0,0.6))
-        
+
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.blurb_text = ui.TextBox(parent = globals.screen_root,
@@ -157,6 +160,7 @@ class GameOver(Mode):
         self.KeyDown(0)
         return False,False
 
+
 class PlayingStages:
     PLAYERS_GO = 0
     COMPUTERS_GO = 1
@@ -169,10 +173,10 @@ class PlayerPlaying(Mode):
         UP    = 4
         DOWN  = 8
 
-    direction_amounts = {KeyFlags.LEFT  : Point(-0.01*speed, 0.00),
-                         KeyFlags.RIGHT : Point( 0.01*speed, 0.00),
-                         KeyFlags.UP    : Point( 0.00, 0.01*speed),
-                         KeyFlags.DOWN  : Point( 0.00,-0.01*speed)}
+    direction_amounts = {KeyFlags.LEFT  : Point(-speed, 0.00),
+                         KeyFlags.RIGHT : Point( speed, 0.00),
+                         KeyFlags.UP    : Point( 0.00, speed),
+                         KeyFlags.DOWN  : Point( 0.00, speed)}
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
@@ -209,25 +213,27 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
 
     def KeyUp(self,key):
-        if key in self.direction_amounts and (self.keydownmap & self.keyflags[key]):
+        if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
             if self.selectedGoodie:
-                self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-    
+                self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
+
     def MouseButtonDown(self,pos,button):
-        objectUnderPoint = self.parent.physics.GetObjectAtPoint(pos)
+        objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
                 self.selectedGoodie = None
-        
+
         if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
             objectUnderPoint.select()
             self.selectedGoodie = objectUnderPoint
 
-    def Update(self):        
-        self.elapsed = globals.time - self.start
+    def Update(self):
+        #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
+        for player in itertools.chain(self.parent.game_world.goodies,self.parent.game_world.baddies):
+            player.Update()
 
     def StartComputersGo(self):
         self.parent.mode = ComputerPlaying(self.parent)
