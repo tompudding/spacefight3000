@@ -13,7 +13,7 @@ class Hud(object):
                                      bl     = Point(0.5,0),
                                      tr     = None,
                                      text   = "??" ,
-                                     textType = drawing.texture.TextTypes.GRID_RELATIVE,
+                                     textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
                                      colour = (1,1,1,1),
                                      scale  = 8)
     

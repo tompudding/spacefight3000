@@ -7,16 +7,13 @@ import math
 import cmath
 import drawing
 import Box2D as box2d
+import numpy
 
-
-class Troop(gobject.BoxGobject):
+class Troop(gobject.TeleportableBox):
     texture_name = 'redtrooper'
     frame_duration = 100
     jump_power = 50
     jump_duration = 300
-    teleport_duration = 1100
-    portal_touch_duration = 1000
-    teleport_min_velocity = 2
     def __init__(self, initialWeapon, bl, goodness):
         self.good = goodness
         if self.good == 0:
@@ -44,11 +41,6 @@ class Troop(gobject.BoxGobject):
         self.move_direction = Point(0,0)
         self.jumping = None
         self.charging = False
-        self.touch_portal = None
-        self.instaport = None
-        self.teleport_in_progress = None
-        self.last_teleport = 0
-        self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
 
@@ -70,57 +62,6 @@ class Troop(gobject.BoxGobject):
     def setDirection(self,newdirection):
         self.direction = newdirection
 
-    def TouchPortal(self, portal):
-        #we've touched a portal. We want the following to happen:
-        #If we're moving fast enough, just teleport us straight away
-        #otherwise, wait a few seconds and then do it
-        if self.teleport_in_progress:
-            return
-        if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
-            if globals.time - self.last_teleport < 1000:
-                #if we just teleported, don't do an instaport
-                return
-            self.instaport = portal.other_end
-            return
-        self.touch_portal = (portal,globals.time + self.portal_touch_duration)
-
-    def AddPortalContact(self, portal, contact):
-        if self.teleport_in_progress:
-            return
-        if not self.touch_portal:
-            self.TouchPortal(portal)
-        self.portal_contacts.append( (portal, contact) )
-
-    def RemovePortalContact(self, portal, contact):
-        if self.teleport_in_progress:
-            return
-        start_len = len(self.portal_contacts)
-        new_contacts = []
-        for p,c in self.portal_contacts:
-            if p is not portal:
-                #we don't care about these
-                new_contacts.append( (p,c) )
-            else:
-                #it is portal, so don't use it if the contact id is the same
-                if c.id != contact.id:
-                    new_contacts.append( (p,c) )
-
-        if len(new_contacts) == len(self.portal_contacts):
-            #we didn't remove any
-            return
-        self.portal_contacts = new_contacts
-        if not self.portal_contacts and self.touch_portal and self.touch_portal[0] is portal:
-            self.touch_portal = None
-
-    def InitiateTeleport(self, portal):
-        if self.teleport_in_progress:
-            return
-        self.Disable()
-        #Where do you go when you're being teleported? to -100,-100 that's where
-        self.shape.isSensor = True
-        self.touch_portal = None
-        self.portal_contacts = []
-        self.teleport_in_progress = (portal,globals.time + self.teleport_duration)
 
     def Disable(self):
         self.quad.Disable()
@@ -131,14 +72,6 @@ class Troop(gobject.BoxGobject):
         if self.selected:
             self.selectionBoxQuad.Enable()
 
-    def Teleport(self, portal):
-        self.Enable()
-        self.shape.isSensor = False
-        self.touch_portal = None
-        self.locked_planet = False
-        self.portal_contacts = []
-        self.body.SetXForm(portal.body.position,0)
-        self.last_teleport = globals.time
 
 
     def select(self):
@@ -168,15 +101,15 @@ class Troop(gobject.BoxGobject):
     def getProjectileBLPosition(self, mouse_xy):
         dx = mouse_xy[0] - self.body.GetWorldCenter()[0] / globals.physics.scale_factor
         dy = mouse_xy[1] - self.body.GetWorldCenter()[1] / globals.physics.scale_factor
-        
+
         projectile_start_pos = box2d.b2Vec2(dx,dy)
         projectile_start_pos.Normalize()
         projectile_start_pos.mul_float(self.midpoint.x + 30)
         projectile_start_pos.add_vector(box2d.b2Vec2(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor))
-        
+
         self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
         #current_angle = self.body.angle
-        
+
         #if(self.direction == 'right'):
         #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
         #    x = update_distance_rect.real
@@ -217,47 +150,31 @@ class Troop(gobject.BoxGobject):
     def setWeaponAngle(self, mouse_xy):
         self.last_mouse_xy = mouse_xy
         self.getProjectileBLPosition(mouse_xy)
-        
+
         dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
         dy = float(mouse_xy[1] - (self.projectile_position[1])) #/ globals.physics.scale_factor))
-    
+
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
     def InitPolygons(self,tc):
         if self.direction == 'right':
+            tc = self.tc_right[0]
             super(Troop,self).InitPolygons(self.tc_right[0])
         else:
+            tc = self.tc_left[0]
             super(Troop,self).InitPolygons(self.tc_left[0])
 
         if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
+
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
     def Update(self):
         current_time = globals.time
 
-        if self.teleport_in_progress:
-            portal,t = self.teleport_in_progress
-            if globals.time > t:
-                self.teleport_in_progress = None
-                self.Teleport(portal)
-                return
-
-            progress = (t - globals.time)/float(self.teleport_duration)
+        if self.TeleportUpdate():
             return
-        else:
 
-            if self.instaport:
-                self.InitiateTeleport(self.instaport)
-                self.instaport = None
-
-            if self.touch_portal:
-                #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
-                #box2d
-                portal,end_time = self.touch_portal
-                if globals.time > end_time:
-                    self.InitiateTeleport(portal.other_end)
-                    self.touch_portal = None
 
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
@@ -275,7 +192,6 @@ class Troop(gobject.BoxGobject):
 
     def TakeDamage(self, amount):
         self.health -= amount
-
 
     def PhysUpdate(self,gravity_sources):
         #Don't pass the gravity sources as we want to take care of that
