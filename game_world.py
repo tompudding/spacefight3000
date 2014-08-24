@@ -1,6 +1,7 @@
 import gobjects
 from globals.types import Point
 
+import itertools
 class GameWorld(object):
     def __init__(self):
         self.planets = []
@@ -14,3 +15,8 @@ class GameWorld(object):
         self.baddies = []
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
+    def update(self):
+        for player in itertools.chain(self.goodies,self.baddies):
+            player.Update()
+        self.goodies = [t for t in self.goodies if not t.dead]
+        self.baddies = [t for t in self.baddies if not t.dead]
