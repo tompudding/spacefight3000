@@ -17,10 +17,15 @@ class GameWorld(object):
         self.baddies = []
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
+        
+        self.projectiles = []
 
     def update(self):
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
+        self.projectiles = [p for p in self.projectiles if not p.dead]
 
-        for item in itertools.chain(self.goodies,self.baddies,self.portals):
+        for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
             item.Update()
+            
+        
