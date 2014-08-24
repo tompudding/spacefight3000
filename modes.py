@@ -219,11 +219,12 @@ class PlayerPlaying(Mode):
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
+        if self.selectedGoodie:
+            self.selectedGoodie.unselect()
+
         objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
         if not objectUnderPoint:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
-                self.selectedGoodie = None
+            self.selectedGoodie = None
 
         if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
             objectUnderPoint.select()
