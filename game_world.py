@@ -27,8 +27,9 @@ class GameWorld(object):
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
         
-
-
+        
+            
+        self.ResetAfterTurn()
         self.UpdateHUD()
         globals.current_view.viewpos.Set(Point(500,500))
     def update(self):
@@ -48,6 +49,25 @@ class GameWorld(object):
     def UpdateHUD(self):
         globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
 
+    def ResetAfterTurn(self):
+        self.goodies_to_play = list(self.goodies)
+        self.badies_to_play = list(self.baddies)
+
+    def NextGoodieToPlay(self):
+        if len(self.goodies_to_play) > 0:
+            return self.goodies_to_play.pop()
+        elif len(self.badies_to_play) > 0:
+            return None
+        else:
+            self.ResetAfterTurn()
+            return self.goodies_to_play.pop()
+
+    def NextBadieToPlay(self):
+        if len(self.badies_to_play) > 0:
+            return self.badies_to_play.pop()
+        else:
+            return None
         
 
+            
 

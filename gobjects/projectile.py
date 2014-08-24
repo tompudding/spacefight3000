@@ -23,7 +23,7 @@ class Projectile(gobject.TeleportableBox):
         globals.physics.AddObject(self)
         self.body.angle = imageAngle
         self.body.ApplyForce(force, self.body.GetWorldCenter())
-    
+
     def dontApplyGravity(self):
         self.applyGravity = False
 
@@ -33,14 +33,16 @@ class Projectile(gobject.TeleportableBox):
 
     def Disable(self):
         self.quad.Disable()
+        print 'disable!'
 
     def Enable(self):
         self.quad.Enable()
+        print 'enable!'
 
     def destroyAfterTimeLimit(self):
         time_limit = 5000
-        
-        if(not self.applyGravity):
+
+        if not self.applyGravity:
             time_limit = 100
             self.applyGravity = True
         if(not self.destroyMe):
@@ -52,6 +54,6 @@ class Projectile(gobject.TeleportableBox):
         if self.TeleportUpdate():
             return
 
-        if(self.destroyMe):
-            if(globals.time >= self.destroy_at):
+        if self.destroyMe:
+            if globals.time >= self.destroy_at:
                 self.Destroy()
