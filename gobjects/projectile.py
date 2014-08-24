@@ -12,6 +12,7 @@ class Projectile(gobject.TeleportableBox):
         self.ParentTroop = parentTroop
         self.maxDamage = maxDamage
         self.destroy_at = 0
+        self.applyGravity = True
 
         self.tc = globals.atlas.TextureSpriteCoords(self.image)
         tr = bl + Point(10,10)
@@ -21,7 +22,9 @@ class Projectile(gobject.TeleportableBox):
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
         self.body.ApplyForce(force, self.body.GetWorldCenter())
-
+    
+    def dontApplyGravity(self):
+        self.applyGravity = False
 
     def destroyNextUpdate(self):
         self.destroyMe = True
@@ -36,9 +39,15 @@ class Projectile(gobject.TeleportableBox):
         print 'enable!'
 
     def destroyAfterTimeLimit(self):
-        if not self.destroyMe:
+        time_limit = 5000
+        
+        if not self.applyGravity)
+            time_limit = 100
+            self.applyGravity = True
+        if(not self.destroyMe):
             self.destroyMe = True
-            self.destroy_at = globals.time + 5000
+            self.destroy_at = globals.time + time_limit
+
 
     def Update(self):
         if self.TeleportUpdate():

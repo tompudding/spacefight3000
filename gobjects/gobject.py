@@ -3,6 +3,7 @@ from globals.types import Point
 import globals
 import drawing
 import math
+import gobjects
 import numpy
 
 class Gobject(object):
@@ -100,6 +101,10 @@ class Gobject(object):
     def doGravity(self,gravity_sources):
         if self.is_gravity_source:
             return
+        
+        if isinstance(self, gobjects.Projectile):
+            if(not self.applyGravity):
+                return
 
         for source in gravity_sources:
             force_dir = -(self.centre_world - source.centre_world)

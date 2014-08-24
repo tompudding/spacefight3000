@@ -7,5 +7,10 @@ class Lazer(weapon.Weapon):
     
     def __init__(self):
         self.projectile_texture_name = "tempRound.png" 
-        super(Lazer, self).__init__(75, self.projectile_texture_name, True, 5)
+        super(Lazer, self).__init__(75, self.projectile_texture_name, 2000, True, 5)
         #picked utterly random numbers, we can sort that later. 
+    
+    def FireAtTarget(self, angle, weapon_force, bl, parentTroop):
+        projectile = super(Lazer, self).FireAtTarget(angle,weapon_force,bl,parentTroop)
+        projectile.dontApplyGravity()
+        return projectile
