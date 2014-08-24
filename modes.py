@@ -74,7 +74,8 @@ class Titles(Mode):
     def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.mode = Playing(self.parent)
+        self.parent.game_world = GameWorld(self.parent.physics)
+        self.parent.mode = PlayerPlaying(self.parent)
 
     def Startup(self):
         return TitleStages.STARTED
@@ -160,7 +161,7 @@ class PlayingStages:
     PLAYERS_GO = 0
     COMPUTERS_GO = 1
 
-class Playing(Mode):
+class PlayerPlaying(Mode):
     speed = 8
     class KeyFlags:
         LEFT  = 1
@@ -182,8 +183,7 @@ class Playing(Mode):
         self.parent          = parent
         self.start           = pygame.time.get_ticks()
         self.stage           = PlayingStages.PLAYERS_GO
-        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay,
-                                PlayingStages.COMPUTERS_GO : self.ComputerPlay}
+        self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.backdrop        = ui.Box(parent = globals.screen_root,
@@ -193,12 +193,10 @@ class Playing(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
 
-
-
         self.selectedGoodie = None
         self.keydownmap = 0
 
-        self.parent.game_world = GameWorld(self.parent.physics)
+
 
     def KeyDown(self,key):
         if key in self.keyflags:
@@ -208,7 +206,7 @@ class Playing(Mode):
         elif key == pygame.K_SPACE and not self.selectedGoodie == None:
             self.selectedGoodie.fireWeapon()
         if key == pygame.K_n:
-            self.StartComputersGo()
+            self.parent.mode = ComputerPlaying(self.parent)
 
     def KeyUp(self,key):
         if key in self.direction_amounts and (self.keydownmap & self.keyflags[key]):
@@ -232,27 +230,59 @@ class Playing(Mode):
         self.stage = self.handlers[self.stage](globals.time)
 
     def StartComputersGo(self):
-        self.selectedGoodie = None
-        self.stage = PlayingStages.COMPUTERS_GO
-        self.computers_go_time = 0;
+        self.parent.mode = ComputerPlaying(self.parent)
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
-    def ComputerPlay(self, ticks):
+class ComputerPlaying(Mode):
+    speed = 8
+    class KeyFlags:
+        LEFT  = 1
+        RIGHT = 2
+        UP    = 4
+        DOWN  = 8
+
+    direction_amounts = {KeyFlags.LEFT  : Point(-0.01*speed, 0.00),
+                         KeyFlags.RIGHT : Point( 0.01*speed, 0.00),
+                         KeyFlags.UP    : Point( 0.00, 0.01*speed),
+                         KeyFlags.DOWN  : Point( 0.00,-0.01*speed)}
+
+    keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
+                pygame.K_RIGHT : KeyFlags.RIGHT,
+                pygame.K_UP    : KeyFlags.UP,
+                pygame.K_DOWN  : KeyFlags.DOWN}
+
+    def __init__(self,parent):
+        self.parent          = parent
+        self.start           = pygame.time.get_ticks()
+        bl = self.parent.GetRelative(Point(0,0))
+        tr = bl + self.parent.GetRelative(globals.screen)
+        self.backdrop        = ui.Box(parent = globals.screen_root,
+                                      pos    = Point(0,0),
+                                      tr     = Point(1,1),
+                                      buffer = globals.ui_buffer,
+                                      colour = (0,0,0,0))
+        self.backdrop.Enable()
+
+        self.selectedGoodie = None
+        self.keydownmap = 0
+        self.computers_go_time = self.start
+        self.current_baddie_index = 0
+        self.parent.game_world.baddies[0].select()
+
+    def Update(self):        
+        self.elapsed = globals.time - self.start
+        ticks = pygame.time.get_ticks()
+
         if len(self.parent.game_world.baddies) == 0:
             raise sys.exit("player won")
-        elif self.computers_go_time == 0:
-            self.computers_go_time = ticks
-            self.current_baddie_index = 0
-            self.parent.game_world.baddies[0].select()
         elif ticks - self.computers_go_time > 500:
             self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
             self.computers_go_time = ticks
             self.parent.game_world.baddies[self.current_baddie_index].unselect()
             self.current_baddie_index += 1
             if self.current_baddie_index == len(self.parent.game_world.baddies):
-                return PlayingStages.PLAYERS_GO
+                self.parent.mode = PlayerPlaying(self.parent)
             else:
                 self.parent.game_world.baddies[self.current_baddie_index].select()
-        return PlayingStages.COMPUTERS_GO
