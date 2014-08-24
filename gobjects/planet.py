@@ -17,7 +17,7 @@ class Portal(object):
     def __init__(self,source_planet,source_angle,target_planet,target_angle):
         self.ends = []
         for planet,angle in (source_planet,source_angle),(target_planet,target_angle):
-            bl = source_planet.GetSurfacePoint(source_angle)
+            bl = planet.GetSurfacePoint(angle)
             tr = bl + Point(50,50)
             self.ends.append(PortalEnd(bl,tr))
 
