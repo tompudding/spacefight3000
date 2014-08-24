@@ -29,12 +29,14 @@ class Projectile(gobject.TeleportableBox):
 
     def Disable(self):
         self.quad.Disable()
+        print 'disable!'
 
     def Enable(self):
         self.quad.Enable()
+        print 'enable!'
 
     def destroyAfterTimeLimit(self):
-        if(not self.destroyMe):
+        if not self.destroyMe:
             self.destroyMe = True
             self.destroy_at = globals.time + 5000
 
@@ -42,6 +44,6 @@ class Projectile(gobject.TeleportableBox):
         if self.TeleportUpdate():
             return
 
-        if(self.destroyMe):
-            if(globals.time >= self.destroy_at):
+        if self.destroyMe:
+            if globals.time >= self.destroy_at:
                 self.Destroy()

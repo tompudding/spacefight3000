@@ -113,10 +113,12 @@ class Gobject(object):
         if self.dead or self.static:
             return
         #Just set the vertices
-
+        vertices = [0,0,0,0]
         for i,vertex in enumerate(self.shape.vertices):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
-            self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
+            vertices[self.vertex_permutation[i]] = screen_coords
+
+        self.quad.SetAllVertices(vertices, self.z_level)
 
         self.doGravity(gravity_sources)
 
@@ -184,6 +186,9 @@ class TeleportableBox(BoxGobject):
         if self.teleport_in_progress:
             return
 
+        self.saved_linear_velocity = self.body.linearVelocity
+        self.saved_angular_velocity = self.body.angularVelocity
+
         #Make 16 quads in the same place as before
         w = (self.quad.vertex[1] - self.quad.vertex[0])/4
         h = (self.quad.vertex[3] - self.quad.vertex[0])/4
@@ -202,8 +207,6 @@ class TeleportableBox(BoxGobject):
                 self.teleport_quads[i*4+j].tc[2] = self.quad.tc[0] + tc_w*(j+1) + tc_h*(i+1)
                 self.teleport_quads[i*4+j].tc[3] = self.quad.tc[0] + tc_w*j + tc_h*(i+1)
 
-                pass
-
         self.body.SetXForm(portal.body.position,0)
         for i,vertex in enumerate(self.shape.vertices):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
@@ -220,14 +223,11 @@ class TeleportableBox(BoxGobject):
                 self.teleport_quads[i*4+j].target_vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
                 self.teleport_quads[i*4+j].target_vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
 
-                pass
-
-
         self.Disable()
 
 
         #Make it a sensor so it's not subject to the collision stuff
-        self.shape.isSensor = True
+        self.body.PutToSleep()
         self.touch_portal = None
         self.portal_contacts = []
         self.teleport_in_progress = (portal,globals.time + self.teleport_duration)
@@ -243,11 +243,14 @@ class TeleportableBox(BoxGobject):
         self.Enable()
         for quad in self.teleport_quads:
             quad.Disable()
-        self.shape.isSensor = False
+        self.body.WakeUp()
         self.touch_portal = None
         self.locked_planet = False
         self.portal_contacts = []
         self.body.SetXForm(portal.body.position,0)
+        self.body.linearVelocity = self.saved_linear_velocity
+        self.body.angularVelocity = self.saved_angular_velocity
+
         self.last_teleport = globals.time
 
 
