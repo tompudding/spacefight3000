@@ -10,7 +10,9 @@ class GameWorld(object):
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
-        
+
         self.baddies = []
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
         self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
+
+        self.portal = gobjects.Portal(self.planets[0],0,self.planets[1],1)

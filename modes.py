@@ -246,8 +246,6 @@ class PlayerPlaying(Mode):
     def Update(self):
         #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
-        for player in itertools.chain(self.parent.game_world.goodies,self.parent.game_world.baddies):
-            player.Update()
 
     def StartComputersGo(self):
         self.parent.mode = ComputerPlaying(self.parent)

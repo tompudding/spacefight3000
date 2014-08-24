@@ -1,5 +1,5 @@
 from gobject import Gobject
-from planet import Planet,YellowPlanet,BluePlanet
+from planet import Planet,YellowPlanet,BluePlanet,Portal
 from troop import Troop
 from projectile import Projectile
 from bazooka import Bazooka

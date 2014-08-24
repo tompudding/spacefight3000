@@ -97,7 +97,7 @@ class Gobject(object):
 
     def doGravity(self,gravity_sources):
         if self.is_gravity_source:
-            return 
+            return
 
         for source in gravity_sources:
             force_dir = -(self.centre_world - source.centre_world)
@@ -124,7 +124,7 @@ class BoxGobject(Gobject):
 
 class CircleGobject(Gobject):
     shape_type = box2d.b2CircleDef
-    vertex_permutation = (0,3,2,1)
+    vertex_permutation = (1,0,3,2)
     def CreateShape(self,midpoint,pos = None):
         if self.dead:
             return
@@ -142,8 +142,7 @@ class CircleGobject(Gobject):
 
         p = Point(*self.body.GetWorldPoint(self.shape.localPosition))
         r = self.shape.radius
-        
+
         for i,(x,y) in enumerate( ((r,r),(r,-r),(-r,-r),(-r,r)) ):
             screen_coords = Point(*self.body.GetWorldPoint(self.shape.localPosition+Point(x,y).to_vec()))/globals.physics.scale_factor
             self.quad.vertex[self.vertex_permutation[i]] = (screen_coords.x,screen_coords.y,self.z_level)
-
