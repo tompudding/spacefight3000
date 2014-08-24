@@ -54,9 +54,19 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, self.bl)
+        currentAngle = self.body.angle
+        temprect = cmath.rect(self.midpoint.x + 0.3, currentAngle)
+        x = temprect.real
+        y = temprect.imag
+        
+        blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
+        bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
+        
+        currentBLPos = Point(blx, bly) 
+        
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponPower, self.currentWeaponAngle, currentBLPos)
 
-        #switch weapon if we run out of ammo.
+        #switch weapon if we run out of ammo. 
         if(self.currentWeapon.isOutOfAmmo()):
             self.currentWeapon = self.defaultWeapon
 
