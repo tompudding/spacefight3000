@@ -5,6 +5,7 @@ import drawing
 import math
 import gobjects
 import numpy
+import cmath
 
 class Gobject(object):
     isBullet = False
@@ -101,7 +102,7 @@ class Gobject(object):
     def doGravity(self,gravity_sources):
         if self.is_gravity_source:
             return
-        
+
         if isinstance(self, gobjects.Projectile):
             if(not self.applyGravity):
                 return
@@ -191,7 +192,11 @@ class TeleportableBox(BoxGobject):
         if self.teleport_in_progress:
             return
 
-        self.saved_linear_velocity = self.body.linearVelocity
+        #rotate the linearvelcity by the angle of the portal
+        r = self.body.linearVelocity.x + self.body.linearVelocity.y*1j
+        distance,angle = cmath.polar(x)
+        rotate_velocity = cmath.rect(distance,angle + portal.body.angle)
+        self.saved_linear_velocity = box2d.b2Vec2(rotate_velocity.real,rotate_velocity.imag)
         self.saved_angular_velocity = self.body.angularVelocity
 
         #Make 16 quads in the same place as before
