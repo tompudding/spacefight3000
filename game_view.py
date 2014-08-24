@@ -154,6 +154,7 @@ class MyContactListener(box2d.b2ContactListener):
         globals.physics.contacts.append(cp)
         
         self.checkProjectileTroopCollision(cp.shape1, cp.shape2)
+        self.checkProjectileTroopCollision(cp.shape2, cp.shape1)
 
         s1 = point.shape1.userData
         s2 = point.shape2.userData
@@ -174,6 +175,7 @@ class MyContactListener(box2d.b2ContactListener):
                  
                 if not (projectile.ParentTroop != None and troop == projectile.ParentTroop):
                     troop.TakeDamage(projectile.maxDamage)
+                    projectile.destroyNextUpdate()
             else:
                 projectile.destroyNextUpdate()
         
