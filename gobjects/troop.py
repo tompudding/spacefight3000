@@ -14,6 +14,7 @@ class Troop(gobject.BoxGobject):
     frame_duration = 100
     jump_power = 50
     jump_duration = 300
+    teleport_duration = 1000
     portal_touch_duration = 1000
     teleport_min_velocity = 2
     def __init__(self, initialWeapon, bl):
@@ -38,9 +39,9 @@ class Troop(gobject.BoxGobject):
         self.move_direction = Point(0,0)
         self.jumping = None
         self.charging = False
-        self.teleport_target = None
         self.touch_portal = None
         self.instaport = None
+        self.teleport_in_progress = None
         self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
@@ -59,7 +60,7 @@ class Troop(gobject.BoxGobject):
 
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
-    
+
     def setDirection(self,newdirection):
         self.direction = newdirection
 
@@ -97,6 +98,11 @@ class Troop(gobject.BoxGobject):
         if not self.portal_contacts and self.touch_portal and self.touch_portal[0] is portal:
             self.touch_portal = None
 
+    def InitateTeleport(self, portal):
+        if self.teleport_in_progress:
+            return
+        self.teleport_in_progress = globals.time + self.teleport_duration
+
     def Teleport(self, portal):
         self.touch_portal = None
         self.body.SetXForm(portal.body.position,0)
@@ -124,7 +130,7 @@ class Troop(gobject.BoxGobject):
         self.charging = False
         self.currentWeaponPower = 0.0
         globals.game_view.hud.setWeaponPowerBarValue(0.0)
-        
+
         return newProjectile
 
     def getProjectileBLPosition(self):
@@ -181,9 +187,6 @@ class Troop(gobject.BoxGobject):
 
     def Update(self):
         current_time = globals.time
-        if self.teleport_target:
-            self.body.SetXForm(self.teleport_target.body.position,0)
-            self.teleport = None
 
         if self.instaport:
             self.Teleport(self.instaport)
@@ -206,10 +209,10 @@ class Troop(gobject.BoxGobject):
             globals.game_view.hud.setWeaponPowerBarValue(self.currentWeaponPower)
 
         self.last_power_update_time = current_time
-        
+
         if(self.health <= 0):
             self.Destroy()
-            
+
     def TakeDamage(self, amount):
         print "taking damage"
         self.health -= amount
@@ -257,7 +260,7 @@ class Troop(gobject.BoxGobject):
                 tc = oldframe
             self.last_frame = tc
             self.quad.SetTextureCoordinates(tc)
-            
+
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
             vector = cmath.rect(-1000,angle )
