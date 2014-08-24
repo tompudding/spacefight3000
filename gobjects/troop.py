@@ -62,17 +62,34 @@ class Troop(gobject.BoxGobject):
         #we've touched a portal. We want the following to happen:
         #If we're moving fast enough, just teleport us straight away
         #otherwise, wait a few seconds and then do it
+        print 'touch portal!',portal
         if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
             self.instaport = portal.other_end
             return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
 
     def AddPortalContact(self, portal, contact):
+        if not self.touch_portal:
+            self.TouchPortal(portal)
         self.portal_contacts.append( (portal, contact) )
 
     def RemovePortalContact(self, portal, contact):
-        self.portal_contacts = [(p,c) for (p,c) in self.portal_contacts if p is not portal or c.id != contact.id]
-        if not self.portal_contacts and self.touch_portal:
+        start_len = len(self.portal_contacts)
+        new_contacts = []
+        for p,c in self.portal_contacts:
+            if p is not portal:
+                #we don't care about these
+                new_contacts.append( (p,c) )
+            else:
+                #it is portal, so don't use it if the contact id is the same
+                if c.id != contact.id:
+                    new_contacts.append( (p,c) )
+
+        if len(new_contacts) == len(self.portal_contacts):
+            #we didn't remove any
+            return
+        self.portal_contacts = new_contacts
+        if not self.portal_contacts and self.touch_portal and self.touch_portal[0] is portal:
             self.touch_portal = None
 
     def Teleport(self, portal):
@@ -147,7 +164,7 @@ class Troop(gobject.BoxGobject):
 
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
 
-    def InitPolygons(self,tc):  
+    def InitPolygons(self,tc):
         if self.direction == 'right':
             super(Troop,self).InitPolygons(self.tc_right[0])
         else:
