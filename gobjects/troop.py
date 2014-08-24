@@ -14,7 +14,7 @@ class Troop(gobject.BoxGobject):
     frame_duration = 100
     jump_power = 50
     jump_duration = 300
-    teleport_duration = 1000
+    teleport_duration = 1100
     portal_touch_duration = 1000
     teleport_min_velocity = 2
     def __init__(self, initialWeapon, bl):
@@ -68,6 +68,8 @@ class Troop(gobject.BoxGobject):
         #we've touched a portal. We want the following to happen:
         #If we're moving fast enough, just teleport us straight away
         #otherwise, wait a few seconds and then do it
+        if self.teleport_in_progress:
+            return
         print 'touch portal!',portal
         if not self.locked_planet and self.body.linearVelocity.Length() > self.teleport_min_velocity:
             self.instaport = portal.other_end
@@ -75,11 +77,15 @@ class Troop(gobject.BoxGobject):
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
 
     def AddPortalContact(self, portal, contact):
+        if self.teleport_in_progress:
+            return
         if not self.touch_portal:
             self.TouchPortal(portal)
         self.portal_contacts.append( (portal, contact) )
 
     def RemovePortalContact(self, portal, contact):
+        if self.teleport_in_progress:
+            return
         start_len = len(self.portal_contacts)
         new_contacts = []
         for p,c in self.portal_contacts:
@@ -98,12 +104,30 @@ class Troop(gobject.BoxGobject):
         if not self.portal_contacts and self.touch_portal and self.touch_portal[0] is portal:
             self.touch_portal = None
 
-    def InitateTeleport(self, portal):
+    def InitiateTeleport(self, portal):
         if self.teleport_in_progress:
             return
-        self.teleport_in_progress = globals.time + self.teleport_duration
+        self.Disable()
+        #Where do you go when you're being teleported? to -100,-100 that's where
+        #print self.body.SetXForm(box2d.b2Vec2(-1000,-1000),0)
+        self.shape.isSensor = True
+        self.touch_portal = None
+        self.portal_contacts = []
+        self.teleport_in_progress = (portal,globals.time + self.teleport_duration)
+
+    def Disable(self):
+        self.quad.Disable()
+        self.selectionBoxQuad.Disable()
+
+    def Enable(self):
+        self.quad.Enable()
+        if self.selected:
+            self.selectionBoxQuad.Enable()
 
     def Teleport(self, portal):
+        print 'teleport!',self.teleport_in_progress
+        self.Enable()
+        self.shape.isSensor = False
         self.touch_portal = None
         self.body.SetXForm(portal.body.position,0)
         self.locked_planet = False
@@ -188,16 +212,28 @@ class Troop(gobject.BoxGobject):
     def Update(self):
         current_time = globals.time
 
-        if self.instaport:
-            self.Teleport(self.instaport)
-            self.instaport = None
+        if self.teleport_in_progress:
+            portal,t = self.teleport_in_progress
+            if globals.time > t:
+                self.teleport_in_progress = None
+                self.Teleport(portal)
+                return
 
-        if self.touch_portal:
-            #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
-            #box2d
-            portal,end_time = self.touch_portal
-            if globals.time > end_time:
-                self.Teleport(portal.other_end)
+            progress = (t - globals.time)/float(self.teleport_duration)
+            print 'teleport_progress',progress
+            return
+        else:
+
+            if self.instaport:
+                self.InitiateTeleport(self.instaport)
+                self.instaport = None
+
+            if self.touch_portal:
+                #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
+                #box2d
+                portal,end_time = self.touch_portal
+                if globals.time > end_time:
+                    self.InitiateTeleport(portal.other_end)
 
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
@@ -220,6 +256,8 @@ class Troop(gobject.BoxGobject):
 
     def PhysUpdate(self,gravity_sources):
         #Don't pass the gravity sources as we want to take care of that
+        if self.teleport_in_progress:
+            return
         super(Troop,self).PhysUpdate([])
         if self.dead or self.static:
             return
