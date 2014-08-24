@@ -35,6 +35,7 @@ class Troop(gobject.BoxGobject):
         self.power_increase_amount_per_milisecond = (0.2 / 1000.0)
         self.last_power_update_time = globals.time
         self.projectile_position = None
+        self.last_mouse_xy = None
 
         self.locked_planet = None
         self.move_direction = Point(0,0)
@@ -146,6 +147,8 @@ class Troop(gobject.BoxGobject):
         self.selectionBoxQuad.Disable()
 
     def fireWeapon(self):
+        self.setWeaponAngle(self.last_mouse_xy)
+        #self.getProjectileBLPosition(self.last_mouse_xy)
         newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, self.projectile_position, self)
 
         #switch weapon if we run out of ammo.
@@ -209,6 +212,7 @@ class Troop(gobject.BoxGobject):
             self.currentWeaponPower = self.maxWeaponPower
 
     def setWeaponAngle(self, mouse_xy):
+        self.last_mouse_xy = mouse_xy
         self.getProjectileBLPosition(mouse_xy)
         
         dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
