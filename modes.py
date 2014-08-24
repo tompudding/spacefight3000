@@ -273,7 +273,7 @@ class PlayerPlaying(Mode):
         if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
 
             if self.selectedGoodie != None:
-                self.selectedGoodie.fireWeapon()
+                self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
 
     def Update(self):
         #self.elapsed = globals.time - self.start

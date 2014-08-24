@@ -8,6 +8,7 @@ import cmath
 import drawing
 import Box2D as box2d
 
+
 class Troop(gobject.BoxGobject):
     texture_name = 'redtrooper'
     frame_duration = 100
@@ -19,6 +20,7 @@ class Troop(gobject.BoxGobject):
         self.direction = 'right'
         self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
         self.tc_left = [globals.atlas.TextureSpriteCoords(self.texture_name +'_left_%d.png' % i) for i in xrange(4)]
+        self.last_frame = self.tc_right[0]
         self.animation_duration = len(self.tc_right)*self.frame_duration
         tr = bl + Point(25,50)
         self.selectedBoxFilename = 'selectionBox.png'
@@ -57,6 +59,9 @@ class Troop(gobject.BoxGobject):
 
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
+    
+    def setDirection(self,newdirection):
+        self.direction = newdirection
 
     def TouchPortal(self, portal):
         #we've touched a portal. We want the following to happen:
@@ -109,7 +114,7 @@ class Troop(gobject.BoxGobject):
     def fireWeapon(self):
         current_bl_pos = self.getProjectileBLPosition()
 
-        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
+        newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos, self)
 
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
@@ -119,7 +124,7 @@ class Troop(gobject.BoxGobject):
         self.charging = False
         self.currentWeaponPower = 0.0
         globals.game_view.hud.setWeaponPowerBarValue(0.0)
-
+        
         return newProjectile
 
     def getProjectileBLPosition(self):
@@ -176,13 +181,6 @@ class Troop(gobject.BoxGobject):
 
     def Update(self):
         current_time = globals.time
-        frame = (globals.time%self.animation_duration)/self.frame_duration
-        if self.direction == 'right':
-            tc = self.tc_right[frame]
-        else:
-            tc = self.tc_left[frame]
-
-        self.quad.SetTextureCoordinates(tc)
         if self.teleport_target:
             self.body.SetXForm(self.teleport_target.body.position,0)
             self.teleport = None
@@ -208,6 +206,13 @@ class Troop(gobject.BoxGobject):
             globals.game_view.hud.setWeaponPowerBarValue(self.currentWeaponPower)
 
         self.last_power_update_time = current_time
+        
+        if(self.health <= 0):
+            self.Destroy()
+            
+    def TakeDamage(self, amount):
+        print "taking damage"
+        self.health -= amount
 
 
     def PhysUpdate(self,gravity_sources):
@@ -236,6 +241,23 @@ class Troop(gobject.BoxGobject):
             distance,angle = cmath.polar(complex(diff_vector.x,diff_vector.y))
             self.body.linearVelocity = box2d.b2Vec2(self.body.linearVelocity.x/10,self.body.linearVelocity.y/10)
             vector = cmath.rect(self.move_direction.x*200,self.body.angle)
+            if self.move_direction.x > 0:
+                self.direction = 'right'
+            elif self.move_direction.x < 0:
+                self.direction = 'left'
+            else:
+                self.direction = 'none'
+            oldframe = self.last_frame
+            frame = (globals.time%self.animation_duration)/self.frame_duration
+            if self.direction == 'right':
+                tc = self.tc_right[frame]
+            elif self.direction == 'left':
+                tc = self.tc_left[frame]
+            else:
+                tc = oldframe
+            self.last_frame = tc
+            self.quad.SetTextureCoordinates(tc)
+            
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
             vector = cmath.rect(-1000,angle )

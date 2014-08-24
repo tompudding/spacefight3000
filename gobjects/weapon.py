@@ -15,7 +15,7 @@ class Weapon(object):
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)
         
-    def FireAtTarget(self, angle, weapon_force, bl):
+    def FireAtTarget(self, angle, weapon_force, bl, parentTroop):
         #need to use the angle and force to determine where the projectile is headed. 
         if(self.limitedAmmo):
             self.currentAmmo -= 1
@@ -26,7 +26,7 @@ class Weapon(object):
         y = update_distance_rect.imag
             
         force = box2d.b2Vec2(x,y)
-        return projectile.Projectile(self.projectileImage, bl, force)
+        return projectile.Projectile(self.projectileImage, bl, force, self.maxDamage, parentTroop)
     
     def isOutOfAmmo(self):
         if(self.limitedAmmo and self.currentAmmo <= 0):
