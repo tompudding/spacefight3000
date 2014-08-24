@@ -208,13 +208,19 @@ class PlayerPlaying(Mode):
             self.selectedGoodie.fireWeapon()
         elif key == pygame.K_UP and self.selectedGoodie:
             self.selectedGoodie.jump()
+        elif key == pygame.K_k and self.selectedGoodie:
+            self.selectedGoodie.Destroy()
+            self.selectedGoodie.unselect()
+            self.selectedGoodie = None
         elif key == pygame.K_n:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
-                self.parent.mode = ComputerPlaying(self.parent)
+
             self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_TAB:
-            if not self.selectedGoodie and len(self.parent.game_world.goodies) > 0:
+            if len(self.parent.game_world.goodies) == 0:
+                return
+            if not self.selectedGoodie: 
                 self.selectedGoodie = self.parent.game_world.goodies[0]
                 self.selectedGoodie.select()
             else:
@@ -249,6 +255,8 @@ class PlayerPlaying(Mode):
     def Update(self):
         #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
+        self.parent.game_world.update()
+
 
     def StartComputersGo(self):
         self.parent.mode = ComputerPlaying(self.parent)
