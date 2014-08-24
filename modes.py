@@ -256,6 +256,14 @@ class PlayerPlaying(Mode):
             if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
                 objectUnderPoint.select()
                 self.selectedGoodie = objectUnderPoint
+        elif(button == 3):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.chargeWeapon()
+    
+    def MouseButtonUp(self,pos,button):
+        if(button == 3):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.fireWeapon()
 
     def Update(self):
         #self.elapsed = globals.time - self.start

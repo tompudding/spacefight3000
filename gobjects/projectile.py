@@ -17,6 +17,5 @@ class Projectile(gobject.BoxGobject):
         self.body.SetMassFromShapes()
         globals.physics.AddObject(self)
     
-        print "force applied = ", force
         self.body.ApplyForce(force, self.body.GetWorldCenter())
         

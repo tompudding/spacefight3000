@@ -21,3 +21,9 @@ class GameWorld(object):
     def update(self):
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
+        
+        for troop in self.goodies:
+            troop.update()
+        
+        for troop in self.baddies:
+            troop.update()
