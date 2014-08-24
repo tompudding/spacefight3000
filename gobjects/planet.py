@@ -28,6 +28,8 @@ class Portal(object):
         for planet,angle in (source_planet,source_angle),(target_planet,target_angle):
             centre = planet.GetSurfacePoint(self.size,angle)
             self.ends.append(PortalEnd(centre,self.size,angle+3*math.pi/2))
+        self.ends[0].other_end = self.ends[1]
+        self.ends[1].other_end = self.ends[0]
 
 
 class Planet(gobject.CircleGobject):

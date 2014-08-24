@@ -47,6 +47,9 @@ class Troop(gobject.BoxGobject):
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
 
+    def Teleport(self, target_portal_end):
+        print 'teleport to',target_portal_end
+
     def select(self):
         self.selected = True
         self.selectionBoxQuad.Enable()
@@ -57,26 +60,26 @@ class Troop(gobject.BoxGobject):
 
     def fireWeapon(self):
         current_bl_pos = self.getProjectileBLPosition()
-        
+
         newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, current_bl_pos)
 
-        #switch weapon if we run out of ammo. 
+        #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
             self.currentWeapon = self.defaultWeapon
 
         return newProjectile
-    
+
     def getProjectileBLPosition(self):
         current_angle = self.body.angle
         update_distance_rect = cmath.rect(self.midpoint.x + 0.3, current_angle)
         x = update_distance_rect.real
         y = update_distance_rect.imag
-        
+
         blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
         bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
-        
-        return Point(blx, bly) 
-        
+
+        return Point(blx, bly)
+
 
     def jump(self):
         if not self.locked_planet:
@@ -98,14 +101,14 @@ class Troop(gobject.BoxGobject):
         self.currentWeaponPower -= 0.01
         if(self.currentWeaponPower < 0):
             self.currentWeaponPower = self.maxWeaponPower
-            
+
     def setWeaponAngle(self, mouse_xy):
         projectile_pos = self.getProjectileBLPosition()
         dx = float(mouse_xy[0] - (projectile_pos[0])) #/ globals.physics.scale_factor))
         dy = float(mouse_xy[1] - (projectile_pos[1])) #/ globals.physics.scale_factor))
-        
+
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
-        
+
     def InitPolygons(self,tc):
         super(Troop,self).InitPolygons(self.tc)
 
