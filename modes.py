@@ -219,7 +219,6 @@ class PlayerPlaying(Mode):
         elif key == pygame.K_n:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
-
             self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_TAB:
             if len(self.parent.game_world.goodies) == 0:
@@ -260,7 +259,8 @@ class PlayerPlaying(Mode):
         #self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
-
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent)
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
 
@@ -295,6 +295,9 @@ class ComputerPlaying(Mode):
             self.parent.game_world.baddies[self.current_baddie_index].unselect()
             self.current_baddie_index += 1
             if self.current_baddie_index == len(self.parent.game_world.baddies):
-                self.parent.mode = PlayerPlaying(self.parent)
+                if len(self.parent.game_world.goodies) == 0:
+                    self.parent.mode = GameOver(self.parent)
+                else:
+                    self.parent.mode = PlayerPlaying(self.parent)
             else:
                 self.parent.game_world.baddies[self.current_baddie_index].select()
