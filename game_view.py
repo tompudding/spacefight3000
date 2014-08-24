@@ -163,13 +163,39 @@ class MyContactListener(box2d.b2ContactListener):
         """Handle results"""
         pass
 
+class MyContactFilter(box2d.b2ContactFilter):
+    def __init__(self):
+        self.thrown = None
+        self.pushed = None
+        self.collide = False
+        super(MyContactFilter,self).__init__()
+    def ShouldCollide(self, shape1, shape2):
+        #print 'cf',shape1
+        #print 'cf1',shape2
+        # Implements the default behavior of b2ContactFilter in Python
+        if self.collide:
+            return True
+        if isinstance(shape1.userData,gobjects.planet.PortalEnd):
+            obj = shape2.userData
+            if isinstance(obj,gobjects.Troop):
+                obj.Teleport(shape1.userData.other_end)
+        #print 'collision!',shape1 == shape1.userData.shape#,shape2
+        filter1 = shape1.filter
+        filter2 = shape2.filter
+        #print filter1.groupIndex,filter2.groupIndex
+        if filter1.groupIndex == filter2.groupIndex and filter1.groupIndex != 0:
+            return filter1.groupIndex > 0
+
+        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0
+        return collides
+
 class Physics(object):
     scale_factor = 0.05
     def __init__(self,parent):
         self.contact_listener = MyContactListener()
         self.contact_listener.physics = self
-        #self.contact_filter = MyContactFilter()
-        #self.contact_filter.physics = self
+        self.contact_filter = MyContactFilter()
+        self.contact_filter.physics = self
         self.parent = parent
         self.worldAABB=box2d.b2AABB()
         self.worldAABB.lowerBound = (-100,-globals.screen.y-100)
@@ -178,7 +204,7 @@ class Physics(object):
         self.doSleep = True
         self.world = box2d.b2World(self.worldAABB, self.gravity, self.doSleep)
         self.world.SetContactListener(self.contact_listener)
-        #self.world.SetContactFilter(self.contact_filter)
+        self.world.SetContactFilter(self.contact_filter)
         self.timeStep = 1.0 / 60.0
         self.velocityIterations = 10
         self.positionIterations = 8
