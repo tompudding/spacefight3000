@@ -14,22 +14,22 @@ class GameWorld(object):
 
 
         if level == 0:
-            self.planets.append(gobjects.BluePlanet(Point(300,400), 200));
-            self.planets.append(gobjects.YellowPlanet(Point(1000,400), 200));
+            self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
+            self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],2,self.planets[1],1.5))
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,600)));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,900)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900)));
         elif level == 1:
-            self.planets.append(gobjects.BluePlanet(Point(600,600), 200));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
+            self.planets.append(gobjects.BluePlanet(Point(1100,600), 200));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(500,900)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600)));
         
         self.projectiles = []
 
         self.UpdateHUD()
-
+        globals.current_view.viewpos.Set(Point(500,500))
     def update(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
             item.Update()
