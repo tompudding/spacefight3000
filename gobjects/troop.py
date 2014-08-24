@@ -13,6 +13,7 @@ class Troop(gobject.BoxGobject):
     frame_duration = 100
     jump_power = 50
     jump_duration = 300
+    portal_touch_duration = 1000
     def __init__(self, initialWeapon, bl):
         self.direction = 'right'
         self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
@@ -35,6 +36,8 @@ class Troop(gobject.BoxGobject):
         self.jumping = None
         self.charging = False
         self.teleport_target = None
+        self.touch_portal = None
+        self.portal_contacts = []
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
 
@@ -53,8 +56,25 @@ class Troop(gobject.BoxGobject):
     def changeWeapon(self, newWeapon):
         self.currentWeapon = newWeapon
 
-    def Teleport(self, target_portal_end):
-        self.teleport_target = target_portal_end
+    def TouchPortal(self, portal):
+        #we've touched a portal. We want the following to happen:
+        #If we're moving fast enough, just teleport us straight away
+        #otherwise, wait a few seconds and then do it
+        self.touch_portal = (portal,globals.time + self.portal_touch_duration)
+
+    def AddPortalContact(self, portal, contact):
+        self.portal_contacts.append( (portal, contact) )
+
+    def RemovePortalContact(self, portal, contact):
+        self.portal_contacts = [(p,c) for (p,c) in self.portal_contacts if p is not portal or c.id != contact.id]
+        if not self.portal_contacts and self.touch_portal:
+            self.touch_portal = None
+
+    def Teleport(self, portal):
+        self.touch_portal = None
+        self.body.SetXForm(portal.body.position,0)
+        self.locked_planet = False
+
 
     def select(self):
         self.selected = True
@@ -145,6 +165,13 @@ class Troop(gobject.BoxGobject):
             self.body.SetXForm(self.teleport_target.body.position,0)
             self.teleport = None
 
+        if self.touch_portal:
+            #check if we're still touching it. Really inefficient but I can't see a nice way of doing this in
+            #box2d
+            portal,end_time = self.touch_portal
+            if globals.time > end_time:
+                self.Teleport(portal.other_end)
+
         if self.charging:
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
             self.currentWeaponPower += amountToIncreasePower
@@ -203,3 +230,7 @@ class Troop(gobject.BoxGobject):
                             vector = cmath.rect(-1000,angle )
                             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
                             break
+
+    def Destroy(self):
+        super(Troop,self).Destroy()
+        self.selectionBoxQuad.Delete()
