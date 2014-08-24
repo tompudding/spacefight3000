@@ -110,8 +110,24 @@ class Troop(gobject.BoxGobject):
     def InitiateTeleport(self, portal):
         if self.teleport_in_progress:
             return
+
+        #Make 16 quads in the same place as before
+        w = (self.quad.vertex[1] - self.quad.vertex[0])/4
+        h = (self.quad.vertex[3] - self.quad.vertex[0])/4
+        for i in xrange(4):
+            for j in xrange(4):
+                self.teleport_quads[i*4+j].Enable()
+                self.teleport_quads[i*4+j].vertex[0] = self.quad.vertex[0] + w*j + h*i
+                self.teleport_quads[i*4+j].vertex[1] = self.quad.vertex[0] + w*(j+1) + h*i
+                self.teleport_quads[i*4+j].vertex[2] = self.quad.vertex[0] + w*(j+1) + h*(i+1)
+                self.teleport_quads[i*4+j].vertex[3] = self.quad.vertex[0] + w*j + h*(i+1)
+
+                pass
+
         self.Disable()
-        #Where do you go when you're being teleported? to -100,-100 that's where
+
+
+        #Make it a sensor so it's not subject to the collision stuff
         self.shape.isSensor = True
         self.touch_portal = None
         self.portal_contacts = []
@@ -128,6 +144,8 @@ class Troop(gobject.BoxGobject):
 
     def Teleport(self, portal):
         self.Enable()
+        for quad in self.teleport_quads:
+            quad.Disable()
         self.shape.isSensor = False
         self.touch_portal = None
         self.locked_planet = False
@@ -202,12 +220,15 @@ class Troop(gobject.BoxGobject):
 
     def InitPolygons(self,tc):
         if self.direction == 'right':
+            tc = self.tc_right[0]
             super(Troop,self).InitPolygons(self.tc_right[0])
         else:
+            tc = self.tc_left[0]
             super(Troop,self).InitPolygons(self.tc_left[0])
 
         if self.dead:        #drawing.Translate(-self.viewpos.pos.x/2,-self.viewpos.pos.y/2,0)
             return
+        self.teleport_quads = [drawing.Quad(globals.quad_buffer, tc = tc) for i in xrange(16)]
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
 
     def Update(self):
