@@ -12,5 +12,11 @@ resource/sprites/gate2.png:tiles_atlas_0.png:1848:1850.0:48:48
 resource/sprites/gate3.png:tiles_atlas_0.png:1896:1850.0:48:48
 resource/sprites/gate4.png:tiles_atlas_0.png:1944:1850.0:48:48
 resource/sprites/gate5.png:tiles_atlas_0.png:1992:1850.0:48:48
-resource/sprites/selectionBox.png:tiles_atlas_0.png:1800:1818.0:32:32
-resource/sprites/tempRound.png:tiles_atlas_0.png:2040:1893.0:5:5
+resource/sprites/gate6.png:tiles_atlas_0.png:1800:1802.0:48:48
+resource/sprites/gate7.png:tiles_atlas_0.png:1848:1802.0:48:48
+resource/sprites/gate8.png:tiles_atlas_0.png:1896:1802.0:48:48
+resource/sprites/redmortar.png:tiles_atlas_0.png:1944:1818.0:32:32
+resource/sprites/redtrooper.png:tiles_atlas_0.png:1976:1818.0:32:32
+resource/sprites/selectionBox.png:tiles_atlas_0.png:2008:1818.0:32:32
+resource/sprites/trooper.png:tiles_atlas_0.png:1800:1770.0:32:32
+resource/sprites/tempRound.png:tiles_atlas_0.png:2040:1845.0:5:5
