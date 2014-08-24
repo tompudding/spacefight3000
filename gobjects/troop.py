@@ -81,6 +81,7 @@ class Troop(gobject.TeleportableBox):
     def unselect(self):
         self.selected = False
         self.selectionBoxQuad.Disable()
+        self.move_direction = Point(0,0)
 
     def fireWeapon(self):
         self.setWeaponAngle(self.last_mouse_xy)
