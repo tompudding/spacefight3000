@@ -16,7 +16,7 @@ def b2Vec_indexer(self,index):
         return self.y
 def b2Vec_setter(self,index,val):
     if index == 0:
-        self.x =val
+        self.x = val
     elif index == 1:
         self.y = val
 box2d.b2Vec2.__getitem__ = b2Vec_indexer
@@ -218,11 +218,6 @@ class MyContactFilter(box2d.b2ContactFilter):
         # Implements the default behavior of b2ContactFilter in Python
         if self.collide:
             return True
-        if isinstance(shape1.userData,gobjects.planet.PortalEnd):
-            obj = shape2.userData
-            if isinstance(obj,gobjects.Troop):
-                obj.TouchPortal(shape1.userData)
-                return True
 
         #print 'collision!',shape1 == shape1.userData.shape#,shape2
         filter1 = shape1.filter

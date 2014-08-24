@@ -11,35 +11,41 @@ class GameWorld(object):
         self.baddies = []
         self.portals = []
         self.level = level
-        print level
-        globals.current_view.hud.SetLevelBar("Level " + str(level+1))
+
 
         if level == 0:
-            self.planets.append(gobjects.BluePlanet(Point(300,400), 200));
-            self.planets.append(gobjects.YellowPlanet(Point(1000,400), 200));
+            self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
+            self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],2,self.planets[1],1.5))
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,400)));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,600)));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,900)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900)));
         elif level == 1:
-            self.planets.append(gobjects.BluePlanet(Point(600,600), 200));
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,400)));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,100)));
+            self.planets.append(gobjects.BluePlanet(Point(1100,600), 200));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(500,900)));
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600)));
         
         self.projectiles = []
 
+        self.UpdateHUD()
+        globals.current_view.viewpos.Set(Point(500,500))
     def update(self):
+        for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
+            item.Update()
+
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
         self.projectiles = [p for p in self.projectiles if not p.dead]
 
-        for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
-            item.Update()
+        self.UpdateHUD()
 
     def Destroy(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets):
             item.Destroy()
+
+    def UpdateHUD(self):
+        globals.current_view.hud.SetLevelBar("Us: {0} | Them: {1} | Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
 
         
 
