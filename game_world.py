@@ -10,6 +10,7 @@ class GameWorld(object):
         self.goodies = []
         self.baddies = []
         self.portals = []
+        self.projectiles = []
         self.level = level
 
 
@@ -26,7 +27,7 @@ class GameWorld(object):
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(500,900),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
         
-        self.projectiles = []
+
 
         self.UpdateHUD()
         globals.current_view.viewpos.Set(Point(500,500))
@@ -41,11 +42,11 @@ class GameWorld(object):
         self.UpdateHUD()
 
     def Destroy(self):
-        for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets):
+        for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets,self.projectiles):
             item.Destroy()
 
     def UpdateHUD(self):
-        globals.current_view.hud.SetLevelBar("Us: {0} | Them: {1} | Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
+        globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
 
         
 
