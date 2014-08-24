@@ -20,6 +20,7 @@ class Troop(gobject.BoxGobject):
         self.direction = 'right'
         self.tc_right = [globals.atlas.TextureSpriteCoords(self.texture_name +'_right_%d.png' % i) for i in xrange(4)]
         self.tc_left = [globals.atlas.TextureSpriteCoords(self.texture_name +'_left_%d.png' % i) for i in xrange(4)]
+        self.last_frame = self.tc_right[0]
         self.animation_duration = len(self.tc_right)*self.frame_duration
         tr = bl + Point(25,50)
         self.selectedBoxFilename = 'selectionBox.png'
@@ -163,13 +164,6 @@ class Troop(gobject.BoxGobject):
 
     def Update(self):
         current_time = globals.time
-        frame = (globals.time%self.animation_duration)/self.frame_duration
-        if self.direction == 'right':
-            tc = self.tc_right[frame]
-        else:
-            tc = self.tc_left[frame]
-
-        self.quad.SetTextureCoordinates(tc)
         if self.teleport_target:
             self.body.SetXForm(self.teleport_target.body.position,0)
             self.teleport = None
@@ -234,6 +228,18 @@ class Troop(gobject.BoxGobject):
                 self.direction = 'right'
             elif self.move_direction.x < 0:
                 self.direction = 'left'
+            else:
+                self.direction = 'none'
+            oldframe = self.last_frame
+            frame = (globals.time%self.animation_duration)/self.frame_duration
+            if self.direction == 'right':
+                tc = self.tc_right[frame]
+            elif self.direction == 'left':
+                tc = self.tc_left[frame]
+            else:
+                tc = oldframe
+            self.last_frame = tc
+            self.quad.SetTextureCoordinates(tc)
             
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
             self.body.angle = angle - math.pi/2
