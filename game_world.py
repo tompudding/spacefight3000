@@ -8,7 +8,7 @@ class GameWorld(object):
 
         self.planets.append(gobjects.BluePlanet(Point(300,400), 200));
         self.planets.append(gobjects.YellowPlanet(Point(1000,400), 200));
-        self.portal = gobjects.Portal(self.planets[0],0.3,self.planets[1],1.5)
+        self.portal = gobjects.Portal(self.planets[0],2,self.planets[1],1.5)
 
         self.goodies = []
         self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(100,100)));
@@ -21,9 +21,9 @@ class GameWorld(object):
     def update(self):
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
-        
+
         for troop in self.goodies:
             troop.update()
-        
+
         for troop in self.baddies:
             troop.update()
