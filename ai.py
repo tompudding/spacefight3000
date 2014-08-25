@@ -37,18 +37,7 @@ class AI(object):
 
         if troop.locked_planet == None:
             return True
-        return self.Idle()
-
-    def Idle(self):
-        print "idle"
-        if self.idle_since == 0:
-            self.idle_since = globals.time
-            return True
-        elif globals.time - self.idle_since > 100:
-            return False
-        else:
-            return True
-
+        return False
 
     def FireAt(self, troop, target):
         vect_diff = target.body.position - troop.body.position
