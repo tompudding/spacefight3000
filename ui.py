@@ -469,8 +469,10 @@ class HoverableElement(UIElement):
 
 
 class Box(UIElement):
-    def __init__(self,parent,pos,tr,colour,buffer=globals.ui_buffer,level = None):
+    def __init__(self,parent,pos,tr,colour,buffer=None,level = None):
         super(Box,self).__init__(parent,pos,tr)
+        if buffer is None:
+            buffer = globals.ui_buffer
         self.quad = drawing.Quad(buffer)
         self.colour = colour
         self.unselectable_colour = tuple(component*0.6 for component in self.colour)
@@ -573,21 +575,56 @@ class ImageBox(Box):
         self.quad.SetTextureCoordinates(self.tc)
         self.Enable()
 
-class ImageBoxButton(ImageBox):
-    def __init__(self,parent,pos,tr,texture_name,callback,args,buffer=None,level=None):
+    def ResizeImage(self,new_size):
+        """The image currently takes up the whole box. Resize it to take up the new amounts"""
+        abs_size = new_size * self.absolute.size
+        offset = (self.absolute.size-abs_size)/2.0
+        self.quad.SetVertices(self.absolute.bottom_left + offset,
+                              self.absolute.top_right - offset,
+                              self.level + self.extra_level)
+
+class ImageBoxButton(ImageBox,HoverableElement):
+    def __init__(self,
+                 parent,
+                 pos,
+                 tr,
+                 texture_name,
+                 callback,
+                 args,
+                 border_colour=drawing.constants.colours.white,
+                 hover_colour=drawing.constants.colours.red,
+                 buffer=None,
+                 level=None):
         self.callback = callback
         self.args = args
+        self.border = drawing.QuadBorder(globals.ui_buffer,line_width=1)
+        self.border_colour = border_colour
+        self.hover_border_colour = hover_colour
+        self.border.SetColour(self.border_colour)
         super(ImageBoxButton,self).__init__(parent,pos,tr,texture_name,buffer,level)
+        self.border.SetVertices(self.absolute.bottom_left,
+                                self.absolute.top_right)
 
     def Enable(self):
-        if not self.enabled:
-            self.root.RegisterUIElement(self)
+        if self.enabled:
+            self.border.Disable()
+            self.quad.Disable()
         super(ImageBoxButton,self).Enable()
 
     def Disable(self):
-        if self.enabled:
-            self.root.RemoveUIElement(self)
+        if not self.enabled:
+            self.border.Enable()
+            self.Enable()
         super(ImageBoxButton,self).Disable()
+
+    def Hover(self):
+        self.hovered = True
+        self.border.SetColour(self.hover_border_colour)
+
+    def EndHover(self):
+        self.hovered = False
+        self.border.SetColour(self.border_colour)
+
 
     def OnClick(self,pos,button):
         self.callback(self,pos,button,self.args)
