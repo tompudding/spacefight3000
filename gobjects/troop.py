@@ -46,7 +46,9 @@ class Troop(gobject.TeleportableBox):
 
         #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
         #you want to give another weapon that isnt unlimited, use change weapon.
+        self.weapon_options = []
         self.currentWeapon = initialWeapon()
+        self.weapon_options.append(self.currentWeapon)
         self.defaultWeapon = initialWeapon()
 
         self.body.SetMassFromShapes()
@@ -56,8 +58,8 @@ class Troop(gobject.TeleportableBox):
         self.selectionBoxQuad.Disable()
         self.z_level = 200
 
-    def changeWeapon(self, newWeapon):
-        self.currentWeapon = newWeapon
+    def changeWeapon(self, weaponToChangeTo):
+        self.currentWeapon = weaponToChangeTo
 
     def setDirection(self,newdirection):
         self.direction = newdirection
@@ -72,16 +74,28 @@ class Troop(gobject.TeleportableBox):
         if self.selected:
             self.selectionBoxQuad.Enable()
 
-
+    def add_weapon(self, wpn):
+        self.weapon_options.append(wpn())
+        
 
     def select(self):
         self.selected = True
         self.selectionBoxQuad.Enable()
-
+        
+        weapon_selection_options = []
+        for weapon in self.weapon_options:
+            weapon_selection_options.append( ("wpn", self.changeWeapon, weapon) )
+        
+        globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
+        
+    def testWpnCallback(self, pos):
+        print "testWpnCallback"
+    
     def unselect(self):
         self.selected = False
         self.selectionBoxQuad.Disable()
         self.move_direction = Point(0,0)
+        #globals.game_view.hud.clearWeaponSelectionBoxs()
 
     def fireWeapon(self):
         self.setWeaponAngle(self.last_mouse_xy)
