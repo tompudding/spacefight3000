@@ -94,9 +94,9 @@ class GameOver(Mode):
     def __init__(self,parent, won):
         self.parent          = parent
         if won:
-            self.blurb           = "You won!"
+            self.blurb           = "You are winner!! !"
         else:
-            self.blurb           = "You lost!"
+            self.blurb           = "You am lost! !!"
 
         self.blurb_text      = None
         self.handlers        = {TitleStages.TEXT    : self.TextDraw,
@@ -111,11 +111,12 @@ class GameOver(Mode):
         bl = self.parent.GetRelative(Point(0,0))
         tr = bl + self.parent.GetRelative(globals.screen)
         self.blurb_text = ui.TextBox(parent = globals.screen_root,
-                                     bl     = bl         ,
-                                     tr     = tr         ,
+                                     bl     = Point(0,0)        ,
+                                     tr     = Point(1.0,0.6)       ,
                                      text   = self.blurb ,
                                      textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
-                                     scale  = 3)
+                                     alignment = drawing.texture.TextAlignments.CENTRE,
+                                     scale  = 24)
 
         self.start = None
         self.blurb_text.EnableChars(0)
@@ -281,6 +282,7 @@ class PlayerPlaying(Mode):
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
+            globals.sounds.level_win.play()
             if game_world.GameWorld.last_level == self.parent.game_world.level:
                 self.parent.mode = GameOver(self.parent, True)
             else:

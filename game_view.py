@@ -43,7 +43,7 @@ class Viewpos(object):
         self.pos = point
         #self.NoTarget()
 
-    def SetTarget(self,point,t,rate=2,callback = None):
+    def SetTarget(self,point,rate=2,callback = None):
         #Don't fuck with the view if the player is trying to control it
         rate /= 4.0
         self.follow        = None
@@ -59,12 +59,12 @@ class Viewpos(object):
             self.duration  = 200
         self.target_time   = self.start_time + self.duration
 
-    def Follow(self,t,actor):
+    def Follow(self,actor):
         """
         Follow the given actor around.
         """
         self.follow        = actor
-        self.follow_start  = t
+        self.follow_start  = globals.time
         self.follow_locked = False
 
     def HasTarget(self):
@@ -80,23 +80,24 @@ class Viewpos(object):
             self.callback(self.t)
             self.callback = None
 
-    def Update(self,t):
+    def Update(self):
         try:
-            return self.update(t)
+            return self.update()
         finally:
             self.pos = self.pos.to_int()
 
-    def update(self,t):
-        self.t = t
+    def update(self):
+        t = globals.time
+        self.t = globals.time
         if self.follow:
             if self.follow_locked:
-                self.pos = self.follow.GetPos() - globals.screen*0.5
+                self.pos = Point(*self.follow.centre_world) - globals.screen*0.5/globals.game_view.zoom
             else:
                 #We haven't locked onto it yet, so move closer, and lock on if it's below the threshold
-                fpos = self.follow.GetPos()*globals.tile_dimensions
+                fpos = Point(*self.follow.centre_world)
                 if not fpos:
                     return
-                target = fpos - globals.screen*0.5
+                target = fpos - globals.screen*0.5/globals.game_view.zoom
                 diff = target - self.pos
                 if diff.SquareLength() < self.follow_threshold:
                     self.pos = target
@@ -356,6 +357,7 @@ class GameView(ui.RootElement):
         
         if self.hud and self.hud.help_screen.enabled:
             return
+        self.viewpos.Update()
         if self.mode:
             self.mode.Update()
 
