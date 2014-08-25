@@ -10,9 +10,8 @@ class AI(object):
         self.idle_since = 0
         self.waiting = None
 
-    def BadgerNextMove(self, troop, enemies):
+    def NextMove(self, troop, enemies):
         nearest_enemy, distance_squared = self.GetNearestEnemy(troop, enemies)
-        print 'badger!',troop.locked_planet
         if not troop.locked_planet:
             return True
 
@@ -22,7 +21,6 @@ class AI(object):
         # if we're on the same planet, either walk towards them or fire
         if nearest_enemy.locked_planet == troop.locked_planet:
             if distance_squared < 40 and not troop.fired:
-                print 'firing'
                 self.FireAt(troop, nearest_enemy)
                 return True
             elif not troop.fired:
@@ -47,24 +45,6 @@ class AI(object):
         if troop.locked_planet == None:
             return True
         return False
-
-    def NextMove(self, troop, enemies):
-        if self.waiting:
-            if globals.time < self.waiting:
-                print globals.time,self.waiting
-                return True
-            self.waiting = None
-            print 'returning false!'
-            return False
-        else:
-            out = self.BadgerNextMove(troop, enemies)
-            print 'x',out
-            if not out:
-                print 'done so waiting'
-                self.waiting = globals.time + 1000
-                troop.move_direction = Point(0.0,0.0)
-                troop.fired = True
-            return True
 
     def FireAt(self, troop, target):
         vect_diff = target.body.position - troop.body.position
