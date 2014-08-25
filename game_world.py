@@ -14,12 +14,14 @@ class GameWorld(object):
         self.portals = []
         self.projectiles = []
         self.level = level
-        level = 1
+        level = 2
 
         if level == 0:
             self.createLevel1()
         elif level == 1:
             self.createLevel2()
+        elif level == 2:
+            self.createLevel3()
 
 
         self.ResetAfterTurn()
@@ -33,20 +35,19 @@ class GameWorld(object):
         #add portals
         self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
         
-        #add troops
+        #add troops - goodies
         pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,5*math.pi/4)
-        wellEquiptTroop = gobjects.Troop(gobjects.Lazer, pos,1)
-        wellEquiptTroop.add_weapon(gobjects.Bazooka)
-        wellEquiptTroop.add_weapon(gobjects.Grenade)
-
-        self.goodies.append(wellEquiptTroop);
+        self.goodies.append(self.getTroop(1, pos, 1));
         pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
-        self.goodies.append(gobjects.Troop(gobjects.Lazer, pos,1));
-
+        self.goodies.append(self.getTroop(1, pos, 1));
+        
+        #baddies
         pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,0)
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
         pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        
+        #set view position
         globals.current_view.viewpos.Set(Point(500,500))
     
     def createLevel2(self):
@@ -60,12 +61,64 @@ class GameWorld(object):
         self.portals.append(gobjects.Portal(self.planets[0],2*math.pi/3,self.planets[1],math.pi/3))
         self.portals.append(gobjects.Portal(self.planets[0],5*math.pi/3,self.planets[1],4*math.pi/3))
         
-        #troops
+        #troops - goodies
         pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
-        self.goodies.append(gobjects.Troop(gobjects.Lazer, pos,1));
+        self.goodies.append(self.getTroop(2, pos, 1));
+        
+        #baddies
         pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        
+        #set view position
         globals.current_view.viewpos.Set(Point(810,340))
+    
+    def createLevel3(self):
+        #cant jump high enough to move between worlds, need to use the gates
+        
+        #add planets
+        self.planets.append(gobjects.planet.BluePlanet(Point(500,500), 300));
+        self.planets.append(gobjects.planet.YellowPlanet(Point(3500,500), 300));
+        self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(500,3500), 300));
+        self.planets.append(gobjects.planet.BunnyPlanet(Point(3500,3500), 300));
+        
+        #portals
+        self.portals.append(gobjects.Portal(self.planets[0],0,self.planets[1],math.pi))
+        self.portals.append(gobjects.Portal(self.planets[0],math.pi,self.planets[2],math.pi))
+        self.portals.append(gobjects.Portal(self.planets[0],math.pi/2,self.planets[3],math.pi))
+        
+        self.portals.append(gobjects.Portal(self.planets[1],0,self.planets[2],math.pi/2))
+        self.portals.append(gobjects.Portal(self.planets[1],math.pi/2,self.planets[3],math.pi/2))
+        
+        self.portals.append(gobjects.Portal(self.planets[2],0,self.planets[3],0))
+        
+        #troops - goodies
+        pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.goodies.append(self.getTroop(3, pos, 1));
+        
+        pos = self.planets[3].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.goodies.append(self.getTroop(3, pos, 1));
+        
+        #baddies
+        pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        
+        pos = self.planets[2].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        
+        #set view position
+        globals.current_view.viewpos.Set(Point(810,340))
+    
+    def getTroop(self, num_weapons, pos, goodness):
+        troop = gobjects.Troop(gobjects.Lazer, pos, goodness)
+        
+        if(num_weapons >= 2):
+            troop.add_weapon(gobjects.Bazooka)
+        
+        if(num_weapons >= 3):
+            troop.add_weapon(gobjects.Grenade)
+        
+        return troop
+        
 
     def update(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
