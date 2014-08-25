@@ -43,7 +43,7 @@ class GameWorld(object):
             self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(2000,900), 250));
             self.portals.append(gobjects.Portal(self.planets[0],2*math.pi/3,self.planets[1],math.pi/3))
             self.portals.append(gobjects.Portal(self.planets[0],5*math.pi/3,self.planets[1],4*math.pi/3))
-            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
+            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/6)
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, pos,1));
             pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
