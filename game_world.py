@@ -49,7 +49,14 @@ class GameWorld(object):
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
 
         #set view position
-        globals.current_view.viewpos.Set(Point(500,500))
+        planetToCenterOnPos = Point(800,900)
+        globals.current_view.viewpos.Set(self.getScreenPos(planetToCenterOnPos))
+    
+    def getScreenPos(self, planetPos):
+        screenSize = globals.screen / globals.current_view.zoom
+        planetToCenterOnPos = planetPos - (screenSize / 2)
+        return planetToCenterOnPos
+        
 
     def createLevel2(self):
         #add planets
@@ -71,7 +78,8 @@ class GameWorld(object):
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
 
         #set view position
-        globals.current_view.viewpos.Set(Point(810,340))
+        planetToCenterOnPos = Point(1100,600)
+        globals.current_view.viewpos.Set(self.getScreenPos(planetToCenterOnPos))
 
     def createLevel3(self):
         #cant jump high enough to move between worlds, need to use the gates
@@ -107,7 +115,8 @@ class GameWorld(object):
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
 
         #set view position
-        globals.current_view.viewpos.Set(Point(0,0))
+        planetToCenterOnPos = Point(500,500)
+        globals.current_view.viewpos.Set(self.getScreenPos(planetToCenterOnPos))
     
     def createLevel4(self):
         #add planets
@@ -128,7 +137,8 @@ class GameWorld(object):
         self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
         
         #set view position
-        globals.current_view.viewpos.Set(Point(2000,500))
+        planetToCenterOnPos = Point(2000,500)
+        globals.current_view.viewpos.Set(self.getScreenPos(planetToCenterOnPos))
 
     def getTroop(self, num_weapons, pos, goodness):
         troop = gobjects.Troop(gobjects.Lazer, pos, goodness)

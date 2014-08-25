@@ -345,11 +345,14 @@ class ComputerPlaying(Mode):
 
         if self.selected_troop is None:
             self.EndGo()
+            return
         if self.selected_troop.amount_moved > globals.max_movement:
             self.EndGo()
+            return
 
         if self.selected_troop.dead or not keep_going:
             self.EndGo()
+            return
         
         if(globals.game_view.dragging == None):
             if(globals.time > self.last_drag + 500):
