@@ -97,11 +97,6 @@ class Hud(object):
             existing_box.Delete()
         
         self.weaponSelectionBoxes = []
-    
-        
-    def science(self, stuff):
-        print stuff
-        print "you clicked a button!"
         
         
         
