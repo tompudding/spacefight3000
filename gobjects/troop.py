@@ -59,9 +59,9 @@ class Troop(gobject.TeleportableBox):
         self.selectionBoxQuad.Disable()
         self.z_level = 200
 
-    def changeWeapon(self, weaponToChangeTo):
+    def changeWeapon(self, btnClass, pos, button, weaponToChangeTo):
         self.currentWeapon = weaponToChangeTo
-
+    
     def setDirection(self,newdirection):
         self.direction = newdirection
 
@@ -82,7 +82,10 @@ class Troop(gobject.TeleportableBox):
     def select(self):
         self.selected = True
         self.selectionBoxQuad.Enable()
-        
+        self.createWeaponSelectionBoxes()
+
+    
+    def createWeaponSelectionBoxes(self):
         weapon_selection_options = []
         for weapon in self.weapon_options:
             wpn_detail = namedtuple("wpn_detail", 'image, image_size, callback, callback_args')
@@ -109,7 +112,11 @@ class Troop(gobject.TeleportableBox):
 
         #switch weapon if we run out of ammo.
         if(self.currentWeapon.isOutOfAmmo()):
+            self.weapon_options.remove(self.currentWeapon)
             self.currentWeapon = self.defaultWeapon
+            self.createWeaponSelectionBoxes()
+            
+            
 
         #reset
         self.charging = False
