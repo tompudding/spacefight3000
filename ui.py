@@ -371,16 +371,10 @@ class UIRoot(RootElement):
         self.updateable_children = {}
 
     def Draw(self):
-        glDisable(GL_TEXTURE_2D)
-        glEnableClientState(GL_VERTEX_ARRAY)
-        glEnableClientState(GL_COLOR_ARRAY)
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY)
-        glLoadIdentity()
-        glVertexPointerf(globals.ui_buffer.vertex_data)
-        glColorPointer(4,GL_FLOAT,0,globals.ui_buffer.colour_data)
-        glDrawElements(GL_QUADS,globals.ui_buffer.current_size,GL_UNSIGNED_INT,globals.ui_buffer.indices)
-        glEnable(GL_TEXTURE_2D)
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+        drawing.ResetState()
+        drawing.DrawNoTexture(globals.ui_buffer)
+        drawing.DrawAll(globals.ui_texture_buffer, globals.atlas.texture.texture)
+
         for item in self.drawable_children:
             item.Draw()
 
@@ -562,6 +556,22 @@ class Border(UIElement):
     def MakeUnselectable(self):
         super(Border,self).MakeUnselectable()
         self.border.SetColour(self.unselectable_colour)
+
+class ImageBox(Box):
+    def __init__(self,parent,pos,tr,texture_name,buffer=None,level = None):
+        super(Box,self).__init__(parent,pos,tr)
+        if buffer == None:
+            buffer = globals.ui_texture_buffer
+
+        self.quad = drawing.Quad(buffer)
+        self.texture_name = texture_name
+        self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)
+        self.extra_level = 0 if level == None else level
+        self.quad.SetVertices(self.absolute.bottom_left,
+                              self.absolute.top_right,
+                              self.level + self.extra_level)
+        self.quad.SetTextureCoordinates(self.tc)
+        self.Enable()
 
 class DottedLine(UIElement):
     def __init__(self,parent,pos,tr,colour,buffer=globals.ui_buffer,level = None,num_segments=20):

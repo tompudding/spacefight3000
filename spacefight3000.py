@@ -14,6 +14,7 @@ def Init():
     globals.screen                = Point(w,h)/globals.scale
     globals.screen_root           = ui.UIRoot(Point(0,0),globals.screen)
     globals.ui_buffer             = drawing.QuadBuffer(131072)
+    globals.ui_texture_buffer     = drawing.QuadBuffer(131072)
     globals.backdrop_buffer       = drawing.QuadBuffer(8)
     globals.backdrop_alpha_buffer = drawing.QuadBuffer(8)
     globals.nonstatic_text_buffer = drawing.QuadBuffer(131072)
@@ -32,6 +33,7 @@ def Init():
     drawing.Init(globals.screen.x,globals.screen.y)
 
     globals.text_manager = drawing.texture.TextManager()
+    drawing.InitDrawing()
 
 def main():
     """Main loop for the game"""
@@ -50,7 +52,7 @@ def main():
         if t - last > 1000:
             #print 'FPS:',clock.get_fps()
             last = t
-        
+
         globals.current_view.Update()
         globals.current_view.Draw()
         globals.screen_root.Draw()
@@ -93,7 +95,7 @@ def main():
                             break
                         if handled:
                             break
-                    
+
                 elif (event.type == pygame.MOUSEBUTTONUP):
                     for layer in globals.screen_root,globals.current_view:
                         handled,dragging = layer.MouseButtonUp(pos,event.button)
