@@ -77,6 +77,13 @@ class Troop(gobject.TeleportableBox):
         if self.selected:
             self.selectionBoxQuad.Enable()
 
+    def Destroy(self):
+        print 'bob'
+        super(Troop,self).Destroy()
+        if not self.static:
+            globals.physics.RemoveObject(self)
+        self.selectionBoxQuad.Delete()
+
     def add_weapon(self, wpn):
         self.weapon_options.append(wpn())
 
@@ -286,7 +293,3 @@ class Troop(gobject.TeleportableBox):
                             vector = cmath.rect(-1000,angle )
                             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
                             break
-
-    def Destroy(self):
-        super(Troop,self).Destroy()
-        self.selectionBoxQuad.Delete()

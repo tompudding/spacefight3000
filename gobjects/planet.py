@@ -29,7 +29,6 @@ class PortalEnd(gobject.CircleGobject):
         tc = self.tc[frame]
         self.quad.SetTextureCoordinates(tc)
 
-
     def ExitPoint(self):
         return
 
@@ -65,6 +64,10 @@ class Planet(gobject.CircleGobject):
         centre = self.body.GetWorldCenter() / globals.physics.scale_factor
         vector = cmath.rect((self.shape.radius / globals.physics.scale_factor) + distance, angle)
         return Point(*centre) + Point(vector.real,vector.imag)
+
+    def Destroy(self):
+        super(Planet,self).Destroy()
+        globals.physics.RemoveObject(self)
 
 class BluePlanet(Planet):
     texture_name = '600blue.png'

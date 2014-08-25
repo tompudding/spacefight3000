@@ -27,7 +27,7 @@ class Gobject(object):
             self.visible = False
         self.bodydef = box2d.b2BodyDef()
         #This is inefficient, but it doesn't want to grab properly otherwise. Shitty hack but whatever
-        self.bodydef.allowSleep = False
+        #self.bodydef.allowSleep = False
         self.midpoint = (tr - bl)*0.5*globals.physics.scale_factor
         self.bodydef.position = tuple((bl*globals.physics.scale_factor) + self.midpoint)
         self.bodydef.angle = angle

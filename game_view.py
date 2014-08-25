@@ -268,6 +268,12 @@ class Physics(object):
         if obj.is_gravity_source:
             self.gravity_sources.append(obj)
 
+    def RemoveObject(self,to_remove):
+        if not to_remove.static:
+            self.objects = [obj for obj in self.objects if obj is not to_remove]
+        if to_remove.is_gravity_source:
+            self.gravity_sources = [obj for obj in self.gravity_sources if obj is not to_remove]
+
     def Step(self):
         self.contacts = []
         self.world.Step(self.timeStep, self.velocityIterations, self.positionIterations)
