@@ -25,25 +25,25 @@ class Projectile(gobject.TeleportableBox):
         globals.physics.AddObject(self)
         self.body.angle = imageAngle
         self.body.ApplyForce(force, self.body.GetWorldCenter())
-        
+
         #explosion stuff
         self.setupExplosionQuads()
         self.exploding = False
-    
+
     def setupExplosionQuads(self):
-        self.explosion_frame_duration = 100     
+        self.explosion_frame_duration = 100
         self.tc_explode = [globals.atlas.TextureSpriteCoords("splode" +'%d.png' % i) for i in xrange(7)]
-        
+
         self.explosion_duration = len(self.tc_explode)*self.explosion_frame_duration
         self.explosion_quad = drawing.Quad(globals.quad_buffer, tc = self.tc_explode[0])
-        
+
         self.explosion_quad.SetVertices(self.bl, self.tr, drawing.constants.DrawLevels.ui)
         self.explosion_quad.SetTextureCoordinates(self.tc_explode[1])
-        
+
         self.explosion_quad.Disable()
-        
+
         self.last_explosion_tc = 0
-        
+
 
     def dontApplyGravity(self):
         self.applyGravity = False
@@ -51,7 +51,7 @@ class Projectile(gobject.TeleportableBox):
     def destroyNextUpdate(self):
         self.destroyMe = True
         self.destroy_at = globals.time
-        
+
 
     def Destroy(self):
         super(Projectile,self).Destroy()
@@ -71,7 +71,7 @@ class Projectile(gobject.TeleportableBox):
         if(not self.destroyMe):
             self.destroyMe = True
             self.destroy_at = globals.time + time_limit
-    
+
     def explode(self):
         if(self.explosive):
             if(self.exploding):
@@ -87,40 +87,41 @@ class Projectile(gobject.TeleportableBox):
                 return True
         else:
             return False
-        
+
         return True
-    
+
     def progressExplosionAnimation(self, required_explosion_tc):
         self.explosion_quad.SetTextureCoordinates(self.tc_explode[required_explosion_tc])
         self.explosion_quad.SetVertices(self.explosion_bl, self.explosion_tr, drawing.constants.DrawLevels.ui)
         self.last_explosion_tc = required_explosion_tc
-    
+
     def createExplosion(self):
+        globals.sounds.explosion.play()
         self.startOfExplosion = globals.time
         self.exploding = True
         self.quad.Disable()
-        
+
         self.getExplosionPosition()
         self.explosion_quad.SetVertices(self.explosion_bl, self.explosion_tr, drawing.constants.DrawLevels.ui)
         self.explosion_quad.Enable()
-        
+
         #check for damage to some mans
-    
+
     def getExplosionPosition(self):
         projectileCenter = Point(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor)
-        
+
         self.explosion_bl = projectileCenter - Point(50,50)
         self.explosion_tr = self.explosion_bl + Point(100,100)
 
     def Update(self):
         if self.TeleportUpdate():
             return
-        
+
         if self.destroyMe:
             if globals.time >= self.destroy_at:
                 if(not self.explode()):
                     self.explosion_quad.Delete()
                     self.Destroy()
-        
 
-                
+
+
