@@ -8,9 +8,13 @@ class AI(object):
 
     def __init__(self):
         self.idle_since = 0
+        self.waiting = None
 
-    def NextMove(self, troop, enemies):
+    def BadgerNextMove(self, troop, enemies):
         nearest_enemy, distance_squared = self.GetNearestEnemy(troop, enemies)
+        print 'badger!',troop.locked_planet
+        if not troop.locked_planet:
+            return True
 
         if nearest_enemy is None:
             return False
@@ -18,6 +22,7 @@ class AI(object):
         # if we're on the same planet, either walk towards them or fire
         if nearest_enemy.locked_planet == troop.locked_planet:
             if distance_squared < 40 and not troop.fired:
+                print 'firing'
                 self.FireAt(troop, nearest_enemy)
                 return True
             elif not troop.fired:
@@ -29,6 +34,7 @@ class AI(object):
         if not nearest_enemy.locked_planet == None and not troop.locked_planet == None:
             angle = self.GetAngle(troop.locked_planet.body, troop.body, nearest_enemy.locked_planet.body)
             if abs(angle) < math.pi / 6:
+                print 'jump!'
                 troop.jump()
             else:
                 self.WalkAt(troop, troop.locked_planet)
@@ -38,6 +44,24 @@ class AI(object):
         if troop.locked_planet == None:
             return True
         return False
+
+    def NextMove(self, troop, enemies):
+        if self.waiting:
+            if globals.time < self.waiting:
+                print globals.time,self.waiting
+                return True
+            self.waiting = None
+            print 'returning false!'
+            return False
+        else:
+            out = self.BadgerNextMove(troop, enemies)
+            print 'x',out
+            if not out:
+                print 'done so waiting'
+                self.waiting = globals.time + 1000
+                troop.move_direction = Point(0.0,0.0)
+                troop.fired = True
+            return True
 
     def FireAt(self, troop, target):
         vect_diff = target.body.position - troop.body.position
@@ -61,37 +85,37 @@ class AI(object):
     def GetAngle(self, origin_body, body1, body2):
         my_difference = origin_body.position - body1.position
         his_difference = origin_body.position - body2.position
-       
+
         distance,angle1 = cmath.polar(complex(my_difference.x, my_difference.y))
         distance,angle2 = cmath.polar(complex(his_difference.x, his_difference.y))
 
         return angle1 - angle2
-        
+
 
     def GetNearestEnemy(self, troop, enemies):
         distance = 10000000000000000
         if troop.locked_planet == None:
-            return None, distance 
-       
+            return None, distance
+
         nearest_enemy = None
 
         location = troop.body.position
         for enemy in enemies:
             enemy_vect = box2d.b2Vec2(enemy.body.position)
             enemy_vect.sub_vector(location)
-            new_distance = enemy_vect.LengthSquared() 
+            new_distance = enemy_vect.LengthSquared()
             if distance > new_distance:
                 distance = new_distance
                 nearest_enemy = enemy
 
         return nearest_enemy, distance
-            
+
 
     def GetNearestOnPlanetEnemy(self, troop, enemies):
         distance = 10000000000000000
         if troop.locked_planet == None:
             return None, distance
-       
+
         nearest_enemy = None
 
         location = troop.body.position
@@ -99,7 +123,7 @@ class AI(object):
             if enemy.locked_planet == troop.locked_planet:
                 enemy_vect = box2d.b2Vec2(enemy.body.position)
                 enemy_vect.sub_vector(location)
-                new_distance = enemy_vect.LengthSquared() 
+                new_distance = enemy_vect.LengthSquared()
                 if distance > new_distance:
                     distance = new_distance
                     nearest_enemy = enemy
