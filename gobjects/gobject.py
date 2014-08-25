@@ -15,6 +15,7 @@ class Gobject(object):
     initial_health   = 500
     z_level  = 10
     is_gravity_source = False
+    max_gravity_distance = 1000
     def __init__(self,bl,tr,tc = None,angle=0):
         self.dead = False
         self.tc = tc
@@ -110,7 +111,7 @@ class Gobject(object):
             force_dir = -(self.centre_world - source.centre_world)
             distance = Point(*force_dir).length()
             force_dir = force_dir/distance
-            force_magnitude = 2000000/(distance*distance)
+            force_magnitude = source.mass*75/(distance*distance)
             self.body.ApplyForce(force_dir*force_magnitude,self.body.GetWorldCenter())
             #print self,distance
 

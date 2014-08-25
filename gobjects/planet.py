@@ -56,6 +56,7 @@ class Planet(gobject.CircleGobject):
     #static = True
     is_gravity_source = True
     def __init__(self,centre,radius):
+        self.mass = radius**2
         self.tc = globals.atlas.TextureSpriteCoords(self.texture_name)
         super(Planet,self).__init__(centre,radius,self.tc)
         globals.physics.AddObject(self)
