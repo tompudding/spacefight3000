@@ -313,7 +313,7 @@ class GameView(ui.RootElement):
         self.paused = False
         self.zoom = 1
         self.viewpos = Viewpos(Point(0,0))
-        #pygame.mixer.music.load('music.ogg')
+        pygame.mixer.music.load(os.path.join('resource','music','theme.ogg'))
         #self.music_playing = False
 
         globals.physics = Physics(self)
@@ -327,9 +327,8 @@ class GameView(ui.RootElement):
         self.hud = hud.Hud(globals.screen_root)
 
     def StartMusic(self):
-        pass
-        #pygame.mixer.music.play(-1)
-        #self.music_playing = True
+        pygame.mixer.music.play(-1)
+        self.music_playing = True
 
     def Draw(self):
         drawing.ResetState()
