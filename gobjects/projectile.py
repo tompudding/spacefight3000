@@ -53,6 +53,12 @@ class Projectile(gobject.TeleportableBox):
     def destroyNextUpdate(self):
         self.destroyMe = True
         self.destroy_at = globals.time
+    
+    def getDamageToDo(self):
+        if(self.exploding):
+            return 0
+        else:
+            return self.maxDamage
 
 
     def Destroy(self):

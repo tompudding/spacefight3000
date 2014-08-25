@@ -178,7 +178,7 @@ class MyContactListener(box2d.b2ContactListener):
                 troop = shape1.userData
 
                 if not (projectile.ParentTroop != None and troop == projectile.ParentTroop):
-                    troop.TakeDamage(projectile.maxDamage)
+                    troop.TakeDamage(projectile.getDamageToDo())
                     projectile.destroyNextUpdate()
             else:
                 if isinstance(shape1.userData, gobjects.Planet):
