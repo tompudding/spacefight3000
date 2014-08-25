@@ -352,6 +352,8 @@ class GameView(ui.RootElement):
         drawing.DrawNoTexture(globals.nonstatic_ui_buffer)
 
     def Update(self):
+        self.viewpos.Update(globals.time)
+        
         if self.hud and self.hud.help_screen.enabled:
             return
         if self.mode:

@@ -289,6 +289,8 @@ class PlayerPlaying(Mode):
                 self.parent.mode = PlayerPlaying(self.parent)
         if self.selected_troop.dead:
             self.EndGo()
+        
+        #globals.game_view.viewpos.Follow(globals.time, self.selected_troop)
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
