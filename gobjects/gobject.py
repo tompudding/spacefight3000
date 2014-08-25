@@ -144,6 +144,7 @@ class TeleportableBox(BoxGobject):
         self.last_teleport = 0
         self.portal_contacts = []
         self.locked_planet = None
+        self.teleportable = True
         super(TeleportableBox,self).__init__(bl,tr,tc)
 
     def TouchPortal(self, portal):

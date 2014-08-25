@@ -7,6 +7,8 @@ import math
 class AI(object):
 
     def NextMove(self, troop, enemies):
+        if troop is None:
+            return False
         nearest_enemy, distance_squared = self.GetNearestEnemy(troop, enemies)
 
         if nearest_enemy is None:
@@ -17,9 +19,11 @@ class AI(object):
             if distance_squared < 40 and not troop.fired:
                 self.FireAt(troop, nearest_enemy)
                 return True
-            else:
+            elif not troop.fired:
                 self.WalkAt(troop, nearest_enemy)
                 return True
+            else:
+                return False
 
         if not nearest_enemy.locked_planet == None and not troop.locked_planet == None:
             angle = self.GetAngle(troop.locked_planet.body, troop.body, nearest_enemy.locked_planet.body)
@@ -49,6 +53,12 @@ class AI(object):
             troop.move_direction = Point(8.0,0.0)
         else:
             troop.move_direction = Point(-8.0,0.0)
+
+    def WalkAway(self, troop, target):
+        if self.GetAngle(troop.locked_planet.body, troop.body, target.body) > 0:
+            troop.move_direction = Point(-8.0,0.0)
+        else:
+            troop.move_direction = Point(8.0,0.0)
 
     def GetAngle(self, origin_body, body1, body2):
         my_difference = origin_body.position - body1.position

@@ -58,6 +58,7 @@ class Troop(gobject.TeleportableBox):
         self.amount_moved = 0
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
+        self.teleportable = goodness
 
         #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
         #you want to give another weapon that isnt unlimited, use change weapon.

@@ -159,10 +159,10 @@ class MyContactListener(box2d.b2ContactListener):
 
         s1 = point.shape1.userData
         s2 = point.shape2.userData
-        if isinstance(s1,gobjects.TeleportableBox) and isinstance(s2,gobjects.planet.PortalEnd):
+        if hasattr(s1, "teleportable") and s1.teleportable and isinstance(s2,gobjects.planet.PortalEnd):
             s1,s2 = s2,s1
 
-        if isinstance(s1,gobjects.planet.PortalEnd) and isinstance(s2,gobjects.TeleportableBox):
+        if isinstance(s1,gobjects.planet.PortalEnd) and hasattr(s2, "teleportable") and s2.teleportable:
             troop = s2
             portal = s1
             troop.AddPortalContact(portal,cp)
