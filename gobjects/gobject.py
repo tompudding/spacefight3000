@@ -50,7 +50,7 @@ class Gobject(object):
 
     @property
     def centre_world(self):
-        return self.body.GetWorldPoint(self.midpoint.to_vec())/globals.physics.scale_factor
+        return self.body.GetWorldCenter()/globals.physics.scale_factor
 
     def ExtraShapes(self):
         pass
