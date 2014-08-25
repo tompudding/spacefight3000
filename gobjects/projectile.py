@@ -53,7 +53,7 @@ class Projectile(gobject.TeleportableBox):
     def destroyNextUpdate(self):
         self.destroyMe = True
         self.destroy_at = globals.time
-    
+
     def getDamageToDo(self):
         if(self.exploding):
             return 0
@@ -118,22 +118,22 @@ class Projectile(gobject.TeleportableBox):
             explosionRange = 50
             explosionRange = math.pow(50, 2)
             explosionDamage = 200
-        
+
             troopCenter = Point(troop.body.GetWorldCenter()[0] / globals.physics.scale_factor, troop.body.GetWorldCenter()[1] / globals.physics.scale_factor)
             explosionCenter = Point(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor)
             distance = (troopCenter - explosionCenter).SquareLength()
-            
-            
+
+
             if(distance < explosionRange):
                 troop.TakeDamage(explosionDamage * distance/explosionRange)
-                
+
                 impulseToApply = troopCenter - explosionCenter
-                impulseToApply.Normalize()
-                impulseToApply * Point(0.3, 0.3)
+                impulseToApply = impulseToApply.Normalize()
+                impulseToApply *= Point(40, 40)
                 impulse = box2d.b2Vec2(impulseToApply[0], impulseToApply[1])
                 troop.locked_planet = None
                 troop.body.ApplyImpulse(impulse, troop.body.GetWorldCenter())
-            
+
 
     def getExplosionPosition(self):
         projectileCenter = Point(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor)
