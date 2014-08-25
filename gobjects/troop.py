@@ -89,8 +89,8 @@ class Troop(gobject.TeleportableBox):
     def createWeaponSelectionBoxes(self):
         weapon_selection_options = []
         for weapon in self.weapon_options:
-            wpn_detail = namedtuple("wpn_detail", 'image, image_size, callback, callback_args')
-            detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon)
+            wpn_detail = namedtuple("wpn_detail", 'image, image_size, callback, callback_args, limited_ammo, current_ammo')
+            detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon, weapon.limitedAmmo, weapon.currentAmmo)
             
             weapon_selection_options.append( detail )
         
@@ -112,7 +112,8 @@ class Troop(gobject.TeleportableBox):
         if(self.currentWeapon.isOutOfAmmo()):
             self.weapon_options.remove(self.currentWeapon)
             self.currentWeapon = self.defaultWeapon
-            self.createWeaponSelectionBoxes()
+        
+        self.createWeaponSelectionBoxes()
             
             
 
