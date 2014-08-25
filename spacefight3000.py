@@ -4,6 +4,7 @@ import ui,globals
 import drawing
 import game_view
 import sounds
+import main_menu
 from globals.types import Point
 
 def Init():
@@ -25,6 +26,7 @@ def Init():
     globals.tile_dimensions       = Point(16,16)*globals.tile_scale
     globals.sounds                = sounds.Sounds()
 
+
     globals.dirs = globals.types.Directories('resource')
 
     pygame.init()
@@ -34,12 +36,14 @@ def Init():
 
     globals.text_manager = drawing.texture.TextManager()
     drawing.InitDrawing()
+    globals.atlas                 = drawing.texture.TextureAtlas('tiles_atlas_0.png','tiles_atlas.txt')
 
 def main():
     """Main loop for the game"""
     Init()
 
-    globals.current_view = globals.game_view = game_view.GameView()
+    #globals.current_view = globals.game_view = game_view.GameView()
+    globals.current_view = main_menu.MainMenu()
 
     done = False
     last = 0

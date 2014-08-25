@@ -19,7 +19,7 @@ class GameWorld(object):
             self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
             self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
-            
+
             wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, Point(600,600),1)
             wellEquiptTroop.add_weapon(gobjects.Lazer)
             wellEquiptTroop.add_weapon(gobjects.Grenade)
@@ -53,8 +53,8 @@ class GameWorld(object):
             item.Destroy()
 
     def UpdateHUD(self):
-        if hasattr(globals.current_view.mode, "selectedGoodie"):
-            move_to_display = globals.max_movement - round(globals.current_view.mode.selectedGoodie.amount_moved)
+        if hasattr(globals.current_view.mode, "selected_troop") and globals.current_view.mode.selected_troop:
+            move_to_display = globals.max_movement - round(globals.current_view.mode.selected_troop.amount_moved)
             if move_to_display < 0:
                 move_to_display = 0
             globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}    Movement Left {3}".format(len(self.goodies), len(self.baddies), self.level+1, move_to_display))

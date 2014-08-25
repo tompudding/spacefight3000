@@ -27,7 +27,7 @@ class Gobject(object):
             self.visible = False
         self.bodydef = box2d.b2BodyDef()
         #This is inefficient, but it doesn't want to grab properly otherwise. Shitty hack but whatever
-        self.bodydef.allowSleep = False
+        #self.bodydef.allowSleep = False
         self.midpoint = (tr - bl)*0.5*globals.physics.scale_factor
         self.bodydef.position = tuple((bl*globals.physics.scale_factor) + self.midpoint)
         self.bodydef.angle = angle
@@ -55,9 +55,6 @@ class Gobject(object):
         pass
 
     def Destroy(self):
-        if self.static:
-            #Don't ever destroy static things
-            return
         if self.dead:
             return
         if self.parent_joint:
@@ -65,6 +62,7 @@ class Gobject(object):
             self.parent_joint.Ungrab()
             self.parent_joint = None
         self.shape.ClearUserData()
+        print 'destroy',self
         globals.physics.world.DestroyBody(self.body)
         self.dead = True
         self.quad.Delete()
@@ -191,6 +189,8 @@ class TeleportableBox(BoxGobject):
     def InitiateTeleport(self, portal):
         if self.teleport_in_progress:
             return
+
+        globals.sounds.teleport.play()
 
         #rotate the linearvelcity by the angle of the portal
         r = self.body.linearVelocity.x + self.body.linearVelocity.y*1j

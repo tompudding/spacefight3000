@@ -54,6 +54,10 @@ class Projectile(gobject.TeleportableBox):
         self.destroy_at = globals.time
         
 
+    def Destroy(self):
+        super(Projectile,self).Destroy()
+        globals.physics.RemoveObject(self)
+
     def Disable(self):
         self.quad.Disable()
         print 'disable!'

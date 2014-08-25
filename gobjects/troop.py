@@ -61,8 +61,9 @@ class Troop(gobject.TeleportableBox):
         self.z_level = 200
 
     def changeWeapon(self, btnClass, pos, button, weaponToChangeTo):
+        globals.sounds.select_weapon.play()
         self.currentWeapon = weaponToChangeTo
-    
+
     def setDirection(self,newdirection):
         self.direction = newdirection
 
@@ -76,26 +77,33 @@ class Troop(gobject.TeleportableBox):
         if self.selected:
             self.selectionBoxQuad.Enable()
 
+    def Destroy(self):
+        print 'bob'
+        super(Troop,self).Destroy()
+        if not self.static:
+            globals.physics.RemoveObject(self)
+        self.selectionBoxQuad.Delete()
+
     def add_weapon(self, wpn):
         self.weapon_options.append(wpn())
-        
+
 
     def select(self):
         self.selected = True
         self.selectionBoxQuad.Enable()
         self.createWeaponSelectionBoxes()
 
-    
+
     def createWeaponSelectionBoxes(self):
         weapon_selection_options = []
         for weapon in self.weapon_options:
             wpn_detail = namedtuple("wpn_detail", 'image, image_size, callback, callback_args, limited_ammo, current_ammo')
             detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon, weapon.limitedAmmo, weapon.currentAmmo)
-            
+
             weapon_selection_options.append( detail )
-        
+
         globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
-        
+
     def unselect(self):
         self.selected = False
         self.charging = False
@@ -112,10 +120,10 @@ class Troop(gobject.TeleportableBox):
         if(self.currentWeapon.isOutOfAmmo()):
             self.weapon_options.remove(self.currentWeapon)
             self.currentWeapon = self.defaultWeapon
-        
+
         self.createWeaponSelectionBoxes()
-            
-            
+
+
 
         #reset
         self.charging = False
@@ -285,7 +293,3 @@ class Troop(gobject.TeleportableBox):
                             vector = cmath.rect(-1000,angle )
                             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
                             break
-
-    def Destroy(self):
-        super(Troop,self).Destroy()
-        self.selectionBoxQuad.Delete()
