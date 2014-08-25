@@ -55,7 +55,7 @@ class Projectile(gobject.TeleportableBox):
         self.destroy_at = globals.time
 
     def getDamageToDo(self):
-        if(self.exploding):
+        if(self.exploding or self.destroyMe):
             return 0
         else:
             return self.maxDamage
