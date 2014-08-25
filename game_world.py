@@ -16,8 +16,8 @@ class GameWorld(object):
 
 
         if level == 0:
-            self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
-            self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
+            self.planets.append(gobjects.planet.BluePlanet(Point(800,900), 200));
+            self.planets.append(gobjects.planet.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
 
             wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, Point(600,600),1)
@@ -28,7 +28,8 @@ class GameWorld(object):
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900),0));
         elif level == 1:
-            self.planets.append(gobjects.BluePlanet(Point(1100,600), 200));
+            self.planets.append(gobjects.planet.BluePlanet(Point(1100,600), 200));
+            self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(2000,900), 250));
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
 

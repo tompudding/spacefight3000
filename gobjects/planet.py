@@ -74,3 +74,12 @@ class BluePlanet(Planet):
 
 class YellowPlanet(Planet):
     texture_name = '600yellow.png'
+
+class BunnyPlanet(Planet):
+    texture_name = 'bunny.png'
+
+class SpaceHattanDayPlanet(Planet):
+    texture_name = 'spacehattanday.png'
+
+class SpaceHattanNightPlanet(Planet):
+    texture_name = 'spacehattannight.png'
