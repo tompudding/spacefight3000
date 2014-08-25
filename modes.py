@@ -70,6 +70,7 @@ class Titles(Mode):
         self.stage = TitleStages.PLAYING
 
     def Update(self):
+        self.Complete()
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage]()
 
