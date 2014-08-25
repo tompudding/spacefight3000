@@ -33,6 +33,7 @@ class Troop(gobject.TeleportableBox):
         self.selectedBoxtc = globals.atlas.TextureSpriteCoords(self.selectedBoxFilename)
         self.currentWeaponAngle = 0
         self.currentWeaponPower = 0
+        self.last_direction = 'right'
 
         health_bar_size = globals.game_view.GetRelative(Point(20,10))
         self.health_bar = ui.PowerBar(parent=globals.game_view,
@@ -81,7 +82,7 @@ class Troop(gobject.TeleportableBox):
         self.SetWeaponQuad()
 
     def SetWeaponQuad(self):
-        if self.direction == 'right':
+        if self.last_direction == 'right':
             tc = self.currentWeapon.item_tc_right
         else:
             tc = self.currentWeapon.item_tc_left
@@ -89,8 +90,10 @@ class Troop(gobject.TeleportableBox):
             self.weapon_quad.SetTextureCoordinates(tc)
 
     def setDirection(self,newdirection):
+        if newdirection != 'none':
+            self.last_direction = newdirection
         self.direction = newdirection
-
+        self.SetWeaponQuad()
 
     def Disable(self):
         self.quad.Disable()
@@ -102,7 +105,6 @@ class Troop(gobject.TeleportableBox):
             self.selectionBoxQuad.Enable()
 
     def Destroy(self):
-        print 'bob'
         super(Troop,self).Destroy()
         if not self.static:
             globals.physics.RemoveObject(self)
@@ -254,10 +256,10 @@ class Troop(gobject.TeleportableBox):
         if self.dead or self.static:
             return
         #Just set the vertices
-        vertices = []
+        vertices = [0,0,0,0]
         for i,vertex in enumerate(self.shape.vertices):
             screen_coords = Point(*self.body.GetWorldPoint(vertex))/globals.physics.scale_factor
-            vertices.append( screen_coords )
+            vertices[self.vertex_permutation[i]] =  screen_coords
 
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
         self.weapon_quad.SetAllVertices(vertices, self.z_level+0.1)
@@ -278,11 +280,11 @@ class Troop(gobject.TeleportableBox):
             self.body.linearVelocity = box2d.b2Vec2(self.body.linearVelocity.x/10,self.body.linearVelocity.y/10)
             vector = cmath.rect(self.move_direction.x*200,self.body.angle)
             if self.move_direction.x > 0:
-                self.direction = 'right'
+                self.setDirection('right')
             elif self.move_direction.x < 0:
-                self.direction = 'left'
+                self.setDirection('left')
             else:
-                self.direction = 'none'
+                self.setDirection('none')
             oldframe = self.last_frame
             frame = (globals.time%self.animation_duration)/self.frame_duration
             if self.direction == 'right':
