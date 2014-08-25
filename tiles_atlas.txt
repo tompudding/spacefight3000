@@ -51,6 +51,7 @@ resource/sprites/redtrooper_right_0.png:tiles_atlas_0.png:1816:1679.0:16:32
 resource/sprites/redtrooper_right_1.png:tiles_atlas_0.png:1832:1679.0:16:32
 resource/sprites/redtrooper_right_2.png:tiles_atlas_0.png:1848:1679.0:16:32
 resource/sprites/redtrooper_right_3.png:tiles_atlas_0.png:1864:1679.0:16:32
+resource/sprites/selectionBoxThin.png:tiles_atlas_0.png:1880:1679.0:16:32
 resource/sprites/zookshell.png:tiles_atlas_0.png:1944:1810.0:16:8
 resource/sprites/laser.png:tiles_atlas_0.png:1962:1771.0:24:4
 resource/sprites/tempRound.png:tiles_atlas_0.png:2043:1797.0:5:5
