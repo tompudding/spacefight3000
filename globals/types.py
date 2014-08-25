@@ -9,7 +9,7 @@ class Point(object):
         self.x = x
         self.y = y
         self.iter_pos = 0
-        
+
     def __add__(self,other_point):
         return Point(self.x + other_point.x, self.y + other_point.y)
 
@@ -81,6 +81,9 @@ class Point(object):
 
     def length(self):
         return math.sqrt(self.x**2 + self.y**2)
+
+    def Normalize(self):
+        return self/self.length()
 
     def SquareLength(self):
         return self.x**2 + self.y**2
