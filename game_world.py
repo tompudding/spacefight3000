@@ -97,6 +97,7 @@ class GameWorld(object):
         self.badies_to_play = list(self.baddies)
         for item in itertools.chain(self.goodies,self.baddies):
             item.amount_moved = 0
+            item.fired = False
 
     def NextGoodieToPlay(self):
         self.ReapFallenHeroes()

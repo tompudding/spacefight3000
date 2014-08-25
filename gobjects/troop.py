@@ -36,7 +36,6 @@ class Troop(gobject.TeleportableBox):
         self.power_increase_amount_per_milisecond = (0.6 / 1000.0)
         self.last_power_update_time = globals.time
         self.projectile_position = None
-        self.last_mouse_xy = None
 
         self.locked_planet = None
         self.move_direction = Point(0,0)
@@ -112,8 +111,6 @@ class Troop(gobject.TeleportableBox):
         globals.game_view.hud.setWeaponPowerBarValue(0.0)
 
     def fireWeapon(self):
-        self.setWeaponAngle(self.last_mouse_xy)
-        #self.getProjectileBLPosition(self.last_mouse_xy)
         newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, self.projectile_position, self)
 
         #switch weapon if we run out of ammo.
@@ -132,9 +129,7 @@ class Troop(gobject.TeleportableBox):
 
         return newProjectile
 
-    def getProjectileBLPosition(self, mouse_xy):
-        dx = mouse_xy[0] - self.body.GetWorldCenter()[0] / globals.physics.scale_factor
-        dy = mouse_xy[1] - self.body.GetWorldCenter()[1] / globals.physics.scale_factor
+    def SetProjectileBLPosition(self, dx, dy):
 
         projectile_start_pos = box2d.b2Vec2(dx,dy)
         projectile_start_pos.Normalize()
@@ -142,22 +137,6 @@ class Troop(gobject.TeleportableBox):
         projectile_start_pos.add_vector(box2d.b2Vec2(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor))
 
         self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
-        #current_angle = self.body.angle
-
-        #if self.direction == 'right':
-        #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
-        #    x = update_distance_rect.real
-        #    y = update_distance_rect.imag
-        #    blx = (self.body.GetWorldCenter()[0] + x) / globals.physics.scale_factor
-        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
-        #else:
-        #    update_distance_rect = cmath.rect(self.midpoint.x - 1, current_angle + math.pi)
-        #    x = update_distance_rect.real
-        #    y = update_distance_rect.imag
-        #    blx = (self.body.GetWorldCenter()[0] - x) / globals.physics.scale_factor
-        #    bly = (self.body.GetWorldCenter()[1] + y) / globals.physics.scale_factor
-
-        #return Point(blx, bly)
 
     def chargeWeapon(self):
         self.charging = True
@@ -172,23 +151,28 @@ class Troop(gobject.TeleportableBox):
         self.jumping = globals.time + self.jump_duration
 
     def increaseWeaponPower(self):
-        self.currentWeaponPower += 0.01
-        if self.currentWeaponPower > self.maxWeaponPower:
-            self.currentWeaponPower = 0
+        self.SetWeaponPower(self.currentWeaponPower + 0.01)
 
     def decreaseWeaponPower(self):
-        self.currentWeaponPower -= 0.01
-        if self.currentWeaponPower < 0:
+        self.SetWeaponPower(self.currentWeaponPower - 0.01)
+
+    def SetWeaponPower(self, power):
+        if power > self.max_weapon_power:
             self.currentWeaponPower = self.maxWeaponPower
+        elif power < 0:
+            self.currentWeaponPower = 0
+        else:
+            self.currentWeaponPower = power
 
     def setWeaponAngle(self, mouse_xy):
-        self.last_mouse_xy = mouse_xy
-        self.getProjectileBLPosition(mouse_xy)
+        dx = float(mouse_xy[0] * globals.physics.scale_factor - (self.body.position[0])) #/ globals.physics.scale_factor))
+        dy = float(mouse_xy[1] * globals.physics.scale_factor - (self.body.position[1])) #/ globals.physics.scale_factor))
 
-        dx = float(mouse_xy[0] - (self.projectile_position[0])) #/ globals.physics.scale_factor))
-        dy = float(mouse_xy[1] - (self.projectile_position[1])) #/ globals.physics.scale_factor))
+        self.ActuallySetWeaponVector( dx, dy )
 
+    def ActuallySetWeaponVector(self, dx, dy):
         self.currentWeaponAngle = cmath.phase( complex(dx, dy) )
+        self.SetProjectileBLPosition(dx, dy)
 
     def InitPolygons(self,tc):
         if self.direction == 'right':
