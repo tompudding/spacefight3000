@@ -272,6 +272,15 @@ class TeleportableBox(BoxGobject):
 
         self.last_teleport = globals.time
 
+    @property
+    def centre_world(self):
+        if not self.teleport_in_progress:
+            return self.body.GetWorldCenter()/globals.physics.scale_factor
+        #teleport is in progress, report an approximate position
+        progress = 1-(t - globals.time)/float(self.teleport_duration)
+        start = self.teleport_quads[0].start_vertex[k]
+        end = self.teleport_quads[0].target_vertex[k]
+        return start + (end-start)*progress
 
     def TeleportUpdate(self):
         if self.teleport_in_progress:
