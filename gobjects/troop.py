@@ -117,7 +117,7 @@ class Troop(gobject.TeleportableBox):
         newProjectile = self.currentWeapon.FireAtTarget(self.currentWeaponAngle, self.currentWeaponPower, self.projectile_position, self)
 
         #switch weapon if we run out of ammo.
-        if(self.currentWeapon.isOutOfAmmo()):
+        if self.currentWeapon.isOutOfAmmo():
             self.weapon_options.remove(self.currentWeapon)
             self.currentWeapon = self.defaultWeapon
 
@@ -144,7 +144,7 @@ class Troop(gobject.TeleportableBox):
         self.projectile_position = Point(projectile_start_pos[0], projectile_start_pos[1])
         #current_angle = self.body.angle
 
-        #if(self.direction == 'right'):
+        #if self.direction == 'right':
         #    update_distance_rect = cmath.rect(self.midpoint.x + 1, current_angle)
         #    x = update_distance_rect.real
         #    y = update_distance_rect.imag
@@ -173,12 +173,12 @@ class Troop(gobject.TeleportableBox):
 
     def increaseWeaponPower(self):
         self.currentWeaponPower += 0.01
-        if(self.currentWeaponPower > self.maxWeaponPower):
+        if self.currentWeaponPower > self.maxWeaponPower:
             self.currentWeaponPower = 0
 
     def decreaseWeaponPower(self):
         self.currentWeaponPower -= 0.01
-        if(self.currentWeaponPower < 0):
+        if self.currentWeaponPower < 0:
             self.currentWeaponPower = self.maxWeaponPower
 
     def setWeaponAngle(self, mouse_xy):
@@ -214,14 +214,14 @@ class Troop(gobject.TeleportableBox):
             amountToIncreasePower = ( (current_time - self.last_power_update_time) ) * self.power_increase_amount_per_milisecond
             self.currentWeaponPower += amountToIncreasePower
 
-            if(self.currentWeaponPower > self.max_weapon_power):
+            if self.currentWeaponPower > self.max_weapon_power:
                 self.currentWeaponPower = self.max_weapon_power
 
             globals.game_view.hud.setWeaponPowerBarValue(self.currentWeaponPower)
 
         self.last_power_update_time = current_time
 
-        if(self.health <= 0):
+        if self.health <= 0:
             self.Destroy()
 
     def TakeDamage(self, amount):

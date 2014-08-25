@@ -66,6 +66,7 @@ class Gobject(object):
         globals.physics.world.DestroyBody(self.body)
         self.dead = True
         self.quad.Delete()
+        globals.sounds.portal_aura.stop()
 
     def Damage(self,amount):
         #can't damage static stuff
@@ -102,7 +103,7 @@ class Gobject(object):
             return
 
         if isinstance(self, gobjects.Projectile):
-            if(not self.applyGravity):
+            if not self.applyGravity:
                 return
 
         for source in gravity_sources:
@@ -157,6 +158,7 @@ class TeleportableBox(BoxGobject):
             self.instaport = portal.other_end
             return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
+        globals.sounds.portal_aura.play(loops=-1)
 
     def AddPortalContact(self, portal, contact):
         if self.teleport_in_progress:
@@ -185,11 +187,13 @@ class TeleportableBox(BoxGobject):
         self.portal_contacts = new_contacts
         if not self.portal_contacts and self.touch_portal and self.touch_portal[0] is portal:
             self.touch_portal = None
+            globals.sounds.portal_aura.stop()
 
     def InitiateTeleport(self, portal):
         if self.teleport_in_progress:
             return
 
+        globals.sounds.portal_aura.stop()
         globals.sounds.teleport.play()
 
         #rotate the linearvelcity by the angle of the portal
@@ -241,6 +245,7 @@ class TeleportableBox(BoxGobject):
         #Make it a sensor so it's not subject to the collision stuff
         self.body.PutToSleep()
         self.touch_portal = None
+        globals.sounds.portal_aura.stop()
         self.portal_contacts = []
         self.teleport_in_progress = (portal,globals.time + self.teleport_duration)
 
@@ -303,6 +308,7 @@ class TeleportableBox(BoxGobject):
                 if globals.time > end_time:
                     self.InitiateTeleport(portal.other_end)
                     self.touch_portal = None
+                    globals.sounds.portal_aura.stop()
 
 
 class CircleGobject(Gobject):
