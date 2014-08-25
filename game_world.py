@@ -6,6 +6,7 @@ import itertools
 
 class GameWorld(object):
     last_level = 1
+    troop_planet_distance = 20
     def __init__(self, level):
         self.planets = []
         self.goodies = []
@@ -20,13 +21,19 @@ class GameWorld(object):
             self.planets.append(gobjects.planet.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
 
-            wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, Point(600,600),1)
+            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,5*math.pi/4)
+            wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, pos,1)
             wellEquiptTroop.add_weapon(gobjects.Lazer)
             wellEquiptTroop.add_weapon(gobjects.Grenade)
+
             self.goodies.append(wellEquiptTroop);
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,900),1));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900),0));
+            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, pos,1));
+
+            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,0)
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
+            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
             globals.current_view.viewpos.Set(Point(500,500))
         elif level == 1:
             self.planets.append(gobjects.planet.BluePlanet(Point(1100,600), 200));
@@ -36,9 +43,11 @@ class GameWorld(object):
             self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(2000,900), 250));
             self.portals.append(gobjects.Portal(self.planets[0],2*math.pi/3,self.planets[1],math.pi/3))
             self.portals.append(gobjects.Portal(self.planets[0],5*math.pi/3,self.planets[1],4*math.pi/3))
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
-            globals.current_view.viewpos.Set(Point(600,600))
+            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, pos,1));
+            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
+            globals.current_view.viewpos.Set(Point(810,340))
 
         self.ResetAfterTurn()
         self.UpdateHUD()
