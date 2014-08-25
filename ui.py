@@ -246,7 +246,7 @@ class RootElement(UIElement):
         self.on                  = True
         self.GetAbsoluteInParent = lambda x:x
         self.root                = self
-        self.level               = 0
+        self.level               = drawing.constants.DrawLevels.ui
         self.hovered             = None
         self.children            = []
         self.active_children     = UIElementList()
@@ -572,6 +572,25 @@ class ImageBox(Box):
                               self.level + self.extra_level)
         self.quad.SetTextureCoordinates(self.tc)
         self.Enable()
+
+class ImageBoxButton(ImageBox):
+    def __init__(self,parent,pos,tr,texture_name,callback,args,buffer=None,level=None):
+        self.callback = callback
+        self.args = args
+        super(ImageBoxButton,self).__init__(parent,pos,tr,texture_name,buffer,level)
+
+    def Enable(self):
+        if not self.enabled:
+            self.root.RegisterUIElement(self)
+        super(ImageBoxButton,self).Enable()
+
+    def Disable(self):
+        if self.enabled:
+            self.root.RemoveUIElement(self)
+        super(ImageBoxButton,self).Disable()
+
+    def OnClick(self,pos,button):
+        self.callback(self,pos,button,self.args)
 
 class DottedLine(UIElement):
     def __init__(self,parent,pos,tr,colour,buffer=globals.ui_buffer,level = None,num_segments=20):
