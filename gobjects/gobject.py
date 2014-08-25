@@ -279,7 +279,7 @@ class TeleportableBox(BoxGobject):
         #teleport is in progress, report an approximate position
         progress = 1-(t - globals.time)/float(self.teleport_duration)
         start = self.teleport_quads[0].start_vertex[k]
-        end = self.teleport_quads[i*4+j].target_vertex[k]
+        end = self.teleport_quads[0].target_vertex[k]
         return start + (end-start)*progress
 
     def TeleportUpdate(self):
