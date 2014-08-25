@@ -66,11 +66,17 @@ class Hud(object):
         while current_row < num_rows:
             while current_column < num_columns:
                 current_detail = box_details[box_no]
+                
+                wpn_image = current_detail.image
+                wpn_size = current_detail.image_size
+                wpn_callback = current_detail.callback
+                wpn_callback_args = current_detail.callback_args
+                
+                
                 current_column += 1
-                #def __init__(self,parent,text,pos,tr=None,size=0.5,callback = None,textType = drawing.texture.TextTypes.SCREEN_RELATIVE,line_width=2,colour=None,level = None):
-                    
-                self.weaponSelectionBoxes.append(ui.TextBoxButton(self.parent_ui_object, current_detail[0], next_box_bottom_left, next_box_top_right, size=5, callback=current_detail[1], colour=drawing.constants.colours.red)) 
-                #self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, next_box_bottom_left, next_box_top_right, drawing.constants.colours.red, buffer=globals.ui_buffer))
+                #def __init__(self,parent,pos,tr,texture_name,callback,args,buffer=None,level=None):
+                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, current_detail[0], current_detail[1], current_detail[2])) 
+
                 next_box_top_right = next_box_top_right - Point(box_size[0], 0)
                 next_box_bottom_left = next_box_bottom_left - Point(box_size[0], 0)
                 box_no += 1

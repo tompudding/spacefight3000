@@ -8,6 +8,7 @@ import cmath
 import drawing
 import Box2D as box2d
 import numpy
+from collections import namedtuple
 
 class Troop(gobject.TeleportableBox):
     texture_name = 'redtrooper'
@@ -84,7 +85,11 @@ class Troop(gobject.TeleportableBox):
         
         weapon_selection_options = []
         for weapon in self.weapon_options:
-            weapon_selection_options.append( ("wpn", self.changeWeapon, weapon) )
+            wpn_detail = namedtuple("wpn_detail", 'image, image_size, callback, callback_args')
+            detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon)
+            
+            weapon_selection_options.append( detail )
+            weapon_selection_options.append( detail )
         
         globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
         
