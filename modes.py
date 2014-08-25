@@ -219,7 +219,7 @@ class PlayerPlaying(Mode):
         else:
             self.selected_troop.select()
 
-            
+
         self.last_drag = globals.time
 
     def MouseMotion(self,pos,rel):
@@ -249,6 +249,9 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_SPACE:
             if self.selected_troop:
+                if not self.selected_troop.locked_planet:
+                    globals.sounds.not_allowed.play()
+                    return
                 self.selected_troop.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
 
@@ -294,7 +297,7 @@ class PlayerPlaying(Mode):
                 self.parent.mode = PlayerPlaying(self.parent)
         if self.selected_troop == None or self.selected_troop.dead:
             self.EndGo()
-        
+
         if(globals.game_view.dragging == None):
             if(globals.time > self.last_drag + 500):
                 globals.game_view.viewpos.Follow(self.selected_troop)
@@ -330,7 +333,7 @@ class ComputerPlaying(Mode):
         self.ai = AI()
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
-        
+
         self.last_drag = globals.time
 
 
@@ -353,7 +356,7 @@ class ComputerPlaying(Mode):
         if self.selected_troop.dead or not keep_going:
             self.EndGo()
             return
-        
+
         if(globals.game_view.dragging == None):
             if(globals.time > self.last_drag + 500):
                 globals.game_view.viewpos.Follow(self.selected_troop)
