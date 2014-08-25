@@ -8,15 +8,17 @@ import cmath
 import drawing
 import Box2D as box2d
 import numpy
+import ui
 from collections import namedtuple
 
 class Troop(gobject.TeleportableBox):
     texture_name = 'redtrooper'
     frame_duration = 100
-    jump_power = 50
+    jump_power = 40
     jump_duration = 300
     def __init__(self, initialWeapon, bl, goodness):
         self.good = goodness
+        self.health = self.initial_health
         if self.good == 0:
             self.texture_name = 'alien'
         self.direction = 'right'
@@ -31,6 +33,18 @@ class Troop(gobject.TeleportableBox):
         self.selectedBoxtc = globals.atlas.TextureSpriteCoords(self.selectedBoxFilename)
         self.currentWeaponAngle = 0
         self.currentWeaponPower = 0
+
+        health_bar_size = globals.game_view.GetRelative(Point(20,10))
+        self.health_bar = ui.PowerBar(parent=globals.game_view,
+                                     pos=Point(0,0),
+                                     tr=health_bar_size,
+                                     level=1.0,
+                                     bar_colours=(drawing.constants.colours.red,
+                                                  drawing.constants.colours.yellow,
+                                                  drawing.constants.colours.green),
+                                     buffer=globals.nonstatic_ui_buffer,
+                                     border_colour = drawing.constants.colours.white)
+        self.health_bar.Disable()
 
         self.max_weapon_power = 1
         self.power_increase_amount_per_milisecond = (0.6 / 1000.0)
@@ -81,6 +95,7 @@ class Troop(gobject.TeleportableBox):
         super(Troop,self).Destroy()
         if not self.static:
             globals.physics.RemoveObject(self)
+        self.health_bar.Delete()
         self.selectionBoxQuad.Delete()
 
     def add_weapon(self, wpn):
@@ -210,6 +225,12 @@ class Troop(gobject.TeleportableBox):
 
     def TakeDamage(self, amount):
         self.health -= amount
+        amount_full = float(self.health)/self.initial_health
+        self.health_bar.SetBarLevel(amount_full)
+        if self.health != self.initial_health:
+            self.health_bar.Enable()
+        else:
+            self.health_bar.Disable()
         print self.health
 
     def PhysUpdate(self,gravity_sources):
@@ -226,6 +247,8 @@ class Troop(gobject.TeleportableBox):
             vertices.append( screen_coords )
 
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
+        if self.health != self.initial_health:
+            self.health_bar.SetPosAbsolute( vertices[2] + Point(10,10) )
 
         if self.jumping:
             if globals.time > self.jumping:
