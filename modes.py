@@ -6,8 +6,8 @@ import gobjects
 from globals.types import Point
 import sys
 import gobjects.bazooka
-from game_world import GameWorld
 import itertools
+import game_world
 
 class Mode(object):
     """ Abstract base class to represent game modes """
@@ -70,13 +70,14 @@ class Titles(Mode):
         self.stage = TitleStages.PLAYING
 
     def Update(self):
+        self.Complete()
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage]()
 
     def Complete(self):
         self.backdrop.Delete()
         self.blurb_text.Delete()
-        self.parent.game_world = GameWorld(0)
+        self.parent.game_world = game_world.GameWorld(0)
         self.parent.mode = PlayerPlaying(self.parent)
 
     def Startup(self):
@@ -221,8 +222,11 @@ class PlayerPlaying(Mode):
     def KeyDown(self,key):
         if key in self.keyflags:
             self.keydownmap |= self.keyflags[key]
-            if self.selectedGoodie and not self.moved:
-                self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
+            if self.selectedGoodie:
+                if not self.moved:
+                    self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
+                else:
+                    globals.sounds.not_allowed.play()
         elif key == pygame.K_UP and self.selectedGoodie and not self.moved:
             self.selectedGoodie.jump()
         elif key == pygame.K_k and self.selectedGoodie:
@@ -252,6 +256,8 @@ class PlayerPlaying(Mode):
             if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
                 if self.selectedGoodie != None:
                     self.selectedGoodie.chargeWeapon()
+        else:
+            globals.sounds.not_allowed.play()
 
     def MouseButtonUp(self,pos,button):
         if not self.fired:
