@@ -8,7 +8,7 @@ class Bazooka(weapon.Weapon):
     def __init__(self):
         self.fire_sound = globals.sounds.bazooka_fire
         self.projectile_texture_name = "zookshell.png"
-        super(Bazooka, self).__init__(500, self.projectile_texture_name, 2000, True, 5)
+        super(Bazooka, self).__init__(300, self.projectile_texture_name, 2000, True, 5)
         self.imageSize = Point(24, 8)
         self.projectileExplodes = True
         #picked utterly random numbers, we can sort that later.
