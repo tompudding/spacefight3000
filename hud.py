@@ -5,7 +5,7 @@ from globals.types import Point
 import globals
 
 class HelpScreen(ui.UIElement):
-    help_text = "left and right to move, mouse to aim, l-mouse to fire, space to end turn, up to jump. Those guys with the big eyes and the tentacles? They want your brave red troopers dead. Make that not happen!"
+    help_text = "left and right to move, mouse to aim, l-mouse to fire, space to end turn, up to jump, mouse wheel to zoom in and out. Those guys with the big eyes and the tentacles? They want your brave red troopers dead. Make that not happen! You will be rewarded with more weapons."
     def __init__(self,parent,pos,tr):
         super(HelpScreen,self).__init__(parent,pos,tr)
         self.backdrop = ui.Box(parent = self,
