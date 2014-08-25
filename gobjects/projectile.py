@@ -123,7 +123,7 @@ class Projectile(gobject.TeleportableBox):
                 
                 impulseToApply = troopCenter - explosionCenter
                 impulseToApply.Normalize()
-                impulseToApply * Point(1, 1)
+                impulseToApply * Point(0.3, 0.3)
                 impulse = box2d.b2Vec2(impulseToApply[0], impulseToApply[1])
                 troop.locked_planet = None
                 troop.body.ApplyImpulse(impulse, troop.body.GetWorldCenter())
