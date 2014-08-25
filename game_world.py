@@ -2,8 +2,8 @@ import gobjects
 import globals
 from globals.types import Point
 import math
-
 import itertools
+
 class GameWorld(object):
     last_level = 1
     def __init__(self, level):
@@ -31,8 +31,6 @@ class GameWorld(object):
             self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(1000,700),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
 
-
-
         self.ResetAfterTurn()
         self.UpdateHUD()
         globals.current_view.viewpos.Set(Point(500,500))
@@ -40,11 +38,14 @@ class GameWorld(object):
         for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
             item.Update()
 
+        self.ReapFallenHeroes()
+
+        self.UpdateHUD()
+
+    def ReapFallenHeroes(self):
         self.goodies = [t for t in self.goodies if not t.dead]
         self.baddies = [t for t in self.baddies if not t.dead]
         self.projectiles = [p for p in self.projectiles if not p.dead]
-
-        self.UpdateHUD()
 
     def Destroy(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets,self.projectiles):
@@ -64,6 +65,7 @@ class GameWorld(object):
             item.amount_moved = 0
 
     def NextGoodieToPlay(self):
+        self.ReapFallenHeroes()
         if len(self.goodies_to_play) > 0:
             return self.goodies_to_play.pop()
         elif len(self.badies_to_play) > 0:
@@ -73,6 +75,7 @@ class GameWorld(object):
             return self.goodies_to_play.pop()
 
     def NextBadieToPlay(self):
+        self.ReapFallenHeroes()
         if len(self.badies_to_play) > 0:
             return self.badies_to_play.pop()
         else:
