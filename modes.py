@@ -218,6 +218,7 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selected_troop.select()
+            globals.game_view.viewpos.Follow(self.selected_troop)
 
 
         self.last_drag = globals.time
@@ -243,6 +244,9 @@ class PlayerPlaying(Mode):
         elif key == pygame.K_x:
             for baddie in self.parent.game_world.baddies:
                 baddie.Destroy();
+        elif key == pygame.K_c:
+            if self.selected_troop:
+                globals.game_view.viewpos.Follow(self.selected_troop)
         elif key == pygame.K_n:
             if self.selected_troop:
                 self.selected_troop.unselect()
@@ -298,12 +302,9 @@ class PlayerPlaying(Mode):
         if self.selected_troop == None or self.selected_troop.dead:
             self.EndGo()
 
-        if(globals.game_view.dragging == None):
-            if(globals.time > self.last_drag + 500):
-                globals.game_view.viewpos.Follow(self.selected_troop)
-        else:
-            self.last_drag = globals.time
+        if globals.game_view.dragging is not None and globals.game_view.viewpos.follow:
             globals.game_view.viewpos.NoTarget()
+
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
