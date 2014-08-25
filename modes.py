@@ -268,6 +268,8 @@ class PlayerPlaying(Mode):
                     #self.fired = True
 
     def Update(self):
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
         self.elapsed = globals.time - self.start
         if self.selected_troop and self.selected_troop.amount_moved > globals.max_movement:
             self.selected_troop.move_direction = Point(0,0)
@@ -308,6 +310,9 @@ class ComputerPlaying(Mode):
 
 
     def Update(self):
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
+
         keep_going = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
         self.parent.game_world.update()
 

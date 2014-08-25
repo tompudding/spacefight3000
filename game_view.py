@@ -367,8 +367,6 @@ class GameView(ui.RootElement):
         self.mode = modes.GameOver(self)
 
     def KeyDown(self,key):
-        print "got a key"
-        print self.mode
         self.mode.KeyDown(key)
 
     def KeyUp(self,key):
