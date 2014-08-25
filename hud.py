@@ -88,6 +88,8 @@ class Hud(object):
         wpn_callback_args = current_detail.callback_args
         
         imageBtn = ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)
+        btnSize = imageBtn.absolute.size
+        imageBtn.ResizeImage(Point(wpn_size[0] / btnSize[0], wpn_size[1] / btnSize[1]))
             
         self.weaponSelectionBoxes.append(imageBtn) 
         
