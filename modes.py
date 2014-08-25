@@ -343,6 +343,7 @@ class ComputerPlaying(Mode):
     def Update(self):
         if self.selected_troop == None:
             self.EndGo()
+            return
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
 
