@@ -283,7 +283,7 @@ class TeleportableBox(BoxGobject):
         start = self.teleport_quads[0].start_vertex[0]
         end = self.teleport_quads[0].target_vertex[0]
         p = start + (end-start)*progress
-        return Point(p[0],p[1])
+        return box2d.b2Vec2(float(p[0]),float(p[1]))
 
     def TeleportUpdate(self):
         if self.teleport_in_progress:
