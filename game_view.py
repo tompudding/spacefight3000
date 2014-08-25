@@ -426,6 +426,7 @@ class GameView(ui.RootElement):
             self.dragging = self.viewpos.Get() + (pos/self.zoom)
         else:
             self.mode.MouseMotion(screen_pos,screen_rel)
+        #print self.viewpos.Get()
         return super(GameView,self).MouseMotion(pos,screen_rel,handled)
 
     def AdjustZoom(self,amount,pos):

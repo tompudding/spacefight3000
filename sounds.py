@@ -12,6 +12,5 @@ class Sounds(object):
             sound.set_volume(0.6)
             name = os.path.basename(filename)
             name = os.path.splitext(name)[0]
-            print name
             setattr(self,name,sound)
 
