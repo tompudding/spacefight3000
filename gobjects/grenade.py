@@ -6,5 +6,5 @@ class Grenade(weapon.Weapon):
     
     def __init__(self):
         self.projectile_texture_name = "grenade.png" 
-        super(Grenade, self).__init__(50, 500, self.projectile_texture_name, True, 3)
+        super(Grenade, self).__init__(50, self.projectile_texture_name, 4000, True, 3)
         self.imageSize = Point(25, 32)
