@@ -5,7 +5,7 @@ import math
 import itertools
 
 class GameWorld(object):
-    last_level = 2
+    last_level = 3
     troop_planet_distance = 20
     def __init__(self, level):
         self.planets = []

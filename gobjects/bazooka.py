@@ -3,10 +3,10 @@ from globals.types import Point
 import globals
 
 class Bazooka(weapon.Weapon):
+    item_name_left = 'red_bazooka_left.png'
+    item_name_right = 'red_bazooka_right.png'
     def __init__(self):
         self.fire_sound = globals.sounds.bazooka_fire
-        self.right_texture = "red_bazooka_right.png"
-        self.left_texture = "red_bazooka_left.png"
         self.projectile_texture_name = "zookshell.png"
         super(Bazooka, self).__init__(500, self.projectile_texture_name, 2000, True, 5)
         self.imageSize = Point(24, 8)
