@@ -1396,9 +1396,6 @@ class Slider(UIElement):
         self.pointer_quad.SetVertices(self.pointer_ui.absolute.bottom_left,self.pointer_ui.absolute.top_right,self.uilevel + 0.1)
         self.pointer_quad.SetColour(self.pointer_colour)
 
-
-
-
     def Enable(self):
         if not self.enabled:
             self.root.RegisterUIElement(self)

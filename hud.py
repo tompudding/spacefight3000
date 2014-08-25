@@ -21,14 +21,6 @@ class Hud(object):
                                      colour = (1,1,1,1),
                                      scale  = 8)
 
-        self.blob = ui.ImageBox(parent = globals.screen_root,
-                                pos = Point(0.2,0.2),
-                                tr = Point(0.8,0.8),
-                                texture_name = 'gate0.png',
-                                level = 8)
-
-
-
     def setupWeaponPowerBar(self):
         barColours = [drawing.constants.colours.light_green, drawing.constants.colours.yellow, drawing.constants.colours.red]
         barBorder = drawing.constants.colours.blue
