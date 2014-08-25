@@ -92,7 +92,6 @@ class Troop(gobject.TeleportableBox):
             detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon)
             
             weapon_selection_options.append( detail )
-            weapon_selection_options.append( detail )
         
         globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
         

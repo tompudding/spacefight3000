@@ -53,7 +53,7 @@ class Hud(object):
         maxY = 1
         
         num_rows = 2
-        num_columns = num_boxes / num_rows
+        num_columns = 2
         
         current_row = 0 
         current_column = 0
@@ -63,18 +63,15 @@ class Hud(object):
         box_no = 0
         while current_row < num_rows:
             while current_column < num_columns:
-                current_detail = box_details[box_no]
                 
-                wpn_image = current_detail.image
-                wpn_size = current_detail.image_size
-                wpn_callback = current_detail.callback
-                wpn_callback_args = current_detail.callback_args
+                if(box_no < num_boxes):
+                    current_detail = box_details[box_no]
+                    self.addWeaponSelectionButton(current_detail)
+                else:
+                    self.addEmptySelectionButton()
                 
-                
-                current_column += 1
-                #def __init__(self,parent,pos,tr,texture_name,callback,args,buffer=None,level=None):
-                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args)) 
 
+                current_column += 1
                 next_box_top_right = next_box_top_right - Point(box_size[0], 0)
                 next_box_bottom_left = next_box_bottom_left - Point(box_size[0], 0)
                 box_no += 1
@@ -83,6 +80,17 @@ class Hud(object):
             next_box_bottom_left =  next_box_top_right - box_size   
             current_row += 1
             current_column = 0
+    
+    def addWeaponSelectionButton(self, detail):
+        wpn_image = current_detail.image
+        wpn_size = current_detail.image_size
+        wpn_callback = current_detail.callback
+        wpn_callback_args = current_detail.callback_args
+            
+        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args)) 
+        
+    def addEmptySelectionButton(self):
+        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, "", None, None)) 
     
     def clearWeaponSelectionBoxs(self):
         for existing_box in self.weaponSelectionBoxes:
