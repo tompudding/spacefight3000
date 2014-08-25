@@ -35,7 +35,7 @@ class AI(object):
             angle = self.GetAngle(troop.locked_planet.body, troop.body, nearest_enemy.locked_planet.body)
             if abs(angle) < math.pi / 6:
                 if not troop.jumped:
-                print 'jump!'
+                    print 'jump!'
                     troop.jump()
                 else:
                     return False
