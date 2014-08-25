@@ -45,7 +45,7 @@ class Gobject(object):
         self.parent_joint = None
         self.ExtraShapes()
         self.PhysUpdate([])
-        self.health = Gobject.initial_health
+        self.health = self.initial_health
 
     @property
     def centre_world(self):

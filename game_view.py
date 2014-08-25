@@ -349,6 +349,7 @@ class GameView(ui.RootElement):
         drawing.Translate(-self.viewpos.pos.x,-self.viewpos.pos.y,0)
         drawing.DrawAll(globals.quad_buffer,self.atlas.texture.texture)
         drawing.DrawAll(globals.nonstatic_text_buffer,globals.text_manager.atlas.texture.texture)
+        drawing.DrawNoTexture(globals.nonstatic_ui_buffer)
 
     def Update(self):
         if self.hud and self.hud.help_screen.enabled:

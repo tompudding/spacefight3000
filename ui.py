@@ -397,15 +397,17 @@ class UIRoot(RootElement):
             pass
 
 class PowerBar(UIElement):
-    def __init__(self,parent,pos,tr,level,bar_colours,border_colour):
+    def __init__(self,parent,pos,tr,level,bar_colours,border_colour,buffer=None):
         super(PowerBar,self).__init__(parent,pos,tr)
         self.low_power_colour    = bar_colours[0]
         self.medium_power_colour = bar_colours[1]
         self.high_power_colour   = bar_colours[2]
-        self.border              = drawing.QuadBorder(globals.ui_buffer,line_width = 1)
+        if buffer == None:
+            buffer = globals.ui_buffer
+        self.border              = drawing.QuadBorder(buffer,line_width = 1)
         self.border_colour       = border_colour
         self.border.SetColour(self.border_colour)
-        self.quad                = drawing.Quad(globals.ui_buffer)
+        self.quad                = drawing.Quad(buffer)
         self.power_level         = level
         self.UpdatePosition()
         self.Enable()
