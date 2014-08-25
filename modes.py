@@ -282,6 +282,7 @@ class PlayerPlaying(Mode):
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
+            globals.sounds.level_win.play()
             if game_world.GameWorld.last_level == self.parent.game_world.level:
                 self.parent.mode = GameOver(self.parent, True)
             else:
