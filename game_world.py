@@ -53,7 +53,7 @@ class GameWorld(object):
             item.Destroy()
 
     def UpdateHUD(self):
-        if hasattr(globals.current_view.mode, "selected_troop"):
+        if hasattr(globals.current_view.mode, "selected_troop") and globals.current_view.mode.selected_troop:
             move_to_display = globals.max_movement - round(globals.current_view.mode.selected_troop.amount_moved)
             if move_to_display < 0:
                 move_to_display = 0

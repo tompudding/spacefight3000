@@ -268,7 +268,7 @@ class PlayerPlaying(Mode):
 
     def Update(self):
         self.elapsed = globals.time - self.start
-        if self.selected_troop.amount_moved > globals.max_movement:
+        if self.selected_troop and self.selected_troop.amount_moved > globals.max_movement:
             self.selected_troop.move_direction = Point(0,0)
             self.selected_troop.max_movement = 0
             self.moved = True
@@ -322,4 +322,4 @@ class ComputerPlaying(Mode):
             if self.selected_troop:
                 self.selected_troop.unselect()
             self.parent.mode = PlayerPlaying(self.parent)
-        
+
