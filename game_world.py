@@ -14,44 +14,58 @@ class GameWorld(object):
         self.portals = []
         self.projectiles = []
         self.level = level
-
+        level = 1
 
         if level == 0:
-            self.planets.append(gobjects.planet.BluePlanet(Point(800,900), 200));
-            self.planets.append(gobjects.planet.YellowPlanet(Point(1500,900), 200));
-            self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
-
-            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,5*math.pi/4)
-            wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, pos,1)
-            wellEquiptTroop.add_weapon(gobjects.Lazer)
-            wellEquiptTroop.add_weapon(gobjects.Grenade)
-
-            self.goodies.append(wellEquiptTroop);
-            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, pos,1));
-
-            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,0)
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
-            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
-            globals.current_view.viewpos.Set(Point(500,500))
+            self.createLevel1()
         elif level == 1:
-            self.planets.append(gobjects.planet.BluePlanet(Point(1100,600), 200));
-            #Lets have 6 portals on the planet, 2 pairs go to each other, the other two go to the other planet
-            self.portals.append(gobjects.Portal(self.planets[0],0,self.planets[0],math.pi))
-            self.portals.append(gobjects.Portal(self.planets[0],math.pi/3,self.planets[0],4*math.pi/3))
-            self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(2000,900), 250));
-            self.portals.append(gobjects.Portal(self.planets[0],2*math.pi/3,self.planets[1],math.pi/3))
-            self.portals.append(gobjects.Portal(self.planets[0],5*math.pi/3,self.planets[1],4*math.pi/3))
-            pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, pos,1));
-            pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
-            self.baddies.append(gobjects.Troop(gobjects.Bazooka, pos,0));
-            globals.current_view.viewpos.Set(Point(810,340))
+            self.createLevel2()
+
 
         self.ResetAfterTurn()
         self.UpdateHUD()
+    
+    def createLevel1(self):
+        #add planets
+        self.planets.append(gobjects.planet.BluePlanet(Point(800,900), 200));
+        self.planets.append(gobjects.planet.YellowPlanet(Point(1500,900), 200));
 
+        #add portals
+        self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
+        
+        #add troops
+        pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,5*math.pi/4)
+        wellEquiptTroop = gobjects.Troop(gobjects.Lazer, pos,1)
+        wellEquiptTroop.add_weapon(gobjects.Bazooka)
+        wellEquiptTroop.add_weapon(gobjects.Grenade)
+
+        self.goodies.append(wellEquiptTroop);
+        pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
+        self.goodies.append(gobjects.Troop(gobjects.Lazer, pos,1));
+
+        pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,0)
+        self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        globals.current_view.viewpos.Set(Point(500,500))
+    
+    def createLevel2(self):
+        #add planets
+        self.planets.append(gobjects.planet.BluePlanet(Point(1100,600), 200));
+        self.planets.append(gobjects.planet.SpaceHattanDayPlanet(Point(2000,900), 250));
+        
+        #Lets have 6 portals on the planet, 2 pairs go to each other, the other two go to the other planet
+        self.portals.append(gobjects.Portal(self.planets[0],0,self.planets[0],math.pi))
+        self.portals.append(gobjects.Portal(self.planets[0],math.pi/3,self.planets[0],4*math.pi/3))
+        self.portals.append(gobjects.Portal(self.planets[0],2*math.pi/3,self.planets[1],math.pi/3))
+        self.portals.append(gobjects.Portal(self.planets[0],5*math.pi/3,self.planets[1],4*math.pi/3))
+        
+        #troops
+        pos = self.planets[0].GetSurfacePoint(self.troop_planet_distance,math.pi/2)
+        self.goodies.append(gobjects.Troop(gobjects.Lazer, pos,1));
+        pos = self.planets[1].GetSurfacePoint(self.troop_planet_distance,3*math.pi/2)
+        self.baddies.append(gobjects.Troop(gobjects.Lazer, pos,0));
+        globals.current_view.viewpos.Set(Point(810,340))
 
     def update(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals, self.projectiles):
