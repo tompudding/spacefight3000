@@ -345,6 +345,8 @@ class GameView(ui.RootElement):
         drawing.DrawAll(globals.nonstatic_text_buffer,globals.text_manager.atlas.texture.texture)
 
     def Update(self):
+        if self.hud and self.hud.help_screen.enabled:
+            return
         if self.mode:
             self.mode.Update()
 
@@ -374,7 +376,8 @@ class GameView(ui.RootElement):
         self.mode.KeyUp(key)
 
     def MouseButtonDown(self,pos,button):
-
+        if self.hud and self.hud.help_screen.enabled:
+            return False,False
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
             self.dragging = screen_pos
@@ -385,6 +388,8 @@ class GameView(ui.RootElement):
         return super(GameView,self).MouseButtonDown(pos,button)
 
     def MouseButtonUp(self,pos,button):
+        if self.hud and self.hud.help_screen.enabled:
+            return False,False
         #print 'mouse button up',pos,button
         screen_pos = self.viewpos.Get() + (pos/self.zoom)
         if button == 2 or button == 3 or pygame.key.get_mods() & pygame.KMOD_CTRL:
@@ -399,6 +404,8 @@ class GameView(ui.RootElement):
         return super(GameView,self).MouseButtonUp(pos,button)
 
     def MouseMotion(self,pos,rel,handled):
+        if self.hud and self.hud.help_screen.enabled:
+            return False
         #print 'mouse',pos
         #if self.selected_player != None:
         #    self.selected_player.MouseMotion()
