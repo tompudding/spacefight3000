@@ -36,11 +36,12 @@ class AI(object):
             return False
 
     def GetNearestEnemy(self, troop, enemies):
+        distance = 10000000000000000
         if troop.locked_planet == None:
-            return []
+            return None, distance 
        
         nearest_enemy = None
-        distance = 10000000000000000
+
         location = troop.body.position
         for enemy in enemies:
             enemy_vect = box2d.b2Vec2(enemy.body.position)
@@ -54,11 +55,12 @@ class AI(object):
             
 
     def GetNearestOnPlanetEnemy(self, troop, enemies):
+        distance = 10000000000000000
         if troop.locked_planet == None:
-            return []
+            return None, distance
        
         nearest_enemy = None
-        distance = 10000000000000000
+
         location = troop.body.position
         for enemy in enemies:
             if enemy.locked_planet == troop.locked_planet:
