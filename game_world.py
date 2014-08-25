@@ -19,7 +19,10 @@ class GameWorld(object):
             self.planets.append(gobjects.BluePlanet(Point(800,900), 200));
             self.planets.append(gobjects.YellowPlanet(Point(1500,900), 200));
             self.portals.append(gobjects.Portal(self.planets[0],3*math.pi/2,self.planets[1],1.5))
-            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,600),1));
+            
+            wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, Point(600,600),1)
+            wellEquiptTroop.add_weapon(gobjects.Lazer)
+            self.goodies.append(wellEquiptTroop);
             self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,900),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900),0));

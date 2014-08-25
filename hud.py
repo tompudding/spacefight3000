@@ -67,7 +67,7 @@ class Hud(object):
                 
                 current_column += 1
                 #def __init__(self,parent,pos,tr,texture_name,callback,args,buffer=None,level=None):
-                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, current_detail[0], current_detail[1], current_detail[2])) 
+                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args)) 
 
                 next_box_top_right = next_box_top_right - Point(box_size[0], 0)
                 next_box_bottom_left = next_box_bottom_left - Point(box_size[0], 0)
