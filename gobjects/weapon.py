@@ -6,6 +6,8 @@ import math
 
 class Weapon(object):
     fire_sound = None
+    item_name_left = None
+    item_name_right = None
     def __init__(self, maxDamage, projectileImage, power_modifier, limitedAmmo, currentAmmo):
         self.maxDamage = maxDamage
         self.projectileImage = projectileImage
@@ -14,6 +16,11 @@ class Weapon(object):
         self.power_modifier = power_modifier
         self.imageSize = None
         self.projectileExplodes = False
+        self.item_tc_left = self.item_tc_right = None
+        if self.item_name_left:
+            self.item_tc_left = globals.atlas.TextureSpriteCoords(self.item_name_left)
+        if self.item_name_right:
+            self.item_tc_right = globals.atlas.TextureSpriteCoords(self.item_name_right)
 
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)

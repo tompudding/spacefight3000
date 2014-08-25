@@ -72,10 +72,20 @@ class Troop(gobject.TeleportableBox):
 
         self.selectionBoxQuad.Disable()
         self.z_level = 200
+        self.SetWeaponQuad()
 
     def changeWeapon(self, btnClass, pos, button, weaponToChangeTo):
         globals.sounds.select_weapon.play()
         self.currentWeapon = weaponToChangeTo
+        self.SetWeaponQuad()
+
+    def SetWeaponQuad(self):
+        if self.direction == 'right':
+            tc = self.currentWeapon.item_tc_right
+        else:
+            tc = self.currentWeapon.item_tc_left
+        if tc:
+            self.weapon_quad.SetTextureCoordinates(tc)
 
     def setDirection(self,newdirection):
         self.direction = newdirection
@@ -201,6 +211,7 @@ class Troop(gobject.TeleportableBox):
             return
 
         self.selectionBoxQuad = drawing.Quad(globals.quad_buffer, tc = self.selectedBoxtc)
+        self.weapon_quad = drawing.Quad(globals.quad_buffer)
 
     def Update(self):
         current_time = globals.time
@@ -247,6 +258,7 @@ class Troop(gobject.TeleportableBox):
             vertices.append( screen_coords )
 
         self.selectionBoxQuad.SetAllVertices(vertices, self.z_level+0.1)
+        self.weapon_quad.SetAllVertices(vertices, self.z_level+0.1)
         if self.health != self.initial_health:
             self.health_bar.SetPosAbsolute( vertices[2] + Point(10,10) )
 
