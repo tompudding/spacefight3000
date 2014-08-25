@@ -12,3 +12,4 @@ player_config         = None
 screen_root           = None
 time                  = 0
 physics               = None
+max_movement          = 200
