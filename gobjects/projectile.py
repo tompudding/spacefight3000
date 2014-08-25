@@ -122,7 +122,7 @@ class Projectile(gobject.TeleportableBox):
                 troop.TakeDamage(explosionDamage * distance/explosionRange)
                 
                 impulseToApply = troopCenter - explosionCenter
-                impulseToApply.Normalise()
+                impulseToApply.Normalize()
                 troop.body.ApplyImpulse(box2d.b2Vec2(100,100), troop.body.GetWorldCenter())
             else:
                 print "no damage from explosion"
