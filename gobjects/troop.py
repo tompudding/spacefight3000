@@ -108,6 +108,7 @@ class Troop(gobject.TeleportableBox):
             globals.physics.RemoveObject(self)
         self.health_bar.Delete()
         self.selectionBoxQuad.Delete()
+        self.weapon_quad.Delete()
 
     def add_weapon(self, wpn):
         self.weapon_options.append(wpn())
