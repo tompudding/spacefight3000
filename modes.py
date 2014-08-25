@@ -204,83 +204,83 @@ class PlayerPlaying(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
 
-        self.selectedGoodie = None
+        self.selected_troop = None
         self.keydownmap = 0
         self.fired = False
         self.moved = False
 
-        self.selectedGoodie = parent.game_world.NextGoodieToPlay()
-        if self.selectedGoodie == None:
+        self.selected_troop = parent.game_world.NextGoodieToPlay()
+        if self.selected_troop == None:
             self.parent.mode = ComputerPlaying(self.parent)
         else:
-            self.selectedGoodie.select()
+            self.selected_troop.select()
 
     def MouseMotion(self,pos,rel):
-        if(self.selectedGoodie != None):
-            self.selectedGoodie.setWeaponAngle(pos)
+        if(self.selected_troop != None):
+            self.selected_troop.setWeaponAngle(pos)
 
     def KeyDown(self,key):
         if key in self.keyflags:
             self.keydownmap |= self.keyflags[key]
-            if self.selectedGoodie:
+            if self.selected_troop:
                 if not self.moved:
-                    self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
+                    self.selected_troop.move_direction += self.direction_amounts[self.keyflags[key]]
                 else:
                     globals.sounds.not_allowed.play()
-        elif key == pygame.K_UP and self.selectedGoodie and not self.moved:
-            self.selectedGoodie.jump()
-        elif key == pygame.K_k and self.selectedGoodie:
-            self.selectedGoodie.Destroy()
-            self.selectedGoodie.unselect()
-            self.selectedGoodie = None
+        elif key == pygame.K_UP and self.selected_troop and not self.moved:
+            self.selected_troop.jump()
+        elif key == pygame.K_k and self.selected_troop:
+            self.selected_troop.Destroy()
+            self.selected_troop.unselect()
+            self.selected_troop = None
         elif key == pygame.K_x:
             for baddie in self.parent.game_world.baddies:
                 baddie.Destroy();
         elif key == pygame.K_n:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
+            if self.selected_troop:
+                self.selected_troop.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_SPACE:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
+            if self.selected_troop:
+                self.selected_troop.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
 
     def KeyUp(self,key):
         if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
-            if self.selectedGoodie and not self.moved:
-                self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
+            if self.selected_troop and not self.moved:
+                self.selected_troop.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
         if not self.fired:
             if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
-                if self.selectedGoodie != None:
-                    self.selectedGoodie.chargeWeapon()
+                if self.selected_troop != None:
+                    self.selected_troop.chargeWeapon()
         else:
             globals.sounds.not_allowed.play()
 
     def MouseButtonUp(self,pos,button):
         if not self.fired:
             if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
-                if self.selectedGoodie != None:
-                    self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
+                if self.selected_troop != None:
+                    self.parent.game_world.projectiles.append(self.selected_troop.fireWeapon())
                     self.fired = True
 
     def Update(self):
         self.elapsed = globals.time - self.start
-        if self.selectedGoodie.amount_moved > globals.max_movement:
-            self.selectedGoodie.move_direction = Point(0,0)
-            self.selectedGoodie.max_movement = 0
+        if self.selected_troop.amount_moved > globals.max_movement:
+            self.selected_troop.move_direction = Point(0,0)
+            self.selected_troop.max_movement = 0
             self.moved = True
 
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
-            if GameWorld.last_level == self.parent.game_world.level:
+            if game_world.GameWorld.last_level == self.parent.game_world.level:
                 self.parent.mode = GameOver(self.parent, True)
             else:
                 self.parent.game_world.Destroy()
-                self.parent.game_world = GameWorld(self.parent.game_world.level + 1)
+                self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
                 self.parent.mode = PlayerPlaying(self.parent)
 
     def PlayerPlay(self, ticks):
@@ -299,39 +299,27 @@ class ComputerPlaying(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
 
-        self.selectedGoodie = None
-        self.keydownmap = 0
+        self.selected_troop = None
 
-        self.selectedGoodie = parent.game_world.NextBadieToPlay()
-        if self.selectedGoodie == None:
+        self.selected_troop = parent.game_world.NextBadieToPlay()
+        if self.selected_troop == None:
             self.parent.mode = PlayerPlaying(self.parent)
         else:
-            self.selectedGoodie.select()
+            self.selected_troop.select()
 
-        self.selectedGoodie.move_direction -= Point(8.0,0.0)
+        self.selected_troop.move_direction -= Point(8.0,0.0)
 
     def Update(self):
-        self.elapsed = globals.time - self.start
-        ticks = pygame.time.get_ticks()
-
         self.parent.game_world.update()
-        if self.selectedGoodie.amount_moved > globals.max_movement:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
-            self.parent.mode = PlayerPlaying(self.parent)
 
-        return
-        if len(self.parent.game_world.baddies) == 0:
-            raise sys.exit("player won")
-        elif ticks - self.computers_go_time > 500:
-            # self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
-            self.computers_go_time = ticks
-            self.parent.game_world.baddies[self.current_baddie_index].unselect()
-            self.current_baddie_index += 1
-            if self.current_baddie_index == len(self.parent.game_world.baddies):
-                if len(self.parent.game_world.goodies) == 0:
-                    self.parent.mode = GameOver(self.parent, False)
-                else:
-                    self.parent.mode = PlayerPlaying(self.parent)
-            else:
-                self.parent.game_world.baddies[self.current_baddie_index].select()
+        if self.selected_troop.amount_moved > globals.max_movement:
+            self.EndGo()
+
+        if self.selected_troop.dead:
+            self.EndGo()
+
+    def EndGo(self):
+            if self.selected_troop:
+                self.selected_troop.unselect()
+            self.parent.mode = PlayerPlaying(self.parent)
+        
