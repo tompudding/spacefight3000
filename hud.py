@@ -24,7 +24,7 @@ class Hud(object):
                                                        text='HELP',
                                                        textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
                                                        colour=(1,1,1,1),
-                                                       callback=self.show_help
+                                                       callback=self.show_help,
                                                        size=8,
                                                        )
         #self.help_screen =
