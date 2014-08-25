@@ -14,7 +14,6 @@ class GameWorld(object):
         self.portals = []
         self.projectiles = []
         self.level = level
-        level = 0
 
         if level == 0:
             self.createLevel1()
