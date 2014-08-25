@@ -42,6 +42,7 @@ class Troop(gobject.TeleportableBox):
         self.move_direction = Point(0,0)
         self.jumping = None
         self.charging = False
+        self.amount_moved = 0
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
 
@@ -263,6 +264,7 @@ class Troop(gobject.TeleportableBox):
             self.quad.SetTextureCoordinates(tc)
 
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
+            self.amount_moved += abs(vector.real) / 1000
             self.body.angle = angle - math.pi/2
             vector = cmath.rect(-1000,angle )
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())

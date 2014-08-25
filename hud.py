@@ -19,7 +19,7 @@ class Hud(object):
                                  colour=(0,0,0,0.7))
 
         self.level_bar = ui.TextBox(parent = self.parent_ui_object,
-                                     bl     = Point(0.5,0),
+                                     bl     = Point(0.25,0),
                                      tr     = None,
                                      text   = "??" ,
                                      textType = drawing.texture.TextTypes.SCREEN_RELATIVE,

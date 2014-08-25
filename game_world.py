@@ -51,11 +51,17 @@ class GameWorld(object):
             item.Destroy()
 
     def UpdateHUD(self):
-        globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}".format(len(self.goodies), len(self.baddies), self.level+1))
+        if hasattr(globals.current_view.mode, "selectedGoodie"):
+            move_to_display = globals.max_movement - round(globals.current_view.mode.selectedGoodie.amount_moved)
+            if move_to_display < 0:
+                move_to_display = 0
+            globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}    Movement Left {3}".format(len(self.goodies), len(self.baddies), self.level+1, move_to_display))
 
     def ResetAfterTurn(self):
         self.goodies_to_play = list(self.goodies)
         self.badies_to_play = list(self.baddies)
+        for item in itertools.chain(self.goodies,self.baddies):
+            item.amount_moved = 0
 
     def NextGoodieToPlay(self):
         if len(self.goodies_to_play) > 0:
