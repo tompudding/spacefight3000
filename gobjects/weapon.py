@@ -13,6 +13,7 @@ class Weapon(object):
         self.currentAmmo = currentAmmo
         self.power_modifier = power_modifier
         self.imageSize = None
+        self.projectileExplodes = False
 
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)
@@ -30,7 +31,7 @@ class Weapon(object):
         projectileAngle = angle
             
         force = box2d.b2Vec2(x,y)
-        return projectile.Projectile(self.projectileImage, bl, self.imageSize, projectileAngle, force, self.maxDamage, parentTroop)
+        return projectile.Projectile(self.projectileImage, bl, self.imageSize, projectileAngle, force, self.maxDamage, parentTroop, self.projectileExplodes)
     
     def isOutOfAmmo(self):
         if(self.limitedAmmo and self.currentAmmo <= 0):

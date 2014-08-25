@@ -9,4 +9,5 @@ class Bazooka(weapon.Weapon):
         self.projectile_texture_name = "zookshell.png" 
         super(Bazooka, self).__init__(500, self.projectile_texture_name, 2000, False, 1)
         self.imageSize = Point(24, 8)
+        self.projectileExplodes = True
         #picked utterly random numbers, we can sort that later. 
