@@ -617,6 +617,10 @@ class ImageBoxButton(ImageBox,HoverableElement):
             self.Enable()
         super(ImageBoxButton,self).Disable()
 
+    def Delete(self):
+        self.border.Delete()
+        super(ImageBoxButton,self).Delete()
+
     def Hover(self):
         self.hovered = True
         self.border.SetColour(self.hover_border_colour)
@@ -625,9 +629,9 @@ class ImageBoxButton(ImageBox,HoverableElement):
         self.hovered = False
         self.border.SetColour(self.border_colour)
 
-
     def OnClick(self,pos,button):
-        self.callback(self,pos,button,self.args)
+        if self.callback:
+            self.callback(self,pos,button,self.args)
 
 class DottedLine(UIElement):
     def __init__(self,parent,pos,tr,colour,buffer=globals.ui_buffer,level = None,num_segments=20):
