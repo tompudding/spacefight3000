@@ -24,7 +24,7 @@ class Hud(object):
                                                        text='HELP',
                                                        textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
                                                        colour=(1,1,1,1),
-                                                       callback=self.show_help
+                                                       callback=self.show_help,
                                                        size=8,
                                                        )
         #self.help_screen =
@@ -85,7 +85,7 @@ class Hud(object):
 
 
                 current_column += 1
-                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args)) 
+                self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args))
                 next_box_top_right = next_box_top_right - Point(box_size[0], 0)
                 next_box_bottom_left = next_box_bottom_left - Point(box_size[0], 0)
                 box_no += 1
@@ -100,15 +100,15 @@ class Hud(object):
         wpn_size = current_detail.image_size
         wpn_callback = current_detail.callback
         wpn_callback_args = current_detail.callback_args
-        
+
         imageBtn = ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)
-            
-        self.weaponSelectionBoxes.append(imageBtn) 
-        
+
+        self.weaponSelectionBoxes.append(imageBtn)
+
     def addEmptySelectionButton(self, bottom_left, top_right):
         lightGrey = 1,1,1,0.5
-        self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, bottom_left, top_right, lightGrey, buffer=globals.ui_buffer)) 
-    
+        self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, bottom_left, top_right, lightGrey, buffer=globals.ui_buffer))
+
     def clearWeaponSelectionBoxs(self):
         for existing_box in self.weaponSelectionBoxes:
             existing_box.Delete()
