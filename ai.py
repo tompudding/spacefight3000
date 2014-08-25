@@ -6,9 +6,10 @@ import math
 
 class AI(object):
 
+    def __init__(self):
+        self.idle_since = 0
+
     def NextMove(self, troop, enemies):
-        if troop is None:
-            return False
         nearest_enemy, distance_squared = self.GetNearestEnemy(troop, enemies)
 
         if nearest_enemy is None:
@@ -36,10 +37,18 @@ class AI(object):
 
         if troop.locked_planet == None:
             return True
+        return self.Idle()
 
-        
-                
-        return False
+    def Idle(self):
+        print "idle"
+        if self.idle_since == 0:
+            self.idle_since = globals.time
+            return True
+        elif globals.time - self.idle_since > 100:
+            return False
+        else:
+            return True
+
 
     def FireAt(self, troop, target):
         vect_diff = target.body.position - troop.body.position
