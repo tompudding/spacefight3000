@@ -102,7 +102,7 @@ class Gobject(object):
             return
 
         if isinstance(self, gobjects.Projectile):
-            if(not self.applyGravity):
+            if not self.applyGravity:
                 return
 
         for source in gravity_sources:

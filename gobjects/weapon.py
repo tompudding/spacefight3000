@@ -20,7 +20,7 @@ class Weapon(object):
 
     def FireAtTarget(self, angle, weapon_force, bl, parentTroop):
         #need to use the angle and force to determine where the projectile is headed.
-        if(self.limitedAmmo):
+        if self.limitedAmmo:
             self.currentAmmo -= 1
         if self.fire_sound:
             self.fire_sound.play()
@@ -35,7 +35,7 @@ class Weapon(object):
         return projectile.Projectile(self.projectileImage, bl, self.imageSize, projectileAngle, force, self.maxDamage, parentTroop, self.projectileExplodes)
 
     def isOutOfAmmo(self):
-        if(self.limitedAmmo and self.currentAmmo <= 0):
+        if self.limitedAmmo and self.currentAmmo <= 0:
             return True
 
         return False

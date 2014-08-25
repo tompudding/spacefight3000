@@ -68,16 +68,16 @@ class Projectile(gobject.TeleportableBox):
 
         if not self.applyGravity:
             self.applyGravity = True
-        if(not self.destroyMe):
+        if not self.destroyMe:
             self.destroyMe = True
             self.destroy_at = globals.time + time_limit
 
     def explode(self):
-        if(self.explosive):
-            if(self.exploding):
+        if self.explosive:
+            if self.exploding:
                 required_explosion_tc = (globals.time - self.startOfExplosion) / self.explosion_frame_duration
-                if(self.last_explosion_tc != required_explosion_tc):
-                    if(required_explosion_tc >= len(self.tc_explode)):
+                if self.last_explosion_tc != required_explosion_tc:
+                    if required_explosion_tc >= len(self.tc_explode):
                         return False
                     else:
                         self.progressExplosionAnimation(required_explosion_tc)
