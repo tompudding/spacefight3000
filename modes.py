@@ -215,6 +215,8 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selected_troop.select()
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
 
     def MouseMotion(self,pos,rel):
         if self.selected_troop != None:
@@ -285,9 +287,16 @@ class PlayerPlaying(Mode):
                 self.parent.game_world.Destroy()
                 self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
                 self.parent.mode = PlayerPlaying(self.parent)
+        if self.selected_troop.dead:
+            self.EndGo()
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
+
+    def EndGo(self):
+        if self.selected_troop:
+            self.selected_troop.unselect()
+        self.parent.mode = ComputerPlaying(self.parent)
 
 class ComputerPlaying(Mode):
     def __init__(self,parent):
@@ -307,6 +316,8 @@ class ComputerPlaying(Mode):
         else:
             self.selected_troop.select()
         self.ai = AI()
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
 
 
     def Update(self):
