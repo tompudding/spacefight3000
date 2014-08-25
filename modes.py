@@ -276,11 +276,11 @@ class PlayerPlaying(Mode):
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
-            if GameWorld.last_level == self.parent.game_world.level:
+            if game_world.GameWorld.last_level == self.parent.game_world.level:
                 self.parent.mode = GameOver(self.parent, True)
             else:
                 self.parent.game_world.Destroy()
-                self.parent.game_world = GameWorld(self.parent.game_world.level + 1)
+                self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
                 self.parent.mode = PlayerPlaying(self.parent)
 
     def PlayerPlay(self, ticks):
@@ -316,22 +316,13 @@ class ComputerPlaying(Mode):
 
         self.parent.game_world.update()
         if self.selectedGoodie.amount_moved > globals.max_movement:
+            self.EndGo()
+
+        if self.selectedGoodie.dead:
+            self.EndGo()
+
+    def EndGo(self):
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
             self.parent.mode = PlayerPlaying(self.parent)
-
-        return
-        if len(self.parent.game_world.baddies) == 0:
-            raise sys.exit("player won")
-        elif ticks - self.computers_go_time > 500:
-            # self.parent.game_world.baddies[self.current_baddie_index].fireWeapon()
-            self.computers_go_time = ticks
-            self.parent.game_world.baddies[self.current_baddie_index].unselect()
-            self.current_baddie_index += 1
-            if self.current_baddie_index == len(self.parent.game_world.baddies):
-                if len(self.parent.game_world.goodies) == 0:
-                    self.parent.mode = GameOver(self.parent, False)
-                else:
-                    self.parent.mode = PlayerPlaying(self.parent)
-            else:
-                self.parent.game_world.baddies[self.current_baddie_index].select()
+        
