@@ -305,26 +305,22 @@ class ComputerPlaying(Mode):
         else:
             self.selected_troop.select()
         self.ai = AI()
-        dis = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
-        if dis:
-            self.selected_troop.move_direction -= Point(dis,0.0)
-        else:
-            self.EndGo()
 
 
     def Update(self):
+        keep_going = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
         self.parent.game_world.update()
 
         if self.selected_troop.amount_moved > globals.max_movement:
             self.EndGo()
 
-        if self.selected_troop.dead:
+        if self.selected_troop.dead or not keep_going:
             self.EndGo()
 
 
 
     def EndGo(self):
-            if self.selected_troop:
-                self.selected_troop.unselect()
-            self.parent.mode = PlayerPlaying(self.parent)
+        if self.selected_troop:
+            self.selected_troop.unselect()
+        self.parent.mode = PlayerPlaying(self.parent)
 

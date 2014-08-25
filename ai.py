@@ -1,4 +1,5 @@
 import globals
+from globals.types import Point
 import Box2D as box2d
 import cmath
 
@@ -10,17 +11,18 @@ class AI(object):
         if not nearest_enemy is None:
             my_difference = troop.locked_planet.body.position - troop.body.position
             his_difference = troop.locked_planet.body.position - nearest_enemy.body.position
-
            
             distance,angle1 = cmath.polar(complex(my_difference.x, my_difference.y))
             distance,angle2 = cmath.polar(complex(his_difference.x, his_difference.y))
 
-            print angle1, angle2
-
             if angle1 > angle2:
-                return -8.0
+                troop.move_direction = Point(8.0,0.0)
             else:
-                return 8.0
+                troop.move_direction = Point(-8.0,0.0)
+
+            return True
+        else:
+            return False
 
     def GetNearestEnemy(self, troop, enemies):
         if troop.locked_planet == None:
