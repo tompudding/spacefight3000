@@ -181,9 +181,11 @@ class GameWorld(object):
             return self.goodies_to_play.pop()
         elif len(self.badies_to_play) > 0:
             return None
-        else:
+        elif len(self.goodies) > 0:
             self.ResetAfterTurn()
             return self.goodies_to_play.pop()
+        else:
+            return None
 
     def NextBadieToPlay(self):
         self.ReapFallenHeroes()

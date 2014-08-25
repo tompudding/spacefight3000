@@ -194,6 +194,8 @@ class PlayerPlaying(Mode):
 
     def __init__(self,parent):
         self.parent          = parent
+        if len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
         self.start           = pygame.time.get_ticks()
         self.stage           = PlayingStages.PLAYERS_GO
         self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
@@ -216,8 +218,7 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selected_troop.select()
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
+
             
         self.last_drag = globals.time
 
@@ -291,7 +292,7 @@ class PlayerPlaying(Mode):
                 self.parent.game_world.Destroy()
                 self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
                 self.parent.mode = PlayerPlaying(self.parent)
-        if self.selected_troop.dead:
+        if self.selected_troop == None or self.selected_troop.dead:
             self.EndGo()
         
         if(globals.game_view.dragging == None):
@@ -334,12 +335,16 @@ class ComputerPlaying(Mode):
 
 
     def Update(self):
+        if self.selected_troop == None:
+            self.EndGo()
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
 
         keep_going = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
         self.parent.game_world.update()
 
+        if self.selected_troop is None:
+            self.EndGo()
         if self.selected_troop.amount_moved > globals.max_movement:
             self.EndGo()
 
