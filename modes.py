@@ -8,6 +8,7 @@ import sys
 import gobjects.bazooka
 import itertools
 import game_world
+from ai import AI
 
 class Mode(object):
     """ Abstract base class to represent game modes """
@@ -298,16 +299,18 @@ class ComputerPlaying(Mode):
                                       buffer = globals.ui_buffer,
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
-
-        self.selected_troop = None
-
         self.selected_troop = parent.game_world.NextBadieToPlay()
         if self.selected_troop == None:
             self.parent.mode = PlayerPlaying(self.parent)
         else:
             self.selected_troop.select()
+        self.ai = AI()
+        dis = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
+        if dis:
+            self.selected_troop.move_direction -= Point(dis,0.0)
+        else:
+            self.EndGo()
 
-        self.selected_troop.move_direction -= Point(8.0,0.0)
 
     def Update(self):
         self.parent.game_world.update()
@@ -317,6 +320,8 @@ class ComputerPlaying(Mode):
 
         if self.selected_troop.dead:
             self.EndGo()
+
+
 
     def EndGo(self):
             if self.selected_troop:
