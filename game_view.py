@@ -295,7 +295,7 @@ class GameView(ui.RootElement):
     max_zoom = 4.0
     min_zoom = 0.5
     def __init__(self):
-        self.atlas = globals.atlas = drawing.texture.TextureAtlas('tiles_atlas_0.png','tiles_atlas.txt')
+        self.atlas = globals.atlas
         self.backdrop_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield.png'))
         self.backdrop_alpha_texture = drawing.texture.Texture(os.path.join(globals.dirs.images,'starfield_alpha.png'))
         super(GameView,self).__init__(Point(0,0),Point(4000,4000))
