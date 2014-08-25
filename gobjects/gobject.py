@@ -21,6 +21,7 @@ class Gobject(object):
         self.tc = tc
         self.bl = bl
         self.tr = tr
+        self.weapon_quad = None
         if tc != None:
             self.InitPolygons(tc)
             self.visible = True
@@ -207,7 +208,8 @@ class TeleportableBox(BoxGobject):
 
         globals.sounds.portal_aura.stop()
         globals.sounds.teleport.play()
-        self.weapon_quad.Disable()
+        if self.weapon_quad:
+            self.weapon_quad.Disable()
 
         #rotate the linearvelcity by the angle of the portal
         r = self.body.linearVelocity.x + self.body.linearVelocity.y*1j
