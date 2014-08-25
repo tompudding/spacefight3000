@@ -4,8 +4,10 @@ import sounds
 import globals
 
 class Lazer(weapon.Weapon):
-    item_name_left = 'red_lasergun_left.png'
-    item_name_right = 'red_lasergun_right.png'
+    item_name_left_good = 'red_lasergun_left.png'
+    item_name_right_good = 'red_lasergun_right.png'
+    item_name_left_bad = 'alien_lasergun_left.png'
+    item_name_right_bad = 'alien_lasergun_right.png'
     #lazers should probably be a limited shot weapon, since gravity wont affect them in the same way as other weapons. Maybe do a touch more damage
     #than the default bazooka as well.
     def __init__(self):

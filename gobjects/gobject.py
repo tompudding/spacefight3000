@@ -21,6 +21,7 @@ class Gobject(object):
         self.tc = tc
         self.bl = bl
         self.tr = tr
+        self.weapon_quad = None
         if tc != None:
             self.InitPolygons(tc)
             self.visible = True
@@ -137,6 +138,7 @@ class TeleportableBox(BoxGobject):
     portal_touch_duration = 1000
     teleport_min_velocity = 2
     always_instaport = False
+    teleportable = True
     def __init__(self,bl,tr,tc):
         self.touch_portal = None
         self.instaport = None
@@ -144,7 +146,7 @@ class TeleportableBox(BoxGobject):
         self.last_teleport = 0
         self.portal_contacts = []
         self.locked_planet = None
-        self.teleportable = True
+        self._move_direction = Point(0,0)
         super(TeleportableBox,self).__init__(bl,tr,tc)
 
     def TouchPortal(self, portal):
@@ -161,6 +163,15 @@ class TeleportableBox(BoxGobject):
             return
         self.touch_portal = (portal,globals.time + self.portal_touch_duration)
         globals.sounds.portal_aura.play(loops=-1)
+
+    @property
+    def move_direction(self):
+        return self._move_direction
+
+    @move_direction.setter
+    def move_direction(self,v):
+        self._move_direction = v
+        self.teleportable = True
 
     def AddPortalContact(self, portal, contact):
         if self.teleport_in_progress:
@@ -197,6 +208,8 @@ class TeleportableBox(BoxGobject):
 
         globals.sounds.portal_aura.stop()
         globals.sounds.teleport.play()
+        if self.weapon_quad:
+            self.weapon_quad.Disable()
 
         #rotate the linearvelcity by the angle of the portal
         r = self.body.linearVelocity.x + self.body.linearVelocity.y*1j
@@ -270,6 +283,9 @@ class TeleportableBox(BoxGobject):
         self.body.linearVelocity = self.saved_linear_velocity
         self.body.angularVelocity = self.saved_angular_velocity
         self.body.angle = self.saved_angle
+        self.weapon_quad.Enable()
+        #Dont allow another teleport until we've moved
+        self.teleportable = False
 
         self.last_teleport = globals.time
 

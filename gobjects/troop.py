@@ -59,7 +59,7 @@ class Troop(gobject.TeleportableBox):
         self.amount_moved = 0
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
-        self.teleportable = goodness
+
 
         #always create the unit with a default weapon that has infinite ammo. Could change this later, but if
         #you want to give another weapon that isnt unlimited, use change weapon.
@@ -83,9 +83,15 @@ class Troop(gobject.TeleportableBox):
 
     def SetWeaponQuad(self):
         if self.last_direction == 'right':
-            tc = self.currentWeapon.item_tc_right
+            if self.good:
+                tc = self.currentWeapon.item_tc_right_good
+            else:
+                tc = self.currentWeapon.item_tc_right_bad
         else:
-            tc = self.currentWeapon.item_tc_left
+            if self.good:
+                tc = self.currentWeapon.item_tc_left_good
+            else:
+                tc = self.currentWeapon.item_tc_left_bad
         if tc:
             self.weapon_quad.SetTextureCoordinates(tc)
             self.weapon_quad.Enable()

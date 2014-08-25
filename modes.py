@@ -196,8 +196,10 @@ class PlayerPlaying(Mode):
 
     def __init__(self,parent):
         self.parent          = parent
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
+
+
+
+
         self.start           = pygame.time.get_ticks()
         self.stage           = PlayingStages.PLAYERS_GO
         self.handlers        = {PlayingStages.PLAYERS_GO : self.PlayerPlay}
@@ -216,6 +218,8 @@ class PlayerPlaying(Mode):
         self.moved = False
 
         self.selected_troop = parent.game_world.NextGoodieToPlay()
+        if self.IsItOver():
+            return
         if self.selected_troop == None:
             self.parent.mode = ComputerPlaying(self.parent)
         else:
@@ -283,8 +287,8 @@ class PlayerPlaying(Mode):
                     self.fired = True
 
     def Update(self):
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
+        if self.IsItOver():
+            return
         self.elapsed = globals.time - self.start
         if self.selected_troop and self.selected_troop.amount_moved > globals.max_movement:
             self.selected_troop.move_direction = Point(0,0)
@@ -293,14 +297,7 @@ class PlayerPlaying(Mode):
 
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
-        if len(self.parent.game_world.baddies) == 0:
-            globals.sounds.level_win.play()
-            if game_world.GameWorld.last_level == self.parent.game_world.level:
-                self.parent.mode = GameOver(self.parent, True)
-            else:
-                self.parent.game_world.Destroy()
-                self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
-                self.parent.mode = PlayerPlaying(self.parent)
+
         if self.selected_troop == None or self.selected_troop.dead:
             self.EndGo()
 
@@ -315,6 +312,22 @@ class PlayerPlaying(Mode):
         if self.selected_troop:
             self.selected_troop.unselect()
         self.parent.mode = ComputerPlaying(self.parent)
+
+    def IsItOver(self):
+        if len(self.parent.game_world.baddies) == 0:
+            globals.sounds.level_win.play()
+            if game_world.GameWorld.last_level == self.parent.game_world.level:
+                self.parent.mode = GameOver(self.parent, True)
+            else:
+                self.parent.game_world.Destroy()
+                self.parent.game_world = game_world.GameWorld(self.parent.game_world.level + 1)
+                self.parent.mode = PlayerPlaying(self.parent)
+            return True
+        elif len(self.parent.game_world.goodies) == 0:
+            self.parent.mode = GameOver(self.parent, False)
+            return True
+        else:
+            return False
 
 class ComputerPlaying(Mode):
     def __init__(self,parent):
@@ -334,8 +347,7 @@ class ComputerPlaying(Mode):
         else:
             self.selected_troop.select()
         self.ai = AI()
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
+
 
         self.last_drag = globals.time
 
@@ -344,8 +356,6 @@ class ComputerPlaying(Mode):
         if self.selected_troop == None:
             self.EndGo()
             return
-        if len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
 
         keep_going = self.ai.NextMove(self.selected_troop, self.parent.game_world.goodies)
         self.parent.game_world.update()

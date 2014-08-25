@@ -16,11 +16,15 @@ class Weapon(object):
         self.power_modifier = power_modifier
         self.imageSize = None
         self.projectileExplodes = False
-        self.item_tc_left = self.item_tc_right = None
-        if self.item_name_left:
-            self.item_tc_left = globals.atlas.TextureSpriteCoords(self.item_name_left)
-        if self.item_name_right:
-            self.item_tc_right = globals.atlas.TextureSpriteCoords(self.item_name_right)
+        self.item_tc_left_good = self.item_tc_right_good = self.item_tc_left_bad = self.item_tc_right_bad = None
+        if self.item_name_left_good:
+            self.item_tc_left_good = globals.atlas.TextureSpriteCoords(self.item_name_left_good)
+        if self.item_name_right_good:
+            self.item_tc_right_good = globals.atlas.TextureSpriteCoords(self.item_name_right_good)
+        if self.item_name_left_bad:
+            self.item_tc_left_bad = globals.atlas.TextureSpriteCoords(self.item_name_left_bad)
+        if self.item_name_right_bad:
+            self.item_tc_right_bad = globals.atlas.TextureSpriteCoords(self.item_name_right_bad)
 
         #self.tc = globals.atlas.TextureSpriteCoords(self.projectileImage)
         #super(Weapon,self).__init__(physics,bl,tr,self.tc)
