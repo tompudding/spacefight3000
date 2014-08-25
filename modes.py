@@ -265,7 +265,7 @@ class PlayerPlaying(Mode):
             if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
                 if self.selected_troop != None:
                     self.parent.game_world.projectiles.append(self.selected_troop.fireWeapon())
-                    self.fired = True
+                    #self.fired = True
 
     def Update(self):
         self.elapsed = globals.time - self.start

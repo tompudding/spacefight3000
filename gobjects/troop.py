@@ -226,6 +226,7 @@ class Troop(gobject.TeleportableBox):
 
     def TakeDamage(self, amount):
         self.health -= amount
+        print self.health
 
     def PhysUpdate(self,gravity_sources):
         #Don't pass the gravity sources as we want to take care of that

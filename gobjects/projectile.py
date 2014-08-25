@@ -3,6 +3,8 @@ import globals
 from globals.types import Point
 import Box2D as box2d
 import drawing
+import math
+import itertools
 
 class Projectile(gobject.TeleportableBox):
     always_instaport = True
@@ -106,6 +108,26 @@ class Projectile(gobject.TeleportableBox):
         self.explosion_quad.Enable()
 
         #check for damage to some mans
+        for troop in itertools.chain(globals.game_view.game_world.goodies, globals.game_view.game_world.baddies):
+            explosionRange = 50
+            explosionRange = math.pow(50, 2)
+            explosionDamage = 200
+        
+            troopCenter = Point(troop.body.GetWorldCenter()[0] / globals.physics.scale_factor, troop.body.GetWorldCenter()[1] / globals.physics.scale_factor)
+            explosionCenter = Point(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor)
+            distance = (troopCenter - explosionCenter).SquareLength()
+            
+            
+            if(distance < explosionRange):
+                troop.TakeDamage(explosionDamage * distance/explosionRange)
+                
+                impulseToApply = troopCenter - explosionCenter
+                impulseToApply.Normalize()
+                impulseToApply * Point(1, 1)
+                impulse = box2d.b2Vec2(impulseToApply[0], impulseToApply[1])
+                troop.locked_planet = None
+                troop.body.ApplyImpulse(impulse, troop.body.GetWorldCenter())
+            
 
     def getExplosionPosition(self):
         projectileCenter = Point(self.body.GetWorldCenter()[0] / globals.physics.scale_factor, self.body.GetWorldCenter()[1] / globals.physics.scale_factor)
