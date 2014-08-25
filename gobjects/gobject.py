@@ -283,7 +283,8 @@ class TeleportableBox(BoxGobject):
         self.body.linearVelocity = self.saved_linear_velocity
         self.body.angularVelocity = self.saved_angular_velocity
         self.body.angle = self.saved_angle
-        self.weapon_quad.Enable()
+        if(self.weapon_quad):
+            self.weapon_quad.Enable()
         #Dont allow another teleport until we've moved
         self.teleportable = False
 
