@@ -38,6 +38,9 @@ class Viewpos(object):
         self.start_point   = None
         self.target_time   = None
         self.start_time    = None
+        self.follow        = None
+        self.follow_locked = False
+        self.t = 0
 
     def Set(self,point):
         self.pos = point
@@ -69,7 +72,7 @@ class Viewpos(object):
 
     def HasTarget(self):
         return self.target != None
-
+    
     def Get(self):
         return self.pos
 
@@ -353,7 +356,7 @@ class GameView(ui.RootElement):
         drawing.DrawNoTexture(globals.nonstatic_ui_buffer)
 
     def Update(self):
-        self.viewpos.Update(globals.time)
+        self.viewpos.Update()
         
         if self.hud and self.hud.help_screen.enabled:
             return

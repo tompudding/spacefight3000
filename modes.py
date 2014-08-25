@@ -218,6 +218,8 @@ class PlayerPlaying(Mode):
             self.selected_troop.select()
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
+            
+        self.last_drag = globals.time
 
     def MouseMotion(self,pos,rel):
         if self.selected_troop != None:
@@ -292,7 +294,12 @@ class PlayerPlaying(Mode):
         if self.selected_troop.dead:
             self.EndGo()
         
-        #globals.game_view.viewpos.Follow(globals.time, self.selected_troop)
+        if(globals.game_view.dragging == None):
+            if(globals.time > self.last_drag + 500):
+                globals.game_view.viewpos.Follow(self.selected_troop)
+        else:
+            self.last_drag = globals.time
+            globals.game_view.viewpos.NoTarget()
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
@@ -322,6 +329,8 @@ class ComputerPlaying(Mode):
         self.ai = AI()
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
+        
+        self.last_drag = globals.time
 
 
     def Update(self):
@@ -336,6 +345,13 @@ class ComputerPlaying(Mode):
 
         if self.selected_troop.dead or not keep_going:
             self.EndGo()
+        
+        if(globals.game_view.dragging == None):
+            if(globals.time > self.last_drag + 500):
+                globals.game_view.viewpos.Follow(self.selected_troop)
+        else:
+            self.last_drag = globals.time
+            globals.game_view.viewpos.NoTarget()
 
 
 
