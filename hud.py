@@ -52,7 +52,7 @@ class Hud(object):
         maxX = 1
         maxY = 1
         
-        num_rows = 2
+        num_rows = 2 #have 4 boxes, for bazooka, grenade, lazer, satalite
         num_columns = 2
         
         current_row = 0 
@@ -66,9 +66,9 @@ class Hud(object):
                 
                 if(box_no < num_boxes):
                     current_detail = box_details[box_no]
-                    self.addWeaponSelectionButton(current_detail)
+                    self.addWeaponSelectionButton(current_detail, next_box_bottom_left, next_box_top_right)
                 else:
-                    self.addEmptySelectionButton()
+                    self.addEmptySelectionButton(next_box_bottom_left, next_box_top_right)
                 
 
                 current_column += 1
@@ -81,16 +81,16 @@ class Hud(object):
             current_row += 1
             current_column = 0
     
-    def addWeaponSelectionButton(self, detail):
+    def addWeaponSelectionButton(self, current_detail, bottom_left, top_right):
         wpn_image = current_detail.image
         wpn_size = current_detail.image_size
         wpn_callback = current_detail.callback
         wpn_callback_args = current_detail.callback_args
             
-        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, wpn_image, wpn_callback, wpn_callback_args)) 
+        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)) 
         
-    def addEmptySelectionButton(self):
-        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, next_box_bottom_left, next_box_top_right, "", None, None)) 
+    def addEmptySelectionButton(self, bottom_left, top_right):
+        self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, bottom_left, top_right, drawing.constants.colours.dark_grey, buffer=globals.ui_buffer)) 
     
     def clearWeaponSelectionBoxs(self):
         for existing_box in self.weaponSelectionBoxes:
