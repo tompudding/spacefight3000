@@ -182,7 +182,7 @@ class MyContactListener(box2d.b2ContactListener):
                     projectile.destroyNextUpdate()
             else:
                 if isinstance(shape1.userData, gobjects.Planet):
-                    projectile.destroyAfterTimeLimit()
+                    projectile.destroyAfterTimeLimit(100)
                 elif isinstance(shape1.userData, gobjects.planet.PortalEnd):
                     pass
                 else:
