@@ -10,6 +10,11 @@ class Hud(object):
         self.weapon_power_bar = None
         self.setupWeaponPowerBar()
 
+        self.bottom_bar = ui.Box(parent = self.parent_ui_object,
+                                 pos = Point(0,0),
+                                 tr = Point(1,0.1),
+                                 colour=(0,0,0,0.7))
+
         self.level_bar = ui.TextBox(parent = self.parent_ui_object,
                                      bl     = Point(0.5,0),
                                      tr     = None,
@@ -17,6 +22,7 @@ class Hud(object):
                                      textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
                                      colour = (1,1,1,1),
                                      scale  = 8)
+
 
     def setupWeaponPowerBar(self):
         barColours = [drawing.constants.colours.light_green, drawing.constants.colours.yellow, drawing.constants.colours.red]
