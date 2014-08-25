@@ -72,7 +72,7 @@ class Viewpos(object):
 
     def HasTarget(self):
         return self.target != None
-    
+
     def Get(self):
         return self.pos
 
@@ -102,16 +102,7 @@ class Viewpos(object):
                     return
                 target = fpos - globals.screen*0.5/globals.game_view.zoom
                 diff = target - self.pos
-                if diff.SquareLength() < self.follow_threshold:
-                    self.pos = target
-                    self.follow_locked = True
-                else:
-                    distance = diff.length()
-                    if distance > self.max_away:
-                        self.pos += diff.unit_vector()*(distance*1.02-self.max_away)
-                        newdiff = target - self.pos
-                    else:
-                        self.pos += diff*0.02
+                self.pos += diff*0.02
 
         elif self.target:
             if t >= self.target_time:
@@ -357,7 +348,7 @@ class GameView(ui.RootElement):
 
     def Update(self):
         self.viewpos.Update()
-        
+
         if self.hud and self.hud.help_screen.enabled:
             return
         self.viewpos.Update()

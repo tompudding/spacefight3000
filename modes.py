@@ -188,6 +188,8 @@ class PlayerPlaying(Mode):
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
+                pygame.K_a  : KeyFlags.LEFT,
+                pygame.K_d : KeyFlags.RIGHT,
                 pygame.K_LSHIFT : KeyFlags.SHIFT,
                 pygame.K_RSHIFT : KeyFlags.SHIFT
                 }
@@ -218,8 +220,9 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selected_troop.select()
+            globals.game_view.viewpos.Follow(self.selected_troop)
 
-            
+
         self.last_drag = globals.time
 
     def MouseMotion(self,pos,rel):
@@ -234,7 +237,7 @@ class PlayerPlaying(Mode):
                     self.selected_troop.move_direction += self.direction_amounts[self.keyflags[key]]
                 else:
                     globals.sounds.not_allowed.play()
-        elif key == pygame.K_UP and self.selected_troop and not self.moved:
+        elif key in (pygame.K_UP,pygame.K_w) and self.selected_troop and not self.moved:
             self.selected_troop.jump()
         elif key == pygame.K_k and self.selected_troop:
             self.selected_troop.Destroy()
@@ -243,12 +246,18 @@ class PlayerPlaying(Mode):
         elif key == pygame.K_x:
             for baddie in self.parent.game_world.baddies:
                 baddie.Destroy();
+        elif key == pygame.K_c:
+            if self.selected_troop:
+                globals.game_view.viewpos.Follow(self.selected_troop)
         elif key == pygame.K_n:
             if self.selected_troop:
                 self.selected_troop.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_SPACE:
             if self.selected_troop:
+                if not self.selected_troop.locked_planet:
+                    globals.sounds.not_allowed.play()
+                    return
                 self.selected_troop.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
 
@@ -260,7 +269,7 @@ class PlayerPlaying(Mode):
 
     def MouseButtonDown(self,pos,button):
         if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
+            if button == 1 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
                 if self.selected_troop != None:
                     self.selected_troop.chargeWeapon()
         else:
@@ -268,7 +277,7 @@ class PlayerPlaying(Mode):
 
     def MouseButtonUp(self,pos,button):
         if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
+            if button == 1 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
                 if self.selected_troop != None:
                     self.parent.game_world.projectiles.append(self.selected_troop.fireWeapon())
                     self.fired = True
@@ -294,13 +303,10 @@ class PlayerPlaying(Mode):
                 self.parent.mode = PlayerPlaying(self.parent)
         if self.selected_troop == None or self.selected_troop.dead:
             self.EndGo()
-        
-        if(globals.game_view.dragging == None):
-            if(globals.time > self.last_drag + 500):
-                globals.game_view.viewpos.Follow(self.selected_troop)
-        else:
-            self.last_drag = globals.time
+
+        if globals.game_view.dragging is not None and globals.game_view.viewpos.follow:
             globals.game_view.viewpos.NoTarget()
+
 
     def PlayerPlay(self, ticks):
         return PlayingStages.PLAYERS_GO
@@ -330,13 +336,14 @@ class ComputerPlaying(Mode):
         self.ai = AI()
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
-        
+
         self.last_drag = globals.time
 
 
     def Update(self):
         if self.selected_troop == None:
             self.EndGo()
+            return
         if len(self.parent.game_world.goodies) == 0:
             self.parent.mode = GameOver(self.parent, False)
 
@@ -353,7 +360,7 @@ class ComputerPlaying(Mode):
         if self.selected_troop.dead or not keep_going:
             self.EndGo()
             return
-        
+
         if(globals.game_view.dragging == None):
             if(globals.time > self.last_drag + 500):
                 globals.game_view.viewpos.Follow(self.selected_troop)
