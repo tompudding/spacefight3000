@@ -213,7 +213,7 @@ class PlayerPlaying(Mode):
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selectedGoodie.select()
-    
+
     def MouseMotion(self,pos,rel):
         if(self.selectedGoodie != None):
             self.selectedGoodie.setWeaponAngle(pos)
@@ -244,18 +244,18 @@ class PlayerPlaying(Mode):
     def KeyUp(self,key):
         if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
-            if self.selectedGoodie and self.moved:
+            if self.selectedGoodie and not self.moved:
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
         if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
                 if self.selectedGoodie != None:
                     self.selectedGoodie.chargeWeapon()
-       
+
     def MouseButtonUp(self,pos,button):
         if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
                 if self.selectedGoodie != None:
                     self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
                     self.fired = True
