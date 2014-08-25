@@ -4,8 +4,10 @@ import globals
 
 class Grenade(weapon.Weapon):
     #Timed explosive, same damage as bazooka, limited ammo?
-    item_name_left_good = item_name_left_bad = 'grenade.png'
-    item_name_right_good = item_name_right_bad = 'grenade.png'
+    item_name_left_good  = 'red_grenade_left.png'
+    item_name_left_bad   = 'alien_grenade_left.png'
+    item_name_right_good = 'red_grenade_right.png'
+    item_name_right_bad  = 'alien_grenade_right.png'
 
     def __init__(self):
         self.projectile_texture_name = "grenade.png"
