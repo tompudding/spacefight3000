@@ -188,6 +188,8 @@ class PlayerPlaying(Mode):
 
     keyflags = {pygame.K_LEFT  : KeyFlags.LEFT,
                 pygame.K_RIGHT : KeyFlags.RIGHT,
+                pygame.K_a  : KeyFlags.LEFT,
+                pygame.K_d : KeyFlags.RIGHT,
                 pygame.K_LSHIFT : KeyFlags.SHIFT,
                 pygame.K_RSHIFT : KeyFlags.SHIFT
                 }
@@ -235,7 +237,7 @@ class PlayerPlaying(Mode):
                     self.selected_troop.move_direction += self.direction_amounts[self.keyflags[key]]
                 else:
                     globals.sounds.not_allowed.play()
-        elif key == pygame.K_UP and self.selected_troop and not self.moved:
+        elif key in (pygame.K_UP,pygame.K_w) and self.selected_troop and not self.moved:
             self.selected_troop.jump()
         elif key == pygame.K_k and self.selected_troop:
             self.selected_troop.Destroy()
