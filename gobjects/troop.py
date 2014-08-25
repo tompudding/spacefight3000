@@ -83,9 +83,15 @@ class Troop(gobject.TeleportableBox):
 
     def SetWeaponQuad(self):
         if self.last_direction == 'right':
-            tc = self.currentWeapon.item_tc_right
+            if self.good:
+                tc = self.currentWeapon.item_tc_right_good
+            else:
+                tc = self.currentWeapon.item_tc_right_bad
         else:
-            tc = self.currentWeapon.item_tc_left
+            if self.good:
+                tc = self.currentWeapon.item_tc_left_good
+            else:
+                tc = self.currentWeapon.item_tc_left_bad
         if tc:
             self.weapon_quad.SetTextureCoordinates(tc)
             self.weapon_quad.Enable()
