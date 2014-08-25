@@ -51,6 +51,7 @@ class GameWorld(object):
     def Destroy(self):
         for item in itertools.chain(self.goodies,self.baddies,self.portals,self.planets,self.projectiles):
             item.Destroy()
+        self.planets = []
 
     def UpdateHUD(self):
         if hasattr(globals.current_view.mode, "selected_troop") and globals.current_view.mode.selected_troop:
