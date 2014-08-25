@@ -119,7 +119,7 @@ class Projectile(gobject.TeleportableBox):
 
         if self.destroyMe:
             if globals.time >= self.destroy_at:
-                if(not self.explode()):
+                if not self.explode():
                     self.explosion_quad.Delete()
                     self.Destroy()
 

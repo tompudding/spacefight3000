@@ -120,7 +120,7 @@ class Hud(object):
         while current_row < num_rows:
             while current_column < num_columns:
 
-                if(box_no < num_boxes):
+                if box_no < num_boxes:
                     current_detail = box_details[box_no]
                     self.addWeaponSelectionButton(current_detail, next_box_bottom_left, next_box_top_right)
                 else:
@@ -143,20 +143,20 @@ class Hud(object):
         wpn_callback = current_detail.callback
         wpn_callback_args = current_detail.callback_args
         wpn_has_ammo = current_detail.limited_ammo
-        
-        if(wpn_has_ammo):
+
+        if wpn_has_ammo:
             wpn_ammo_amount = str(current_detail.current_ammo)
         else:
             wpn_ammo_amount = "*"
-        
-        
+
+
 
         imageBtn = ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)
         btnSize = imageBtn.absolute.size
         imageBtn.ResizeImage(Point(wpn_size[0] / btnSize[0], wpn_size[1] / btnSize[1]))
-        
+
         ammoLbl = ui.TextBox(imageBtn, Point(0.85, 1), Point(1, 0.85), wpn_ammo_amount, 4, drawing.constants.colours.red)#, textType, alignment, level)
-            
+
         self.weaponSelectionBoxes.append(imageBtn)
         self.weaponSelectionBoxes.append(ammoLbl)
 

@@ -217,7 +217,7 @@ class PlayerPlaying(Mode):
             self.selected_troop.select()
 
     def MouseMotion(self,pos,rel):
-        if(self.selected_troop != None):
+        if self.selected_troop != None:
             self.selected_troop.setWeaponAngle(pos)
 
     def KeyDown(self,key):
