@@ -277,10 +277,12 @@ class TeleportableBox(BoxGobject):
         if not self.teleport_in_progress:
             return self.body.GetWorldCenter()/globals.physics.scale_factor
         #teleport is in progress, report an approximate position
+        portal,t = self.teleport_in_progress
         progress = 1-(t - globals.time)/float(self.teleport_duration)
-        start = self.teleport_quads[0].start_vertex[k]
-        end = self.teleport_quads[0].target_vertex[k]
-        return start + (end-start)*progress
+        start = self.teleport_quads[0].start_vertex[0]
+        end = self.teleport_quads[0].target_vertex[0]
+        p = start + (end-start)*progress
+        return Point(p[0],p[1])
 
     def TeleportUpdate(self):
         if self.teleport_in_progress:
