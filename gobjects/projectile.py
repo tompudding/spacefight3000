@@ -123,9 +123,10 @@ class Projectile(gobject.TeleportableBox):
                 
                 impulseToApply = troopCenter - explosionCenter
                 impulseToApply.Normalize()
-                troop.body.ApplyImpulse(box2d.b2Vec2(100,100), troop.body.GetWorldCenter())
-            else:
-                print "no damage from explosion"
+                impulseToApply * Point(1, 1)
+                impulse = box2d.b2Vec2(impulseToApply[0], impulseToApply[1])
+                troop.locked_planet = None
+                troop.body.ApplyImpulse(impulse, troop.body.GetWorldCenter())
             
 
     def getExplosionPosition(self):
