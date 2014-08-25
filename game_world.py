@@ -23,7 +23,7 @@ class GameWorld(object):
             wellEquiptTroop = gobjects.Troop(gobjects.Bazooka, Point(600,600),1)
             wellEquiptTroop.add_weapon(gobjects.Lazer)
             self.goodies.append(wellEquiptTroop);
-            self.goodies.append(gobjects.Troop(gobjects.Lazer, Point(600,900),1));
+            self.goodies.append(gobjects.Troop(gobjects.Bazooka, Point(600,900),1));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,600),0));
             self.baddies.append(gobjects.Troop(gobjects.Bazooka, Point(1500,900),0));
         elif level == 1:

@@ -86,11 +86,14 @@ class Hud(object):
         wpn_size = current_detail.image_size
         wpn_callback = current_detail.callback
         wpn_callback_args = current_detail.callback_args
+        
+        imageBtn = ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)
             
-        self.weaponSelectionBoxes.append(ui.ImageBoxButton(self.parent_ui_object, bottom_left, top_right, wpn_image, wpn_callback, wpn_callback_args)) 
+        self.weaponSelectionBoxes.append(imageBtn) 
         
     def addEmptySelectionButton(self, bottom_left, top_right):
-        self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, bottom_left, top_right, drawing.constants.colours.dark_grey, buffer=globals.ui_buffer)) 
+        lightGrey = 1,1,1,0.5
+        self.weaponSelectionBoxes.append(ui.Border(self.parent_ui_object, bottom_left, top_right, lightGrey, buffer=globals.ui_buffer)) 
     
     def clearWeaponSelectionBoxs(self):
         for existing_box in self.weaponSelectionBoxes:
