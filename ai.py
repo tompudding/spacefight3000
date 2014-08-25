@@ -54,7 +54,7 @@ class AI(object):
         vect_diff = target.body.position - troop.body.position
         troop.ActuallySetWeaponVector(vect_diff.x, vect_diff.y)
         troop.SetWeaponPower(1)
-        troop.fireWeapon()
+        globals.current_view.game_world.projectiles.append(troop.fireWeapon())
         troop.fired = True
 
     def WalkAt(self, troop, target):
