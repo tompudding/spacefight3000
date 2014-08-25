@@ -166,7 +166,6 @@ class MyContactListener(box2d.b2ContactListener):
         if isinstance(shape2.userData, gobjects.Projectile):
             projectile = shape2.userData
             if hasattr(projectile,'teleport_in_progress') and projectile.teleport_in_progress:
-                print 'ignoring!'
                 #ignore this, it's a phantom!
                 return
             if isinstance(shape1.userData, gobjects.Troop):
@@ -177,7 +176,7 @@ class MyContactListener(box2d.b2ContactListener):
                     projectile.destroyNextUpdate()
             else:
                 if isinstance(shape1.userData, gobjects.Planet):
-                    projectile.destroyAfterTimeLimit(100)
+                    projectile.destroyNextUpdate()
                 elif isinstance(shape1.userData, gobjects.planet.PortalEnd):
                     pass
                 else:
