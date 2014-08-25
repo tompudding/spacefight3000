@@ -96,9 +96,6 @@ class Troop(gobject.TeleportableBox):
         
         globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
         
-    def testWpnCallback(self, pos):
-        print "testWpnCallback"
-    
     def unselect(self):
         self.selected = False
         self.selectionBoxQuad.Disable()
