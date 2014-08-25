@@ -88,6 +88,9 @@ class Troop(gobject.TeleportableBox):
             tc = self.currentWeapon.item_tc_left
         if tc:
             self.weapon_quad.SetTextureCoordinates(tc)
+            self.weapon_quad.Enable()
+        else:
+            self.weapon_quad.Disable()
 
     def setDirection(self,newdirection):
         if newdirection != 'none':
