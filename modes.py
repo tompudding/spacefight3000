@@ -205,8 +205,6 @@ class PlayerPlaying(Mode):
 
         self.selectedGoodie = None
         self.keydownmap = 0
-        self.fired = False
-        self.moved = False
 
         self.selectedGoodie = parent.game_world.NextGoodieToPlay()
         if self.selectedGoodie == None:
@@ -221,9 +219,9 @@ class PlayerPlaying(Mode):
     def KeyDown(self,key):
         if key in self.keyflags:
             self.keydownmap |= self.keyflags[key]
-            if self.selectedGoodie and not self.moved:
+            if self.selectedGoodie:
                 self.selectedGoodie.move_direction += self.direction_amounts[self.keyflags[key]]
-        elif key == pygame.K_UP and self.selectedGoodie and not self.moved:
+        elif key == pygame.K_UP and self.selectedGoodie:
             self.selectedGoodie.jump()
         elif key == pygame.K_k and self.selectedGoodie:
             self.selectedGoodie.Destroy()
@@ -236,37 +234,58 @@ class PlayerPlaying(Mode):
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
             self.parent.mode = ComputerPlaying(self.parent)
-        elif key == pygame.K_SPACE:
-            if self.selectedGoodie:
-                self.selectedGoodie.unselect()
-            self.parent.mode = ComputerPlaying(self.parent)
+        elif key == pygame.K_TAB:
+            if len(self.parent.game_world.goodies) == 0:
+                return
+            if not self.selectedGoodie: 
+                self.selectedGoodie = self.parent.game_world.goodies[0]
+                self.selectedGoodie.select()
+            else:
+                selected_goodie_index = self.parent.game_world.goodies.index(self.selectedGoodie)
+                print selected_goodie_index
+                if selected_goodie_index + 1 < len(self.parent.game_world.goodies):
+                    self.selectedGoodie.unselect()
+                    self.selectedGoodie = self.parent.game_world.goodies[selected_goodie_index + 1]
+                    self.selectedGoodie.select()
+                else:
+                    self.selectedGoodie.unselect()
+                    self.selectedGoodie = None
 
     def KeyUp(self,key):
         if key in self.keyflags and (self.keydownmap & self.keyflags[key]):
             self.keydownmap &= (~self.keyflags[key])
-            if self.selectedGoodie and self.moved:
+            if self.selectedGoodie:
                 self.selectedGoodie.move_direction -= self.direction_amounts[self.keyflags[key]]
 
     def MouseButtonDown(self,pos,button):
-        if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
-                if self.selectedGoodie != None:
-                    self.selectedGoodie.chargeWeapon()
+        if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+            if self.selectedGoodie != None:
+                self.selectedGoodie.chargeWeapon()
+        elif button == 1: 
+            if self.selectedGoodie:
+                self.selectedGoodie.unselect()
+    
+            objectUnderPoint = globals.physics.GetObjectAtPoint(pos)
+            if not objectUnderPoint:
+                self.selectedGoodie = None
+    
+            if objectUnderPoint is not self.selectedGoodie and objectUnderPoint in self.parent.game_world.goodies:
+                objectUnderPoint.select()
+                self.selectedGoodie = objectUnderPoint
+
+    
        
     def MouseButtonUp(self,pos,button):
-        if not self.fired:
-            if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
-                if self.selectedGoodie != None:
-                    self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
-                    self.fired = True
+        if button == 3 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT == PlayerPlaying.KeyFlags.SHIFT):
+            if self.selectedGoodie != None:
+                self.parent.game_world.projectiles.append(self.selectedGoodie.fireWeapon())
 
     def Update(self):
         self.elapsed = globals.time - self.start
-        if self.selectedGoodie.amount_moved > globals.max_movement:
-            self.selectedGoodie.move_direction = Point(0,0)
-            self.selectedGoodie.max_movement = 0
-            self.moved = True
-
+#        if self.elapsed > 5000:
+#            if self.selectedGoodie:
+#                self.selectedGoodie.unselect()
+#            self.parent.mode = ComputerPlaying(self.parent)
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
         if len(self.parent.game_world.baddies) == 0:
@@ -302,14 +321,12 @@ class ComputerPlaying(Mode):
         else:
             self.selectedGoodie.select()
 
-        self.selectedGoodie.move_direction -= Point(8.0,0.0)
-
     def Update(self):
         self.elapsed = globals.time - self.start
         ticks = pygame.time.get_ticks()
 
         self.parent.game_world.update()
-        if self.selectedGoodie.amount_moved > globals.max_movement:
+        if self.elapsed > 5000:
             if self.selectedGoodie:
                 self.selectedGoodie.unselect()
             self.parent.mode = PlayerPlaying(self.parent)

@@ -42,7 +42,6 @@ class Troop(gobject.TeleportableBox):
         self.move_direction = Point(0,0)
         self.jumping = None
         self.charging = False
-        self.amount_moved = 0
 
         super(Troop,self).__init__(bl,tr,self.tc_right)
 
@@ -93,15 +92,15 @@ class Troop(gobject.TeleportableBox):
             detail = wpn_detail(weapon.projectileImage, weapon.imageSize, self.changeWeapon, weapon)
             
             weapon_selection_options.append( detail )
+            weapon_selection_options.append( detail )
         
         globals.game_view.hud.createWeaponSelectionBoxs(weapon_selection_options)
         
     def unselect(self):
         self.selected = False
-        self.charging = False
         self.selectionBoxQuad.Disable()
         self.move_direction = Point(0,0)
-        globals.game_view.hud.setWeaponPowerBarValue(0.0)
+        #globals.game_view.hud.clearWeaponSelectionBoxs()
 
     def fireWeapon(self):
         self.setWeaponAngle(self.last_mouse_xy)
@@ -264,7 +263,6 @@ class Troop(gobject.TeleportableBox):
             self.quad.SetTextureCoordinates(tc)
 
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
-            self.amount_moved += abs(vector.real) / 1000
             self.body.angle = angle - math.pi/2
             vector = cmath.rect(-1000,angle )
             self.body.ApplyForce(box2d.b2Vec2(vector.real,vector.imag),self.body.GetWorldCenter())
