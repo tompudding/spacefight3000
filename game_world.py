@@ -15,6 +15,7 @@ class GameWorld(object):
         self.projectiles = []
         self.level = level
 
+
         if level == 0:
             self.createLevel1()
         elif level == 1:
@@ -183,6 +184,7 @@ class GameWorld(object):
         for item in itertools.chain(self.goodies,self.baddies):
             item.amount_moved = 0
             item.fired = False
+            item.jumped = False
 
     def NextGoodieToPlay(self):
         self.ReapFallenHeroes()

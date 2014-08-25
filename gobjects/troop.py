@@ -187,6 +187,7 @@ class Troop(gobject.TeleportableBox):
         r = cmath.rect(self.jump_power,self.body.angle+math.pi/2)
         self.body.ApplyImpulse(box2d.b2Vec2(r.real,r.imag),self.body.GetWorldCenter())
         self.jumping = globals.time + self.jump_duration
+        self.jumped = True
 
     def increaseWeaponPower(self):
         self.SetWeaponPower(self.currentWeaponPower + 0.01)
