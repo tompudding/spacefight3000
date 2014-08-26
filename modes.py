@@ -94,8 +94,10 @@ class GameOver(Mode):
     def __init__(self,parent, won):
         self.parent          = parent
         if won:
+            globals.sounds.level_win.play()
             self.blurb           = "You are winner!! !"
         else:
+            globals.sounds.level_lose.play()
             self.blurb           = "You am lost! !!"
 
         self.blurb_text      = None
