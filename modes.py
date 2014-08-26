@@ -243,20 +243,9 @@ class PlayerPlaying(Mode):
                     globals.sounds.not_allowed.play()
         elif key in (pygame.K_UP,pygame.K_w) and self.selected_troop and not self.moved:
             self.selected_troop.jump()
-        elif key == pygame.K_k and self.selected_troop:
-            self.selected_troop.Destroy()
-            self.selected_troop.unselect()
-            self.selected_troop = None
-        elif key == pygame.K_x:
-            for baddie in self.parent.game_world.baddies:
-                baddie.Destroy();
         elif key == pygame.K_c:
             if self.selected_troop:
                 globals.game_view.viewpos.Follow(self.selected_troop)
-        elif key == pygame.K_n:
-            if self.selected_troop:
-                self.selected_troop.unselect()
-            self.parent.mode = ComputerPlaying(self.parent)
         elif key == pygame.K_SPACE:
             if self.selected_troop:
                 if not self.selected_troop.locked_planet:
