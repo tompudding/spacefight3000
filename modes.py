@@ -283,6 +283,7 @@ class PlayerPlaying(Mode):
         if not self.fired:
             if button == 1 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
                 if self.selected_troop != None:
+                    self.selected_troop.setWeaponAngle(pos)
                     self.parent.game_world.projectiles.append(self.selected_troop.fireWeapon())
                     self.fired = True
 
