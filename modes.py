@@ -335,7 +335,10 @@ class ComputerPlaying(Mode):
         self.backdrop.Enable()
         self.selected_troop = parent.game_world.NextBadieToPlay()
         if self.selected_troop == None:
-            self.parent.mode = PlayerPlaying(self.parent)
+            #don't make a playerplaying here as we're in a constructor, the update function will do it
+            #if selected player is none
+            #self.parent.mode = PlayerPlaying(self.parent)
+            return
         else:
             self.selected_troop.select()
         self.ai = AI()
