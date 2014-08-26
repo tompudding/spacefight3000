@@ -38,7 +38,7 @@ class AI(object):
                 else:
                     return False
             else:
-                self.WalkAt(troop, troop.locked_planet)
+                self.WalkAt(troop, nearest_enemy.locked_planet)
 
             return True
 
