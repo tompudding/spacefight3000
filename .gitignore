@@ -5,3 +5,5 @@
 .pydevproject
 errorlog.log
 *.orig
+dist/
+build/
