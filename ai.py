@@ -29,6 +29,10 @@ class AI(object):
             else:
                 return False
 
+        # too far away, do nothing
+        if distance_squared > 10000:
+            return False
+
         if not nearest_enemy.locked_planet == None and not troop.locked_planet == None:
             angle = self.GetAngle(troop.locked_planet.body, troop.body, nearest_enemy.locked_planet.body)
             if abs(angle) < math.pi / 6:
@@ -58,12 +62,6 @@ class AI(object):
             troop.move_direction = Point(8.0,0.0)
         else:
             troop.move_direction = Point(-8.0,0.0)
-
-    def WalkAway(self, troop, target):
-        if self.GetAngle(troop.locked_planet.body, troop.body, target.body) > 0:
-            troop.move_direction = Point(-8.0,0.0)
-        else:
-            troop.move_direction = Point(8.0,0.0)
 
     def GetAngle(self, origin_body, body1, body2):
         my_difference = origin_body.position - body1.position
