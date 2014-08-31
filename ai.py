@@ -58,7 +58,9 @@ class AI(object):
         troop.fired = True
 
     def WalkAt(self, troop, target):
-        if self.GetAngle(troop.locked_planet.body, troop.body, target.body) > 0:
+        angle_delta = self.GetAngle(troop.locked_planet.body, troop.body, target.body)
+
+        if angle_delta > 0  and angle_delta < math.pi:
             troop.move_direction = Point(8.0,0.0)
         else:
             troop.move_direction = Point(-8.0,0.0)
@@ -70,7 +72,15 @@ class AI(object):
         distance,angle1 = cmath.polar(complex(my_difference.x, my_difference.y))
         distance,angle2 = cmath.polar(complex(his_difference.x, his_difference.y))
 
-        return angle1 - angle2
+        angle_delta = angle1 - angle2
+
+        # normalise the angle to into (0..2pi)
+        while angle_delta < 0:
+            angle_delta += math.pi * 2
+        while angle_delta > 2 * math.pi:
+            angle_delta -= math.pi * 2
+
+        return angle_delta
 
 
     def GetNearestEnemy(self, troop, enemies):
