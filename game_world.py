@@ -176,7 +176,7 @@ class GameWorld(object):
             move_to_display = globals.max_movement - round(globals.current_view.mode.selected_troop.amount_moved)
             if move_to_display < 0:
                 move_to_display = 0
-            globals.current_view.hud.SetLevelBar("Us: {0}    Them: {1}    Level {2}    Movement Left {3}".format(len(self.goodies), len(self.baddies), self.level+1, move_to_display))
+            globals.current_view.hud.SetLevelBar("Us: {0}   Them: {1}   Level {2}   Movement Left {3}   Retries Left {4}".format(len(self.goodies), len(self.baddies), self.level+1, move_to_display, globals.retries_left))
 
     def ResetAfterTurn(self):
         self.goodies_to_play = list(self.goodies)

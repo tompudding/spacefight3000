@@ -316,7 +316,13 @@ class PlayerPlaying(Mode):
                 self.parent.mode = PlayerPlaying(self.parent)
             return True
         elif len(self.parent.game_world.goodies) == 0:
-            self.parent.mode = GameOver(self.parent, False)
+            if globals.retries_left > 0:
+                globals.retries_left -= 1
+                self.parent.game_world.Destroy()
+                self.parent.game_world = game_world.GameWorld(self.parent.game_world.level)
+                self.parent.mode = PlayerPlaying(self.parent)
+            else:
+                self.parent.mode = GameOver(self.parent, False)
             return True
         else:
             return False

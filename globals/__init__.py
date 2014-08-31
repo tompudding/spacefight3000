@@ -14,3 +14,4 @@ time                  = 0
 hud                   = None
 physics               = None
 max_movement          = 200
+retries_left          = 3

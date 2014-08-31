@@ -73,7 +73,7 @@ class Hud(object):
         self.help_screen.Disable()
 
         self.level_bar = ui.TextBox(parent = self.parent_ui_object,
-                                     bl     = Point(0.25,0),
+                                     bl     = Point(0.15,0),
                                      tr     = None,
                                      text   = "??" ,
                                      textType = drawing.texture.TextTypes.SCREEN_RELATIVE,
