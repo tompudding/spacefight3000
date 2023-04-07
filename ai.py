@@ -33,7 +33,7 @@ class AI(object):
         if distance_squared > 10000:
             return False
 
-        if not nearest_enemy.locked_planet == None and not troop.locked_planet == None:
+        if not nearest_enemy.locked_planet is None and not troop.locked_planet is None:
             angle = self.GetAngle(troop.locked_planet.body, troop.body, nearest_enemy.locked_planet.body)
             if abs(angle) < math.pi / 6:
                 if not troop.jumped:
@@ -46,7 +46,7 @@ class AI(object):
 
             return True
 
-        if troop.locked_planet == None:
+        if troop.locked_planet is None:
             return True
         return False
 
@@ -75,7 +75,7 @@ class AI(object):
 
     def GetNearestEnemy(self, troop, enemies):
         distance = 10000000000000000
-        if troop.locked_planet == None:
+        if troop.locked_planet is None:
             return None, distance
 
         nearest_enemy = None
@@ -94,7 +94,7 @@ class AI(object):
 
     def GetNearestOnPlanetEnemy(self, troop, enemies):
         distance = 10000000000000000
-        if troop.locked_planet == None:
+        if troop.locked_planet is None:
             return None, distance
 
         nearest_enemy = None

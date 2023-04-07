@@ -131,7 +131,7 @@ class GameOver(Mode):
         #pygame.mixer.music.play(-1)
 
     def Update(self):
-        if self.start == None:
+        if self.start is None:
             self.start = globals.time
         self.elapsed = globals.time - self.start
         self.stage = self.handlers[self.stage](globals.time)
@@ -222,7 +222,7 @@ class PlayerPlaying(Mode):
         self.selected_troop = parent.game_world.NextGoodieToPlay()
         if self.IsItOver():
             return
-        if self.selected_troop == None:
+        if self.selected_troop is None:
             self.parent.mode = ComputerPlaying(self.parent)
         else:
             self.selected_troop.select()
@@ -232,7 +232,7 @@ class PlayerPlaying(Mode):
         self.last_drag = globals.time
 
     def MouseMotion(self,pos,rel):
-        if self.selected_troop != None:
+        if self.selected_troop is not None:
             self.selected_troop.setWeaponAngle(pos)
 
     def KeyDown(self,key):
@@ -265,7 +265,7 @@ class PlayerPlaying(Mode):
     def MouseButtonDown(self,pos,button):
         if not self.fired:
             if button == 1 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT ):
-                if self.selected_troop != None:
+                if self.selected_troop is not None:
                     self.selected_troop.chargeWeapon()
         else:
             globals.sounds.not_allowed.play()
@@ -273,7 +273,7 @@ class PlayerPlaying(Mode):
     def MouseButtonUp(self,pos,button):
         if not self.fired:
             if button == 1 or ( button == 1 and self.keydownmap & PlayerPlaying.KeyFlags.SHIFT) :
-                if self.selected_troop != None:
+                if self.selected_troop is not None:
                     self.selected_troop.setWeaponAngle(pos)
                     self.parent.game_world.projectiles.append(self.selected_troop.fireWeapon())
                     self.fired = True
@@ -290,7 +290,7 @@ class PlayerPlaying(Mode):
         self.stage = self.handlers[self.stage](globals.time)
         self.parent.game_world.update()
 
-        if self.selected_troop == None or self.selected_troop.dead:
+        if self.selected_troop is None or self.selected_troop.dead:
             self.EndGo()
 
         if globals.game_view.dragging is not None and globals.game_view.viewpos.follow:
@@ -334,7 +334,7 @@ class ComputerPlaying(Mode):
                                       colour = (0,0,0,0))
         self.backdrop.Enable()
         self.selected_troop = parent.game_world.NextBadieToPlay()
-        if self.selected_troop == None:
+        if self.selected_troop is None:
             #don't make a playerplaying here as we're in a constructor, the update function will do it
             #if selected player is none
             #self.parent.mode = PlayerPlaying(self.parent)
@@ -348,7 +348,7 @@ class ComputerPlaying(Mode):
 
 
     def Update(self):
-        if self.selected_troop == None:
+        if self.selected_troop is None:
             self.EndGo()
             return
 
@@ -366,7 +366,7 @@ class ComputerPlaying(Mode):
             self.EndGo()
             return
 
-        if(globals.game_view.dragging == None):
+        if(globals.game_view.dragging is None):
             if(globals.time > self.last_drag + 500):
                 globals.game_view.viewpos.Follow(self.selected_troop)
         else:

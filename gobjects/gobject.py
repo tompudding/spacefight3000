@@ -22,7 +22,7 @@ class Gobject(object):
         self.bl = bl
         self.tr = tr
         self.weapon_quad = None
-        if tc != None:
+        if tc is not None:
             self.InitPolygons(tc)
             self.visible = True
         else:
@@ -36,7 +36,7 @@ class Gobject(object):
         self.shape = self.CreateShape(self.midpoint)
         if not self.static:
             self.shape.userData = self
-        if self.filter_group != None:
+        if self.filter_group is not None:
             self.shape.filter.groupIndex = self.filter_group
         self.bodydef.isBullet = self.isBullet
         self.body = globals.physics.world.CreateBody(self.bodydef)
@@ -78,7 +78,7 @@ class Gobject(object):
         if self.dead:
             return
         shape = self.shape_type()
-        if pos == None:
+        if pos is None:
             shape.SetAsBox(*midpoint)
         else:
             shape.SetAsBox(midpoint[0],midpoint[1],pos.to_vec(),0)
@@ -348,7 +348,7 @@ class CircleGobject(Gobject):
     def __init__(self,centre,radius,tc = None,angle=0):
         self.dead = False
         self.tc = tc
-        if tc != None:
+        if tc is not None:
             self.InitPolygons(tc)
             self.visible = True
         else:
@@ -363,7 +363,7 @@ class CircleGobject(Gobject):
         self.shape.isSensor = self.is_sensor
         if not self.static:
             self.shape.userData = self
-        if self.filter_group != None:
+        if self.filter_group is not None:
             self.shape.filter.groupIndex = self.filter_group
         self.bodydef.isBullet = self.isBullet
         self.body = globals.physics.world.CreateBody(self.bodydef)
@@ -382,7 +382,7 @@ class CircleGobject(Gobject):
         shape = self.shape_type()
         shape.radius = radius*globals.physics.scale_factor
         self.midpoint = Point(0,0)
-        if pos != None:
+        if pos is not None:
             shape.SetLocalPosition(pos.to_vec())
         return shape
 
